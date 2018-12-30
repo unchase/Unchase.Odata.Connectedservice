@@ -16,8 +16,6 @@ build_script:
   - msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
 after_test:
   - ps: Vsix-PushArtifacts | Vsix-PublishToGallery
-artifacts:
-  - path: artifacts/*.vsix
 deploy:
 - provider: GitHub
   tag: v$(APPVEYOR_REPO_TAG_NAME)
