@@ -10,6 +10,7 @@ configuration: Release
 install:
   - ps: (new-object Net.WebClient).DownloadString("https://raw.github.com/unchase/unchase.odata.connectedservice/master/vsix.ps1") | iex
 before_build:
+  - ps: nuget restore
   - ps: Vsix-IncrementVsixVersion | Vsix-UpdateBuildVersion
 build_script:
   - msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
