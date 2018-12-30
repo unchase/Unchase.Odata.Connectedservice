@@ -1,0 +1,44 @@
+version: 0.1.{build}
+pull_requests:
+  do_not_increment_build_number: true
+skip_tags: true
+image: Visual Studio 2017
+platform: Any CPU
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
+build:
+  verbosity: minimal
+configuration: Release
+install:
+  - ps: (new-object Net.WebClient).DownloadString("https://raw.github.com/unchase/unchase.odata.connectedservice/master/vsix.ps1") | iex
+before_build:
+  - ps: nuget restore
+  - ps: Vsix-IncrementVsixVersion | Vsix-UpdateBuildVersion
+build_script:
+  - msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
+after_test:
+  - ps: Vsix-PushArtifacts | Vsix-PublishToGallery
+deploy:
+- provider: GitHub
+  tag: v$(appveyor_build_version)
+  release: Unchase.OData.ConnectedService-v$(appveyor_build_version)
+  auth_token:
+    secure: 5YjB5tKbw0Z/mnSTKxo3WLD9TWuyGpGPhaNlSTA+cFA1oORUk46i6tPuyvekHaS9
+  repository: unchase/Unchase.OData.ConnectedService
+  artifact: /*.*\.vsix/
+  on:
+    branch: master                # release from master branch only
+    appveyor_repo_tag: true       # deploy on tag push only
+notifications:
+- provider: Email
+  to:
+    - spiritkola@hotmail.com
+  subject: 'Unchase.OData.ConnectedService - Build {{status}}'
+  message: "Building complete, commitId = {{commitId}}"
+  on_build_status_changed: true
