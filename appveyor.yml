@@ -4,21 +4,12 @@ pull_requests:
 skip_tags: true
 image: Visual Studio 2017
 platform: Any CPU
-dotnet_csproj:
-  patch: true
-  file: '**\*.csproj'
-  version: '{version}'
-  package_version: '{version}'
-  assembly_version: '{version}'
-  file_version: '{version}'
-  informational_version: '{version}'
 build:
   verbosity: minimal
 configuration: Release
 install:
   - ps: (new-object Net.WebClient).DownloadString("https://raw.github.com/unchase/unchase.odata.connectedservice/master/vsix.ps1") | iex
 before_build:
-  - ps: nuget restore
   - ps: Vsix-IncrementVsixVersion | Vsix-UpdateBuildVersion
 build_script:
   - msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
