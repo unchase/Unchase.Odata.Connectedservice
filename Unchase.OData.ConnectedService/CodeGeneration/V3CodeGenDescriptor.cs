@@ -160,7 +160,7 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
             var t4Folder = Path.Combine(CurrentAssemblyPath, "Templates");
 
             var proxyClassText = File.ReadAllText(generatedFileName);
-            var proxyClassNamespace = Regex.Match(proxyClassText, @"(namespace\s)\w+", RegexOptions.IgnoreCase | RegexOptions.Multiline).Value.Trim().Replace("namespace ", "").Trim();
+            var proxyClassNamespace = Regex.Match(proxyClassText, @"(namespace\s)\w+.+", RegexOptions.IgnoreCase | RegexOptions.Multiline).Value.Trim().Replace("namespace ", "").Trim();
             var proxyClassName = Regex.Match(proxyClassText, @"(public partial class\s)\w+", RegexOptions.IgnoreCase | RegexOptions.Multiline).Value.Trim().Replace("public partial class ", "").Trim();
 
             using (var writer = File.CreateText(tempFile))
