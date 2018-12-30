@@ -19,12 +19,12 @@ artifacts:
   - path: artifacts/*.vsix
 deploy:
 - provider: GitHub
-  tag: v$(appveyor_build_version)
+  tag: v$(APPVEYOR_REPO_TAG_NAME)
   release: Unchase.OData.ConnectedService-v$(appveyor_build_version)
   auth_token:
     secure: 5YjB5tKbw0Z/mnSTKxo3WLD9TWuyGpGPhaNlSTA+cFA1oORUk46i6tPuyvekHaS9
   repository: unchase/Unchase.OData.ConnectedService
-  artifact: /*\.vsix/
+  artifact: bin\release\Unchase.OData.ConnectedService.vsix
 notifications:
 - provider: Email
   to:
