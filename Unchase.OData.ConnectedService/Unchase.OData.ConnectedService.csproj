@@ -84,7 +84,9 @@
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Templates\ODataT4CodeGenerator.ttinclude" />
+    <Content Include="Templates\ODataT4CodeGenerator.ttinclude">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="License.txt">
@@ -97,6 +99,7 @@
     <Content Include="Templates\ODataT4CodeGenerator.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ODataT4CodeGenerator1.cs</LastGenOutput>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ODataV3ExtensionsT4CodeGenerator.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

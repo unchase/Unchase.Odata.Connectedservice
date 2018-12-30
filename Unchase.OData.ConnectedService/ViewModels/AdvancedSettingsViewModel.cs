@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using System.Windows;
 using Microsoft.VisualStudio.ConnectedServices;
 using Unchase.OData.ConnectedService.Views;
 
@@ -18,6 +19,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
         public string GeneratedFileName { get; set; }
         public bool IncludeT4File { get; set; }
         public bool IncludeExtensionsT4File { get; set; }
+        public Visibility IncludeExtensionsT4FileVisibility { get; set; }
 
         public AdvancedSettingsViewModel() : base()
         {
@@ -25,6 +27,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.Description = "Advanced settings for generating client proxy and extension methods for call service functions";
             this.Legend = "Settings";
             this.IncludeExtensionsT4File = false;
+            this.IncludeExtensionsT4FileVisibility = Visibility.Collapsed;
             this.ResetDataContext();
         }
 
@@ -55,6 +58,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.GeneratedFileName = Common.Constants.DefaultReferenceFileName;
             this.IncludeT4File = false;
             this.IncludeExtensionsT4File = false;
+            this.IncludeExtensionsT4FileVisibility = Visibility.Collapsed;
         }
     }
 }

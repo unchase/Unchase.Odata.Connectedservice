@@ -30,23 +30,23 @@
                 </CheckBox>
                 <TextBox x:Name="NamespacePrefix" Text="{Binding NamespacePrefix}"
                          HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Center" Width="480" Margin="20, 0, 0, 5"/>
-                <CheckBox x:Name="UseDSC" Content="Enable entity and property tracking" IsChecked="{Binding UseDataServiceCollection}"
+                <CheckBox x:Name="UseDSC" Content="Enable entity and property tracking." IsChecked="{Binding UseDataServiceCollection}"
                           HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0, 5, 0, 0" />
-                <TextBlock x:Name="ExtensionsTemplateLabel" Text="Extensions:"
+                <TextBlock x:Name="ExtensionsTemplateLabel" Visibility="{Binding IncludeExtensionsT4FileVisibility}" Text="Extensions:"
                            HorizontalAlignment="Left" Margin="0, 10, 10, 5">
                 </TextBlock>
-                <CheckBox x:Name="IncludeExtensionsT4File" Content="Add extensions code template for OData proxy-class." IsChecked="{Binding IncludeExtensionsT4File}"
+                <CheckBox x:Name="IncludeExtensionsT4File" Content="Add extensions code template for OData proxy-class." Visibility="{Binding IncludeExtensionsT4FileVisibility}" IsChecked="{Binding IncludeExtensionsT4File}"
                           HorizontalAlignment="Left" VerticalAlignment="Top" Width="450"  Height="25" Margin="0, 5, 0, 0" FontWeight="Medium"/>
             </StackPanel>
             <StackPanel x:Name="AdvancedSettingsForv4" HorizontalAlignment="Left" Margin="10, 5, 0, 0" VerticalAlignment="Top">
-                <CheckBox x:Name="EnableCamelCase" Content="Use c# casing style" IsChecked="{Binding EnableNamingAlias}"
+                <CheckBox x:Name="EnableCamelCase" Content="Use c# casing style." IsChecked="{Binding EnableNamingAlias}"
             		HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0, 5"/>
                 <CheckBox x:Name="IgnoreUnknownAttributeOrElement" IsChecked="{Binding IgnoreUnexpectedElementsAndAttributes}"
             		HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0, 5">
                     <TextBlock TextWrapping="Wrap" Margin="0, 0, 40, 0">Ignore unknown elements (Whether to ignore unexpected elements and attributes in the metadata document and generate the client code if any).</TextBlock>
                 </CheckBox>
                 <CheckBox x:Name="IncludeT4File" Content="Add code templates (Whether to include the T4 files into this project)." IsChecked="{Binding IncludeT4File}"
-            		HorizontalAlignment="Left" VerticalAlignment="Top" Width="280"  Height="25" Margin="0, 15" FontWeight="Medium"/>
+            		HorizontalAlignment="Left" VerticalAlignment="Top" Width="410"  Height="25" Margin="0, 5" FontWeight="Medium"/>
             </StackPanel>
         </StackPanel>
     </StackPanel>

@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using System.Windows;
 using Microsoft.VisualStudio.ConnectedServices;
 using Unchase.OData.ConnectedService.Models;
 using Unchase.OData.ConnectedService.ViewModels;
@@ -58,7 +59,6 @@ namespace Unchase.OData.ConnectedService
                             advancedSettingsViewModel.UseNamespacePrefix = serviceConfig.UseNameSpacePrefix;
                             advancedSettingsViewModel.NamespacePrefix = serviceConfig.NamespacePrefix;
                             advancedSettingsViewModel.UseDataServiceCollection = serviceConfig.UseDataServiceCollection;
-                            advancedSettingsViewModel.IncludeExtensionsT4File = serviceConfig.EdmxVersion != Common.Constants.EdmxVersion4;
 
                             if (serviceConfig.EdmxVersion == Common.Constants.EdmxVersion4)
                             {
@@ -72,6 +72,15 @@ namespace Unchase.OData.ConnectedService
                     }
                 };
             }
+
+            AdvancedSettingsViewModel.PageEntering += (sender, args) =>
+            {
+                if (sender is AdvancedSettingsViewModel advancedSettingsViewModel)
+                {
+                    advancedSettingsViewModel.IncludeExtensionsT4File = ConfigODataEndpointViewModel.EdmxVersion != Common.Constants.EdmxVersion4;
+                    advancedSettingsViewModel.IncludeExtensionsT4FileVisibility = ConfigODataEndpointViewModel.EdmxVersion != Common.Constants.EdmxVersion4 ? Visibility.Visible : Visibility.Collapsed;
+                }
+            };
 
             this.Pages.Add(ConfigODataEndpointViewModel);
             this.Pages.Add(AdvancedSettingsViewModel);
