@@ -47,8 +47,6 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
 
         public override async Task AddGeneratedClientCode()
         {
-            await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Generating Client Proxy for OData V4...");
-
             if (this.ServiceConfiguration.IncludeT4File)
             {
                 await AddT4File();
@@ -57,8 +55,6 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
             {
                 await AddGeneratedCSharpCode();
             }
-
-            await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Client Proxy for OData V4 was generated.");
         }
 
         private async Task AddT4File()
