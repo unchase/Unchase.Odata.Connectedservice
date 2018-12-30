@@ -1,6 +1,6 @@
 # Unchase.OData.ConnectedService
 
-[![Build status](https://ci.appveyor.com/api/projects/status/?svg=true)](https://ci.appveyor.com/project/unchase/unchase.odata.connectedservice)
+[![Build status](https://ci.appveyor.com/api/projects/status/kk4auowp28dy7qme?svg=true)](https://ci.appveyor.com/project/unchase/unchase.odata.connectedservice)
 
 Connected service generate client-side C# proxy-classes for OData protocol versions 1.0-4.0 and proxy-class extension methods for OData protocol versions 1.0-3.0. 
 
