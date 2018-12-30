@@ -15,6 +15,8 @@ build_script:
   - msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
 after_test:
   - ps: Vsix-PushArtifacts | Vsix-PublishToGallery
+artifacts:
+  - path: artifacts/*.vsix
 deploy:
 - provider: GitHub
   tag: v$(appveyor_build_version)
@@ -22,7 +24,7 @@ deploy:
   auth_token:
     secure: 5YjB5tKbw0Z/mnSTKxo3WLD9TWuyGpGPhaNlSTA+cFA1oORUk46i6tPuyvekHaS9
   repository: unchase/Unchase.OData.ConnectedService
-  artifact: /*.*\.vsix/
+  artifact: /*\.vsix/
 notifications:
 - provider: Email
   to:
