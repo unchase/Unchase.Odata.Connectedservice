@@ -18,7 +18,7 @@ after_test:
   - ps: Vsix-PushArtifacts | Vsix-PublishToGallery
 deploy:
 - provider: GitHub
-  tag: v$(APPVEYOR_REPO_TAG_NAME)
+  tag: v$(appveyor_build_version)
   release: Unchase.OData.ConnectedService-v$(appveyor_build_version)
   auth_token:
     secure: 5YjB5tKbw0Z/mnSTKxo3WLD9TWuyGpGPhaNlSTA+cFA1oORUk46i6tPuyvekHaS9
