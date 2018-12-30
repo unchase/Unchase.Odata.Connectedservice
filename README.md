@@ -8,7 +8,7 @@ Add necessary nuget-packages for client-side OData proxy-classes.
  
 [![GitHub release](https://img.shields.io/github/release/unchase/Unchase.Odata.Connectedservice.svg)](https://github.com/unchase/Unchase.Odata.Connectedservice/releases/latest) [![Github Releases](https://img.shields.io/github/downloads/unchase/Unchase.Odata.Connectedservice/total.svg)](https://github.com/unchase/Unchase.Odata.Connectedservice/releases/latest) [![GitHub Release Date](https://img.shields.io/github/release-date/unchase/Unchase.Odata.Connectedservice.svg)](https://github.com/unchase/Unchase.Odata.Connectedservice/releases/latest) 
 
-To use the connected service, first install vsix-extension in visual studio or download this extension from the [VS Gallery](https://marketplace.visualstudio.com/items?itemName=Unchase.unchaseodataconnectedservice).
+To use the connected service, first install vsix-extension in visual studio or download this extension from the [VS Gallery](http://vsixgallery.com/extensions/Unchase.OData.ConnectedService.afc46f39-8c64-4e14-85d0-af6c7c4291f3/extension.vsix) or [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=Unchase.unchaseodataconnectedservice).
 
 See the [changelog](https://github.com/unchase/Unchase.Odata.Connectedservice/blob/master/CHANGELOG.md) for changes and roadmap.
 
