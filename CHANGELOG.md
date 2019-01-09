@@ -1,9 +1,15 @@
 # Unchase.OData.ConnectedService сhangelog:
 
-### Version 0.1.*:
+### Version 0.1.0 - 0.1.32:
 
 *Features:*
 
 - Generate client-side C# proxy-classes for OData protocol versions 1.0-4.0;
 - Generate client-side class with proxy-class extension methods for OData protocol versions 1.0-3.0;
 - Add necessary nuget-packages for client-side OData proxy-classes.
+
+### Version 0.1.33:
+
+*Bug fixes:*
+
+- Fix bug in tt-template for OData V3 extension class: made public a few internal classes. 

@@ -122,7 +122,7 @@ namespace $rootnamespace$
 
 	    [XmlType(AnonymousType = true, Namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata")]
 	    [XmlRoot(ElementName = "error", Namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata", IsNullable = false)]
-	    internal class ODataException
+	    public class ODataException
 	    {
 	        [XmlElement("code")]
 	        public string ErrorCode { get; set; }
@@ -135,7 +135,7 @@ namespace $rootnamespace$
 	    }
 
 	    [XmlType(AnonymousType = true, Namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata")]
-	    internal class ODataErrorMessage
+	    public class ODataErrorMessage
 	    {
 	        [XmlAttribute(AttributeName = "lang", Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/XML/1998/namespace")]
 	        public string Language { get; set; }
@@ -145,7 +145,7 @@ namespace $rootnamespace$
 	    }
 
 	    [XmlType(AnonymousType = true, Namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata")]
-	    internal class ODataInternalException
+	    public class ODataInternalException
 	    {
 	        [XmlElement("message")]
 	        public string Message { get; set; }
