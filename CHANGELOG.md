@@ -12,4 +12,11 @@
 
 *Bug fixes:*
 
-- Fix bug in tt-template for OData V3 extension class: made public a few internal classes. 
+- Fix bug in tt-template for OData V3 extension class: made public a few internal classes.
+
+### Version 0.1.34:
+
+*Code fixes:*
+
+- Code fix in tt-template for OData V3 extension class: simplify method "AddGetQueryOptions".
+ 

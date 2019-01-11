@@ -1,4 +1,4 @@
-﻿Unchase OData Connected Service ver. 0.1.0
+﻿Unchase OData Connected Service
 
 Copyright (c) 2018 Unchase (https://github.com/unchase).
 
