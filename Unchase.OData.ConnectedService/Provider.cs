@@ -19,7 +19,7 @@ namespace Unchase.OData.ConnectedService
             this.Description = "OData V1-V4 connected service with extension methods for client-side proxy class";
             this.Icon = new BitmapImage(new Uri($"pack://application:,,/{this.GetType().Assembly};component/Resources/ProviderIcon.png"));
             this.CreatedBy = "Unchase";
-            this.Version = new Version(0, 1, 0);
+            this.Version = new Version(0, 2, 0);
             this.MoreInfoUri = new Uri("https://github.com/unchase/Unchase.Odata.Connectedservice");
         }
 

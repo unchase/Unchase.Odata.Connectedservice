@@ -19,4 +19,10 @@
 *Code fixes:*
 
 - Code fix in tt-template for OData V3 extension class: simplify method "AddGetQueryOptions".
+
+### Version 0.2:
+
+*Features:*
+
+- Added methods in OData V3 extension class for calling service methods returns void value.
  
