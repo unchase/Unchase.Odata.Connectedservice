@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.ConnectedServices;
 
 namespace Unchase.OData.ConnectedService
 {
-    [ConnectedServiceProviderExport("Microsoft.Samples.Wizard", SupportsUpdate = true)]
+    [ConnectedServiceProviderExport("Unchase.OData.ConnectedService", SupportsUpdate = true)]
     internal class Provider : ConnectedServiceProvider
     {
         public Provider()

@@ -31,7 +31,7 @@ namespace Unchase.OData.ConnectedService.Common
         public const string EdmxVersion3Namespace = "http://schemas.microsoft.com/ado/2009/11/edmx";
         public const string EdmxVersion4Namespace = "http://docs.oasis-open.org/odata/ns/edmx";
 
-        public const string ProviderId = "Microsoft.OData.ConnectedService";
+        public const string ProviderId = "Unchase.OData.ConnectedService";
 
         public const string V3DocUri = "https://msdn.microsoft.com/en-us/library/cc668772(v=vs.110).aspx";
         public const string V4DocUri = "http://odata.github.io/odata.net/";

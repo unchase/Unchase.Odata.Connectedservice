@@ -13,7 +13,7 @@ using Unchase.OData.ConnectedService.Models;
 
 namespace Unchase.OData.ConnectedService
 {
-    [ConnectedServiceHandlerExport("Microsoft.Samples.Wizard", AppliesTo = "CSharp")]
+    [ConnectedServiceHandlerExport("Unchase.OData.ConnectedService", AppliesTo = "CSharp")]
     internal class Handler : ConnectedServiceHandler
     {
         public override async Task<AddServiceInstanceResult> AddServiceInstanceAsync(ConnectedServiceHandlerContext context, CancellationToken ct)
