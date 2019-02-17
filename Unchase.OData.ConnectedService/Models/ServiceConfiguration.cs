@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using Unchase.OData.ConnectedService.Common;
 
 namespace Unchase.OData.ConnectedService.Models
 {
@@ -18,6 +19,7 @@ namespace Unchase.OData.ConnectedService.Models
 
     internal class ServiceConfigurationV3 : ServiceConfiguration
     {
+        public Constants.FunctionImportsGenerator FunctionImportsGenerator { get; set; }
         public bool IncludeExtensionsT4File { get; set; }
     }
 

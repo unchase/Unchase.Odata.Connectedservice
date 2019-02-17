@@ -52,6 +52,7 @@
     <Compile Include="CodeGeneration\V4CodeGenDescriptor.cs" />
     <Compile Include="Common\CodeGeneratorUtils.cs" />
     <Compile Include="Common\Constants.cs" />
+    <Compile Include="Common\FunctionImportsHelper.cs" />
     <Compile Include="Common\ProjectHelper.cs" />
     <Compile Include="Common\UserSettingsPersistenceHelper.cs" />
     <Compile Include="Handler.cs" />

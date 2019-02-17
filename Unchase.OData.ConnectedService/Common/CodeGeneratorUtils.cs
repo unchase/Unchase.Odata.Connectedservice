@@ -66,9 +66,7 @@ namespace Unchase.OData.ConnectedService.Common
                             {
                                 var runtimePath = (string)dataFxKey.GetValue(InstallLocationSubKeyName);
                                 if (!string.IsNullOrEmpty(runtimePath))
-                                {
                                     return runtimePath;
-                                }
                             }
                         }
                     }

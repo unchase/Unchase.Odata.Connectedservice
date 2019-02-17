@@ -22,6 +22,8 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
         public string MetadataUri { get; private set; }
         public string ClientNuGetPackageName { get; set; }
         public string ValueTupleNuGetPackageName { get; set; }
+        public string SimpleODataClientNuGetPackageName { get; set; }
+        public string SystemComponentModelAnnotationsNuGetPackageName { get; set; }
         public string ClientDocUri { get; set; }
         protected string GeneratedFileNamePrefix => string.IsNullOrWhiteSpace(this.ServiceConfiguration.GeneratedFileNamePrefix)
             ? Common.Constants.DefaultReferenceFileName : this.ServiceConfiguration.GeneratedFileNamePrefix;

@@ -79,6 +79,7 @@ namespace Unchase.OData.ConnectedService
                 {
                     advancedSettingsViewModel.IncludeExtensionsT4File = ConfigODataEndpointViewModel.EdmxVersion != Common.Constants.EdmxVersion4;
                     advancedSettingsViewModel.IncludeExtensionsT4FileVisibility = ConfigODataEndpointViewModel.EdmxVersion != Common.Constants.EdmxVersion4 ? Visibility.Visible : Visibility.Collapsed;
+                    advancedSettingsViewModel.FunctionImportsGenerator = AdvancedSettingsViewModel.FunctionImportsGenerator;
                 }
             };
 
@@ -120,7 +121,8 @@ namespace Unchase.OData.ConnectedService
             {
                 serviceConfiguration = new ServiceConfigurationV3
                 {
-                    IncludeExtensionsT4File = AdvancedSettingsViewModel.IncludeExtensionsT4File
+                    IncludeExtensionsT4File = AdvancedSettingsViewModel.IncludeExtensionsT4File,
+                    FunctionImportsGenerator = AdvancedSettingsViewModel.FunctionImportsGenerator
                 };
             }
 

@@ -10,9 +10,11 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using EnvDTE;
+using Microsoft.Data.Edm.Csdl;
 using Microsoft.VisualStudio.ConnectedServices;
 using Unchase.OData.ConnectedService.Common;
 using Unchase.OData.ConnectedService.Models;
+using Constants = Unchase.OData.ConnectedService.Common.Constants;
 
 namespace Unchase.OData.ConnectedService.CodeGeneration
 {
@@ -23,6 +25,8 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
         {
             this.ClientNuGetPackageName = Common.Constants.V3ClientNuGetPackage;
             this.ValueTupleNuGetPackageName = Common.Constants.ValueTupleNuGetPackage;
+            this.SimpleODataClientNuGetPackageName = Common.Constants.SimpleODataClientNuGetPackage;
+            this.SystemComponentModelAnnotationsNuGetPackageName = Common.Constants.SystemComponentModelAnnotationsNuGetPackage;
             this.ClientDocUri = Common.Constants.V3DocUri;
             this.ServiceConfiguration = base.ServiceConfiguration as ServiceConfigurationV3;
         }
@@ -61,12 +65,15 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
             if (ServiceConfiguration.IncludeExtensionsT4File)
                 await CheckAndInstallNuGetPackage(packageSource, this.ValueTupleNuGetPackageName);
 
+            await CheckAndInstallNuGetPackage(packageSource, this.SystemComponentModelAnnotationsNuGetPackageName);
+
+            if (this.ServiceConfiguration.FunctionImportsGenerator == Constants.FunctionImportsGenerator.SimpleOData)
+                await CheckAndInstallNuGetPackage(packageSource, this.SimpleODataClientNuGetPackageName);
+
             if (packageSource == Common.Constants.NuGetOnlineRepository)
             {
                 foreach (var nugetPackage in Common.Constants.V3NuGetPackages)
-                {
                     await CheckAndInstallNuGetPackage(packageSource, nugetPackage);
-                }
             }
             else
                 await CheckAndInstallNuGetPackage(packageSource, this.ClientNuGetPackageName);
@@ -75,16 +82,23 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
 
         internal async Task CheckAndInstallNuGetPackage(string packageSource, string nugetPackage)
         {
-            if (!PackageInstallerServices.IsPackageInstalled(this.Project, nugetPackage))
+            try
             {
-                Version packageVersion = null;
-                PackageInstaller.InstallPackage(packageSource, this.Project, nugetPackage, packageVersion, false);
+                if (!PackageInstallerServices.IsPackageInstalled(this.Project, nugetPackage))
+                {
+                    Version packageVersion = null;
+                    PackageInstaller.InstallPackage(packageSource, this.Project, nugetPackage, packageVersion, false);
 
-                await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, $"Nuget Package \"{nugetPackage}\" for OData V3 was added.");
+                    await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, $"Nuget Package \"{nugetPackage}\" for OData V3 was added.");
+                }
+                else
+                {
+                    await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, $"Nuget Package \"{nugetPackage}\" for OData V3 already installed.");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, $"Nuget Package \"{nugetPackage}\" for OData V3 already installed.");
+                await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Error, $"Nuget Package \"{nugetPackage}\" for OData V3 not installed. Error: {ex.Message}.");
             }
         }
 
@@ -160,15 +174,36 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
             var t4Folder = Path.Combine(CurrentAssemblyPath, "Templates");
 
             var proxyClassText = File.ReadAllText(generatedFileName);
-            var proxyClassNamespace = Regex.Match(proxyClassText, @"(namespace\s)\w+.+", RegexOptions.IgnoreCase | RegexOptions.Multiline).Value.Trim().Replace("namespace ", "").Trim();
-            var proxyClassName = Regex.Match(proxyClassText, @"(public partial class\s)\w+", RegexOptions.IgnoreCase | RegexOptions.Multiline).Value.Trim().Replace("public partial class ", "").Trim();
+            var proxyClassNamespace = Regex.Match(proxyClassText, @"(namespace\s)\w+.+", RegexOptions.IgnoreCase | RegexOptions.Multiline).Value.Trim().Replace("namespace ", string.Empty).Trim();
+            var proxyClassName = Regex.Match(proxyClassText, @"(public partial class\s)\w+", RegexOptions.IgnoreCase | RegexOptions.Multiline).Value.Trim().Replace("public partial class ", string.Empty).Trim();
+
+            #region Create methods with data models from FunctionImports
+            var functionMethods = string.Empty;
+            try
+            {
+                if (EdmxReader.TryParse(XmlReader.Create(ServiceConfiguration.Endpoint), out var model, out var parseErrors))
+                    functionMethods = FunctionImportsHelper.GetFunctionImportsCode(model, proxyClassName, ServiceConfiguration.Endpoint.Replace("$metadata", string.Empty), this.ServiceConfiguration.FunctionImportsGenerator);
+                else
+                {
+                    foreach (var error in parseErrors)
+                        await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Warning, error.ErrorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Error, $"Error: {ex.Message}.");
+            }
+            #endregion
 
             using (var writer = File.CreateText(tempFile))
             {
                 var text = File.ReadAllText(Path.Combine(t4Folder, Common.Constants.V3ExtensionsT4FileName));
                 text = Regex.Replace(text, "(namespace )\\$rootnamespace\\$", "$1" + (string.IsNullOrEmpty(ServiceConfiguration.NamespacePrefix) ? proxyClassNamespace : ServiceConfiguration.NamespacePrefix));
                 text = Regex.Replace(text, "\\$proxyClassName\\$", proxyClassName);
-                text = Regex.Replace(text, "(new Uri\\()\"\\$metadataDocumentUri\\$\"\\)\\)", "$1\"" + ServiceConfiguration.Endpoint.Replace("$metadata", "") + "\"))");
+                text = Regex.Replace(text, "\\$functionMethods\\$", !string.IsNullOrEmpty(functionMethods) ? functionMethods : string.Empty);
+                text = Regex.Replace(text, "(new Uri\\()\"\\$metadataDocumentUri\\$\"\\)\\)", "$1\"" + ServiceConfiguration.Endpoint.Replace("$metadata", string.Empty) + "\"))");
+                if (this.ServiceConfiguration.FunctionImportsGenerator != Constants.FunctionImportsGenerator.SimpleOData)
+                    text = Regex.Replace(text, "using Simple.OData.Client;", string.Empty);
 
                 await writer.WriteAsync(text);
                 await writer.FlushAsync();

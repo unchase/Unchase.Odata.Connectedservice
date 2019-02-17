@@ -20,6 +20,8 @@ namespace Unchase.OData.ConnectedService.Common
 
         public const string ValueTupleNuGetPackage = "System.ValueTuple";
         public const string V3ExtensionsT4FileName = "ODataV3ExtensionsT4CodeGenerator.tt";
+        public const string SimpleODataClientNuGetPackage = "Simple.OData.Client";
+        public const string SystemComponentModelAnnotationsNuGetPackage = "System.ComponentModel.Annotations";
 
         public const string V4ClientNuGetPackage = "Microsoft.OData.Client";
         public const string V4ODataNuGetPackage = "Microsoft.OData.Core";
@@ -47,7 +49,8 @@ namespace Unchase.OData.ConnectedService.Common
             V3ClientNuGetPackage,
             V3ODataNuGetPackage,
             V3EdmNuGetPackage,
-            V3SpatialNuGetPackage
+            V3SpatialNuGetPackage,
+
         };
 
         public static string[] V4NuGetPackages = new string[]
@@ -65,5 +68,13 @@ namespace Unchase.OData.ConnectedService.Common
             { EdmxVersion3Namespace, EdmxVersion3},
             { EdmxVersion4Namespace, EdmxVersion4}
         };
+
+        public enum FunctionImportsGenerator
+        {
+            Inner = 0,
+            SimpleOData = 1,
+            Vipr = 2
+        }
+
     }
 }
