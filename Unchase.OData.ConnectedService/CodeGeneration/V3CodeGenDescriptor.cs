@@ -62,12 +62,12 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
                     packageSource = Common.Constants.NuGetOnlineRepository;
             }
 
-            if (ServiceConfiguration.IncludeExtensionsT4File)
+            if (this.ServiceConfiguration.IncludeExtensionsT4File)
                 await CheckAndInstallNuGetPackage(packageSource, this.ValueTupleNuGetPackageName);
 
             await CheckAndInstallNuGetPackage(packageSource, this.SystemComponentModelAnnotationsNuGetPackageName);
 
-            if (this.ServiceConfiguration.FunctionImportsGenerator == Constants.FunctionImportsGenerator.SimpleOData)
+            if (this.ServiceConfiguration.IncludeExtensionsT4File && this.ServiceConfiguration.GenerateFunctionImports && this.ServiceConfiguration.FunctionImportsGenerator == Constants.FunctionImportsGenerator.SimpleOData)
                 await CheckAndInstallNuGetPackage(packageSource, this.SimpleODataClientNuGetPackageName);
 
             if (packageSource == Common.Constants.NuGetOnlineRepository)
@@ -177,23 +177,24 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
             var proxyClassNamespace = Regex.Match(proxyClassText, @"(namespace\s)\w+.+", RegexOptions.IgnoreCase | RegexOptions.Multiline).Value.Trim().Replace("namespace ", string.Empty).Trim();
             var proxyClassName = Regex.Match(proxyClassText, @"(public partial class\s)\w+", RegexOptions.IgnoreCase | RegexOptions.Multiline).Value.Trim().Replace("public partial class ", string.Empty).Trim();
 
-            #region Create methods with data models from FunctionImports
             var functionMethods = string.Empty;
-            try
-            {
-                if (EdmxReader.TryParse(XmlReader.Create(ServiceConfiguration.Endpoint), out var model, out var parseErrors))
-                    functionMethods = FunctionImportsHelper.GetFunctionImportsCode(model, proxyClassName, ServiceConfiguration.Endpoint.Replace("$metadata", string.Empty), this.ServiceConfiguration.FunctionImportsGenerator);
-                else
+            if (this.ServiceConfiguration.IncludeExtensionsT4File && this.ServiceConfiguration.GenerateFunctionImports)
+            { 
+                try
                 {
-                    foreach (var error in parseErrors)
-                        await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Warning, error.ErrorMessage);
+                    if (EdmxReader.TryParse(XmlReader.Create(ServiceConfiguration.Endpoint), out var model, out var parseErrors))
+                        functionMethods = FunctionImportsHelper.GetFunctionImportsCode(model, proxyClassName, ServiceConfiguration.Endpoint.Replace("$metadata", string.Empty), this.ServiceConfiguration.FunctionImportsGenerator);
+                    else
+                    {
+                        foreach (var error in parseErrors)
+                            await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Warning, error.ErrorMessage);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Error, $"Error: {ex.Message}.");
                 }
             }
-            catch (Exception ex)
-            {
-                await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Error, $"Error: {ex.Message}.");
-            }
-            #endregion
 
             using (var writer = File.CreateText(tempFile))
             {

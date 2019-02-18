@@ -25,6 +25,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
         public bool IncludeExtensionsT4File { get; set; }
         public Visibility IncludeExtensionsT4FileVisibility { get; set; }
         public Constants.FunctionImportsGenerator FunctionImportsGenerator { get; set; }
+        public bool GenerateFunctionImports { get; set; }
 
         public AdvancedSettingsViewModel() : base()
         {
@@ -32,6 +33,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.Description = "Advanced settings for generating client proxy and extension methods for call service functions";
             this.Legend = "Settings";
             this.IncludeExtensionsT4File = false;
+            this.GenerateFunctionImports = false;
             this.IncludeExtensionsT4FileVisibility = Visibility.Collapsed;
             this.FunctionImportsGenerator = Constants.FunctionImportsGenerator.Inner;
             this.ResetDataContext();
@@ -64,6 +66,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.GeneratedFileName = Common.Constants.DefaultReferenceFileName;
             this.IncludeT4File = false;
             this.IncludeExtensionsT4File = false;
+            this.GenerateFunctionImports = false;
             this.IncludeExtensionsT4FileVisibility = Visibility.Collapsed;
             this.FunctionImportsGenerator = Constants.FunctionImportsGenerator.Inner;
         }

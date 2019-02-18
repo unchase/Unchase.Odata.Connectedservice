@@ -37,10 +37,12 @@
                 </TextBlock>
                 <CheckBox x:Name="IncludeExtensionsT4File" Content="Add extensions code template for OData proxy-class." Visibility="{Binding IncludeExtensionsT4FileVisibility}" IsChecked="{Binding IncludeExtensionsT4File}"
                           HorizontalAlignment="Left" VerticalAlignment="Top" Width="450"  Height="25" Margin="0, 5, 0, 0" FontWeight="Medium"/>
-                <TextBlock x:Name="ExtensionsFunctionImportsGeneratorLabel" Text="OData methods generation method (from FunctionImports):"
+                <CheckBox x:Name="GenerateFunctionImports" Content="Generate OData methods from FunctionImports." IsEnabled="{Binding ElementName=IncludeExtensionsT4File, Path=IsChecked}" Visibility="{Binding IncludeExtensionsT4FileVisibility}" IsChecked="{Binding GenerateFunctionImports}"
+                          HorizontalAlignment="Left" VerticalAlignment="Top" Width="450"  Height="25" Margin="0, 5, 0, 0" FontWeight="Medium"/>
+                <TextBlock x:Name="ExtensionsFunctionImportsGeneratorLabel" IsEnabled="{Binding ElementName=IncludeExtensionsT4File, Path=IsChecked}" Visibility="{Binding IncludeExtensionsT4FileVisibility}" Text="OData methods generation method (from FunctionImports):"
                            HorizontalAlignment="Left" Margin="0, 10, 10, 5">
                 </TextBlock>
-                <ComboBox x:Name="FunctionImportsGenerationMethod" ItemsSource="{Binding FunctionImportsGenerators}" SelectedIndex="0" SelectedValue="{Binding FunctionImportsGenerator}"
+                <ComboBox x:Name="FunctionImportsGenerationMethod" IsEnabled="{Binding ElementName=IncludeExtensionsT4File, Path=IsChecked}" ItemsSource="{Binding FunctionImportsGenerators}" Visibility="{Binding IncludeExtensionsT4FileVisibility}" SelectedIndex="0" SelectedValue="{Binding FunctionImportsGenerator}"
                           HorizontalAlignment="Left" VerticalAlignment="Top" Width="480"  Height="25" Margin="20, 5, 0, 0" FontWeight="Medium"/>
             </StackPanel>
             <StackPanel x:Name="AdvancedSettingsForv4" HorizontalAlignment="Left" Margin="10, 5, 0, 0" VerticalAlignment="Top">

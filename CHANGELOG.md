@@ -32,4 +32,11 @@
 
 - Added methods to generating functions from FunctionImports in OData V3 extension class.
 
+### Version 0.3.2:
+
+*Minor fixes:*
+
+- Added checkbox for enable/disable methods generation from FunctionImports.
+
+
  

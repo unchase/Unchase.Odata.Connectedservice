@@ -78,8 +78,10 @@ namespace Unchase.OData.ConnectedService
                 if (sender is AdvancedSettingsViewModel advancedSettingsViewModel)
                 {
                     advancedSettingsViewModel.IncludeExtensionsT4File = ConfigODataEndpointViewModel.EdmxVersion != Common.Constants.EdmxVersion4;
+                    
                     advancedSettingsViewModel.IncludeExtensionsT4FileVisibility = ConfigODataEndpointViewModel.EdmxVersion != Common.Constants.EdmxVersion4 ? Visibility.Visible : Visibility.Collapsed;
                     advancedSettingsViewModel.FunctionImportsGenerator = AdvancedSettingsViewModel.FunctionImportsGenerator;
+                    advancedSettingsViewModel.GenerateFunctionImports = AdvancedSettingsViewModel.GenerateFunctionImports;
                 }
             };
 
@@ -122,7 +124,8 @@ namespace Unchase.OData.ConnectedService
                 serviceConfiguration = new ServiceConfigurationV3
                 {
                     IncludeExtensionsT4File = AdvancedSettingsViewModel.IncludeExtensionsT4File,
-                    FunctionImportsGenerator = AdvancedSettingsViewModel.FunctionImportsGenerator
+                    FunctionImportsGenerator = AdvancedSettingsViewModel.FunctionImportsGenerator,
+                    GenerateFunctionImports = AdvancedSettingsViewModel.GenerateFunctionImports
                 };
             }
 

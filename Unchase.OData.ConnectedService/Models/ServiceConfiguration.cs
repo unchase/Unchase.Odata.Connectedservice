@@ -21,6 +21,7 @@ namespace Unchase.OData.ConnectedService.Models
     {
         public Constants.FunctionImportsGenerator FunctionImportsGenerator { get; set; }
         public bool IncludeExtensionsT4File { get; set; }
+        public bool GenerateFunctionImports { get; set; }
     }
 
     internal class ServiceConfigurationV4 : ServiceConfigurationV3
