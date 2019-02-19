@@ -66,6 +66,12 @@ namespace Unchase.OData.ConnectedService
                 throw new Exception(string.Format(CultureInfo.InvariantCulture, "Not supported Edmx Version{0}", (edmxVersion != null ? $" {edmxVersion}." : ". Try with Endpoint ends \"/$metadata\".")));
             }
 
+            var codeGenInstance = (Instance)context.ServiceInstance;
+            codeGenDescriptor.UseNetworkCredentials = codeGenInstance.ServiceConfig.UseNetworkCredentials;
+            codeGenDescriptor.NetworkCredentialsUserName = codeGenInstance.ServiceConfig.NetworkCredentialsUserName;
+            codeGenDescriptor.NetworkCredentialsPassword = codeGenInstance.ServiceConfig.NetworkCredentialsPassword;
+            codeGenDescriptor.NetworkCredentialsDomain = codeGenInstance.ServiceConfig.NetworkCredentialsDomain;
+
             await codeGenDescriptor.AddNugetPackages();
             await codeGenDescriptor.AddGeneratedClientCode();
 

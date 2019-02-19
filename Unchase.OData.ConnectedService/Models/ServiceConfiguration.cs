@@ -16,6 +16,13 @@ namespace Unchase.OData.ConnectedService.Models
         public bool UseNameSpacePrefix { get; set; }
         public string NamespacePrefix { get; set; }
         public bool UseDataServiceCollection { get; set; }
+
+        #region Network Credentials
+        public bool UseNetworkCredentials { get; set; }
+        public string NetworkCredentialsUserName { get; set; }
+        public string NetworkCredentialsPassword { get; set; }
+        public string NetworkCredentialsDomain { get; set; }
+        #endregion
     }
 
     internal class ServiceConfigurationV3 : ServiceConfiguration

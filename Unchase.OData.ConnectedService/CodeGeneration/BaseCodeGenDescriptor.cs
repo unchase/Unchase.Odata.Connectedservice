@@ -31,6 +31,13 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
 
         protected string CurrentAssemblyPath => Path.GetDirectoryName(this.GetType().Assembly.Location);
 
+        #region Network Credentials
+        public bool UseNetworkCredentials { get; set; }
+        public string NetworkCredentialsUserName { get; set; }
+        public string NetworkCredentialsPassword { get; set; }
+        public string NetworkCredentialsDomain { get; set; }
+        #endregion
+
         protected BaseCodeGenDescriptor(string metadataUri, ConnectedServiceHandlerContext Context, Project project)
         {
             this.Init();

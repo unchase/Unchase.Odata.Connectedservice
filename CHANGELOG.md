@@ -38,5 +38,11 @@
 
 - Added checkbox for enable/disable methods generation from FunctionImports.
 
+### Version 0.3.6:
+
+*Features:*
+
+- Added network credentials for connecting to the endpoint.
+
 
  

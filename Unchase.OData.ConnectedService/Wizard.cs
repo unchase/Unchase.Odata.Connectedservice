@@ -99,6 +99,14 @@ namespace Unchase.OData.ConnectedService
             this.ServiceInstance.Name = ConfigODataEndpointViewModel.ServiceName;
             this.ServiceInstance.MetadataTempFilePath = ConfigODataEndpointViewModel.MetadataTempPath;
             this.ServiceInstance.ServiceConfig = this.CreateServiceConfiguration();
+            this.ServiceInstance.ServiceConfig.UseNetworkCredentials =
+                ConfigODataEndpointViewModel.UseNetworkCredentials;
+            this.ServiceInstance.ServiceConfig.NetworkCredentialsUserName =
+                ConfigODataEndpointViewModel.NetworkCredentialsUserName;
+            this.ServiceInstance.ServiceConfig.NetworkCredentialsPassword =
+                ConfigODataEndpointViewModel.NetworkCredentialsPassword;
+            this.ServiceInstance.ServiceConfig.NetworkCredentialsDomain =
+                ConfigODataEndpointViewModel.NetworkCredentialsDomain;
 
             return Task.FromResult<ConnectedServiceInstance>(this.ServiceInstance);
         }

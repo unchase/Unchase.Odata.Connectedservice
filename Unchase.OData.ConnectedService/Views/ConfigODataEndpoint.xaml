@@ -22,5 +22,23 @@
                   HorizontalAlignment="Left"
                   ItemsSource="{Binding Path=UserSettings.MruEndpoints}"
                   Text="{Binding Path=Endpoint, TargetNullValue='Enter your endpoint...' }"/>
+        <CheckBox x:Name="UseNetworkCredentials" IsChecked="{Binding UseNetworkCredentials}"
+                   HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10, 10, 5, 5">
+            <TextBlock TextWrapping="Wrap" Margin="0, 0, 40, 0">
+                Use network credentials for connecting to the endpoint:
+            </TextBlock>
+        </CheckBox>
+        <DockPanel IsEnabled="{Binding ElementName=UseNetworkCredentials, Path=IsChecked}">
+            <TextBlock x:Name="NetworkCredentialsUserNameLabel" Text="UserName:" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"></TextBlock>
+            <TextBox x:Name="NetworkCredentialsUserName" Text="{Binding NetworkCredentialsUserName}" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"/>
+        </DockPanel>
+        <DockPanel IsEnabled="{Binding ElementName=UseNetworkCredentials, Path=IsChecked}">
+            <TextBlock x:Name="NetworkCredentialsPasswordLabel" Text="Password:" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"></TextBlock>
+            <TextBox x:Name="NetworkCredentialsPassword" Text="{Binding NetworkCredentialsPassword}" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"/>
+        </DockPanel>
+        <DockPanel IsEnabled="{Binding ElementName=UseNetworkCredentials, Path=IsChecked}">
+            <TextBlock x:Name="NetworkCredentialsDomainLabel" Text="Password:" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"></TextBlock>
+            <TextBox x:Name="NetworkCredentialsDomain" Text="{Binding NetworkCredentialsDomain}" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"/>
+        </DockPanel>
     </StackPanel>
 </UserControl>

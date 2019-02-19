@@ -23,6 +23,13 @@ namespace Unchase.OData.ConnectedService.ViewModels
         public string MetadataTempPath { get; set; }
         public UserSettings UserSettings { get; }
 
+        #region Network Credentials
+        public bool UseNetworkCredentials { get; set; }
+        public string NetworkCredentialsUserName { get; set; }
+        public string NetworkCredentialsPassword { get; set; }
+        public string NetworkCredentialsDomain { get; set; }
+        #endregion
+
         public ConfigODataEndpointViewModel(UserSettings userSettings) : base()
         {
             this.Title = "Configure endpoint";
@@ -32,6 +39,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.ServiceName = Common.Constants.DefaultServiceName;
             this.View.DataContext = this;
             this.UserSettings = userSettings;
+            this.UseNetworkCredentials = false;
         }
 
         public override Task<PageNavigationResult> OnPageLeavingAsync(WizardLeavingArgs args)
@@ -73,7 +81,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
             // Set up XML secure resolver
             var xmlUrlResolver = new XmlUrlResolver()
             {
-                Credentials = CredentialCache.DefaultNetworkCredentials
+                Credentials = UseNetworkCredentials ? new NetworkCredential(this.NetworkCredentialsUserName, this.NetworkCredentialsPassword, this.NetworkCredentialsDomain) : CredentialCache.DefaultNetworkCredentials
             };
 
             var permissionSet = new PermissionSet(System.Security.Permissions.PermissionState.Unrestricted);

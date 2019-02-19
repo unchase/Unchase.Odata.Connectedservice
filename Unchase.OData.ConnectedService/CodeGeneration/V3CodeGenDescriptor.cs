@@ -6,6 +6,7 @@ using System;
 using System.Data.Services.Design;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -116,7 +117,7 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
             // Set up XML secure resolver
             var xmlUrlResolver = new XmlUrlResolver()
             {
-                Credentials = System.Net.CredentialCache.DefaultNetworkCredentials
+                Credentials = UseNetworkCredentials ? new NetworkCredential(this.NetworkCredentialsUserName, this.NetworkCredentialsPassword, this.NetworkCredentialsDomain) : System.Net.CredentialCache.DefaultNetworkCredentials
             };
 
             var permissionSet = new PermissionSet(System.Security.Permissions.PermissionState.Unrestricted);
