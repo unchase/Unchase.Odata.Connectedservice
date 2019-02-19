@@ -1,6 +1,8 @@
-﻿Unchase OData Connected Service
+﻿odata-lab
+Copyright (c) Microsoft Corporation
 
-Copyright (c) 2018 Unchase (https://github.com/unchase).
+Unchase OData Connected Service
+Updated by Unchase (https://github.com/unchase).
 
 All rights reserved. 
 

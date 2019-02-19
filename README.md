@@ -16,4 +16,4 @@ Then, apply the settings to generate client-side classes for OData services.
 
 ----------
 
-Copyright &copy; 2018 Unchase - Provided under the [MIT License](https://opensource.org/licenses/MIT).
+Copyright &copy; odatalab Microsoft. Updated by unchase - Provided under the [MIT License](https://opensource.org/licenses/MIT).
