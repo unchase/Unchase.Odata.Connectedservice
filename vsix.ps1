@@ -3,7 +3,6 @@
 param()
 
 $vsixUploadEndpoint = "http://vsixgallery.com/api/upload"
-#$vsixUploadEndpoint = "http://localhost:7035/api/upload"
 
 function Vsix-PushArtifacts {
     [cmdletbinding()]
