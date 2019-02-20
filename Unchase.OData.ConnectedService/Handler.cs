@@ -72,6 +72,13 @@ namespace Unchase.OData.ConnectedService
             codeGenDescriptor.NetworkCredentialsPassword = codeGenInstance.ServiceConfig.NetworkCredentialsPassword;
             codeGenDescriptor.NetworkCredentialsDomain = codeGenInstance.ServiceConfig.NetworkCredentialsDomain;
 
+            codeGenDescriptor.UseWebProxy = codeGenInstance.ServiceConfig.UseWebProxy;
+            codeGenDescriptor.UseWebProxyCredentials = codeGenInstance.ServiceConfig.UseWebProxyCredentials;
+            codeGenDescriptor.WebProxyNetworkCredentialsUserName = codeGenInstance.ServiceConfig.WebProxyNetworkCredentialsUserName;
+            codeGenDescriptor.WebProxyNetworkCredentialsPassword = codeGenInstance.ServiceConfig.WebProxyNetworkCredentialsPassword;
+            codeGenDescriptor.WebProxyNetworkCredentialsDomain = codeGenInstance.ServiceConfig.WebProxyNetworkCredentialsDomain;
+            codeGenDescriptor.WebProxyUri = codeGenInstance.ServiceConfig.WebProxyUri;
+
             await codeGenDescriptor.AddNugetPackages();
             await codeGenDescriptor.AddGeneratedClientCode();
 

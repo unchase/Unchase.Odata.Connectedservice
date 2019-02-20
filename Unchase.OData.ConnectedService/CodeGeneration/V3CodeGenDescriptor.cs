@@ -117,8 +117,14 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
             // Set up XML secure resolver
             var xmlUrlResolver = new XmlUrlResolver()
             {
-                Credentials = UseNetworkCredentials ? new NetworkCredential(this.NetworkCredentialsUserName, this.NetworkCredentialsPassword, this.NetworkCredentialsDomain) : System.Net.CredentialCache.DefaultNetworkCredentials
+                Credentials = this.UseNetworkCredentials ? new NetworkCredential(this.NetworkCredentialsUserName, this.NetworkCredentialsPassword, this.NetworkCredentialsDomain) : System.Net.CredentialCache.DefaultNetworkCredentials
             };
+            if (this.UseWebProxy)
+                xmlUrlResolver = new XmlUrlResolver
+                {
+                    Proxy = new WebProxy(new Uri(this.WebProxyUri)),
+                    Credentials = this.UseWebProxyCredentials ? new NetworkCredential(this.WebProxyNetworkCredentialsUserName, this.WebProxyNetworkCredentialsPassword, this.WebProxyNetworkCredentialsDomain) : System.Net.CredentialCache.DefaultNetworkCredentials
+                };
 
             var permissionSet = new PermissionSet(System.Security.Permissions.PermissionState.Unrestricted);
 

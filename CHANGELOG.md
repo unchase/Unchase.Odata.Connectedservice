@@ -44,5 +44,11 @@
 
 - Added network credentials for connecting to the endpoint.
 
+### Version 0.3.7:
+
+*Features:*
+
+- Added web-proxy (with network credentials) for connecting to the endpoint.
+
 
  

@@ -30,6 +30,15 @@ namespace Unchase.OData.ConnectedService.ViewModels
         public string NetworkCredentialsDomain { get; set; }
         #endregion
 
+        #region WebProxy
+        public bool UseWebProxy { get; set; }
+        public bool UseWebProxyCredentials { get; set; }
+        public string WebProxyNetworkCredentialsUserName { get; set; }
+        public string WebProxyNetworkCredentialsPassword { get; set; }
+        public string WebProxyNetworkCredentialsDomain { get; set; }
+        public string WebProxyUri { get; set; }
+        #endregion
+
         public ConfigODataEndpointViewModel(UserSettings userSettings) : base()
         {
             this.Title = "Configure endpoint";
@@ -40,6 +49,8 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.View.DataContext = this;
             this.UserSettings = userSettings;
             this.UseNetworkCredentials = false;
+            this.UseWebProxy = false;
+            this.UseWebProxyCredentials = false;
         }
 
         public override Task<PageNavigationResult> OnPageLeavingAsync(WizardLeavingArgs args)
@@ -81,8 +92,14 @@ namespace Unchase.OData.ConnectedService.ViewModels
             // Set up XML secure resolver
             var xmlUrlResolver = new XmlUrlResolver()
             {
-                Credentials = UseNetworkCredentials ? new NetworkCredential(this.NetworkCredentialsUserName, this.NetworkCredentialsPassword, this.NetworkCredentialsDomain) : CredentialCache.DefaultNetworkCredentials
+                Credentials = this.UseNetworkCredentials ? new NetworkCredential(this.NetworkCredentialsUserName, this.NetworkCredentialsPassword, this.NetworkCredentialsDomain) : CredentialCache.DefaultNetworkCredentials
             };
+            if (this.UseWebProxy)
+                xmlUrlResolver = new XmlUrlResolver
+                {
+                    Proxy = new WebProxy(this.WebProxyUri),
+                    Credentials = this.UseWebProxyCredentials ? new NetworkCredential(this.WebProxyNetworkCredentialsUserName, this.WebProxyNetworkCredentialsPassword, this.WebProxyNetworkCredentialsDomain) : System.Net.CredentialCache.DefaultNetworkCredentials
+                };
 
             var permissionSet = new PermissionSet(System.Security.Permissions.PermissionState.Unrestricted);
 

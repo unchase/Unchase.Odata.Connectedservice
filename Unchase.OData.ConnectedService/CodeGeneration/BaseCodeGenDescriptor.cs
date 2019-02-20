@@ -38,6 +38,15 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
         public string NetworkCredentialsDomain { get; set; }
         #endregion
 
+        #region WebProxy
+        public bool UseWebProxy { get; set; }
+        public bool UseWebProxyCredentials { get; set; }
+        public string WebProxyNetworkCredentialsUserName { get; set; }
+        public string WebProxyNetworkCredentialsPassword { get; set; }
+        public string WebProxyNetworkCredentialsDomain { get; set; }
+        public string WebProxyUri { get; set; }
+        #endregion
+
         protected BaseCodeGenDescriptor(string metadataUri, ConnectedServiceHandlerContext Context, Project project)
         {
             this.Init();

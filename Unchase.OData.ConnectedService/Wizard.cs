@@ -99,6 +99,8 @@ namespace Unchase.OData.ConnectedService
             this.ServiceInstance.Name = ConfigODataEndpointViewModel.ServiceName;
             this.ServiceInstance.MetadataTempFilePath = ConfigODataEndpointViewModel.MetadataTempPath;
             this.ServiceInstance.ServiceConfig = this.CreateServiceConfiguration();
+
+            // network credentials
             this.ServiceInstance.ServiceConfig.UseNetworkCredentials =
                 ConfigODataEndpointViewModel.UseNetworkCredentials;
             this.ServiceInstance.ServiceConfig.NetworkCredentialsUserName =
@@ -107,6 +109,20 @@ namespace Unchase.OData.ConnectedService
                 ConfigODataEndpointViewModel.NetworkCredentialsPassword;
             this.ServiceInstance.ServiceConfig.NetworkCredentialsDomain =
                 ConfigODataEndpointViewModel.NetworkCredentialsDomain;
+
+            // web proxy
+            this.ServiceInstance.ServiceConfig.UseWebProxy =
+                ConfigODataEndpointViewModel.UseWebProxy;
+            this.ServiceInstance.ServiceConfig.UseWebProxyCredentials =
+                ConfigODataEndpointViewModel.UseWebProxyCredentials;
+            this.ServiceInstance.ServiceConfig.WebProxyNetworkCredentialsUserName =
+                ConfigODataEndpointViewModel.WebProxyNetworkCredentialsUserName;
+            this.ServiceInstance.ServiceConfig.WebProxyNetworkCredentialsPassword =
+                ConfigODataEndpointViewModel.WebProxyNetworkCredentialsPassword;
+            this.ServiceInstance.ServiceConfig.WebProxyNetworkCredentialsDomain =
+                ConfigODataEndpointViewModel.WebProxyNetworkCredentialsDomain;
+            this.ServiceInstance.ServiceConfig.WebProxyUri =
+                ConfigODataEndpointViewModel.WebProxyUri;
 
             return Task.FromResult<ConnectedServiceInstance>(this.ServiceInstance);
         }
