@@ -12,13 +12,13 @@
 
 *Bug fixes:*
 
-- Fix bug in tt-template for OData V3 extension class: made public a few internal classes.
+- Fixed bug in tt-template for OData V3 extension class: made public a few internal classes.
 
 ### Version 0.1.34:
 
 *Code fixes:*
 
-- Code fix in tt-template for OData V3 extension class: simplify method "AddGetQueryOptions".
+- Added code-fix in tt-template for OData V3 extension class: simplify method "AddGetQueryOptions".
 
 ### Version 0.2:
 
@@ -49,6 +49,12 @@
 *Features:*
 
 - Added web-proxy (with network credentials) for connecting to the endpoint.
+
+### Version 0.3.8:
+
+*Fixes:*
+
+- Fixed setting web-proxy credentials.
 
 
  

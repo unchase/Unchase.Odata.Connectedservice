@@ -95,11 +95,19 @@ namespace Unchase.OData.ConnectedService.ViewModels
                 Credentials = this.UseNetworkCredentials ? new NetworkCredential(this.NetworkCredentialsUserName, this.NetworkCredentialsPassword, this.NetworkCredentialsDomain) : CredentialCache.DefaultNetworkCredentials
             };
             if (this.UseWebProxy)
-                xmlUrlResolver = new XmlUrlResolver
-                {
-                    Proxy = new WebProxy(this.WebProxyUri),
-                    Credentials = this.UseWebProxyCredentials ? new NetworkCredential(this.WebProxyNetworkCredentialsUserName, this.WebProxyNetworkCredentialsPassword, this.WebProxyNetworkCredentialsDomain) : System.Net.CredentialCache.DefaultNetworkCredentials
-                };
+            {
+                xmlUrlResolver.Proxy = new WebProxy(this.WebProxyUri, true);
+                if (this.UseWebProxyCredentials)
+                    xmlUrlResolver.Proxy = new WebProxy(this.WebProxyUri, true, new string[0], new NetworkCredential
+                    {
+                        UserName = WebProxyNetworkCredentialsUserName,
+                        Password = WebProxyNetworkCredentialsPassword,
+                        Domain = WebProxyNetworkCredentialsDomain
+                    });
+                else
+                    xmlUrlResolver.Proxy = new WebProxy(this.WebProxyUri);
+
+            }
 
             var permissionSet = new PermissionSet(System.Security.Permissions.PermissionState.Unrestricted);
 
