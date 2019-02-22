@@ -913,7 +913,8 @@ public class CodeGenerationContext
                 tmp.FindDeclaredTerm(CapabilitiesVocabularyConstants.ChangeTracking) != null ||
                 tmp.FindDeclaredTerm(AlternateKeysVocabularyConstants.AlternateKeys) != null ||
                 tmp.FindDeclaredTerm("Org.OData.Authorization.V1.Authorizations") != null ||
-                tmp.FindDeclaredTerm("Org.OData.Validation.V1.DerivedTypeConstraint") != null)
+                tmp.FindDeclaredTerm("Org.OData.Validation.V1.DerivedTypeConstraint") != null ||
+                tmp.FindDeclaredTerm("Org.OData.Community.V1.UrlEscapeFunction") != null)
             {
                 continue;
             }
@@ -930,7 +931,7 @@ public class CodeGenerationContext
 /// </summary>
 public abstract class ODataClientTemplate : TemplateBase
 {
-    protected const string T4Version  = "#VersionNumber#";
+    protected const string T4Version  = Configuration.T4Version;
 
     /// <summary>
     /// The code generation context.
@@ -1140,8 +1141,7 @@ public abstract class ODataClientTemplate : TemplateBase
             if (operation.IsBound)
             {
                 IEdmType edmType = operation.Parameters.First().Type.Definition;
-                IEdmStructuredType edmStructuredType = edmType as IEdmStructuredType;
-                if (edmStructuredType != null)
+                if (edmType is IEdmStructuredType edmStructuredType)
                 {
                     List<IEdmOperation> operationList;
                     if (!boundOperationsMap.TryGetValue(edmStructuredType, out operationList))
@@ -1165,19 +1165,18 @@ public abstract class ODataClientTemplate : TemplateBase
             }
             else
             {
-                IEdmComplexType complexType = type as IEdmComplexType;
-                if (complexType != null)
+                if (type is IEdmComplexType complexType)
                 {
                     this.WriteComplexType(complexType, boundOperationsMap);
                 }
                 else
                 {
-                    IEdmEntityType entityType = type as IEdmEntityType;
-                    this.WriteEntityType(entityType, boundOperationsMap);
+                    if (type is IEdmEntityType entityType)
+						this.WriteEntityType(entityType, boundOperationsMap);
                 }
 
                 IEdmStructuredType structuredType = type as IEdmStructuredType;
-                if (structuredType.BaseType != null)
+                if (structuredType?.BaseType != null)
                 {
                     List<IEdmStructuredType> derivedTypes;
                     if (!structuredBaseTypeMap.TryGetValue(structuredType.BaseType, out derivedTypes))
@@ -1951,7 +1950,7 @@ public abstract class ODataClientTemplate : TemplateBase
 
     internal string GetParameterExpressionString(IEdmOperationParameter param, string typeName)
     {
-        string clrTypeName;
+        string clrTypeName = null;
         IEdmType edmType = param.Type.Definition;
         IEdmPrimitiveType edmPrimitiveType = edmType as IEdmPrimitiveType;
         if (edmPrimitiveType != null)
@@ -2669,10 +2668,9 @@ internal static class Utils
     /// <returns>The clr type name of the type reference.</returns>
     internal static string GetClrTypeName(IEdmTypeReference edmTypeReference, bool useDataServiceCollection, ODataClientTemplate clientTemplate, CodeGenerationContext context, bool addNullableTemplate = true, bool needGlobalPrefix = true, bool isOperationParameter = false, bool isEntitySingleType = false)
     {
-        string clrTypeName;
+        string clrTypeName = null;
         IEdmType edmType = edmTypeReference.Definition;
-        IEdmPrimitiveType edmPrimitiveType = edmType as IEdmPrimitiveType;
-        if (edmPrimitiveType != null)
+        if (edmType is IEdmPrimitiveType edmPrimitiveType)
         {
             clrTypeName = Utils.GetClrTypeName(edmPrimitiveType, clientTemplate);
             if (edmTypeReference.IsNullable && !clientTemplate.ClrReferenceTypes.Contains(edmPrimitiveType.PrimitiveKind) && addNullableTemplate)
@@ -2682,16 +2680,14 @@ internal static class Utils
         }
         else
         {
-            IEdmComplexType edmComplexType = edmType as IEdmComplexType;
-            if (edmComplexType != null)
+            if (edmType is IEdmComplexType edmComplexType)
             {
                 clrTypeName = context.GetPrefixedFullName(edmComplexType,
                     context.EnableNamingAlias ? clientTemplate.GetFixedName(Customization.CustomizeNaming(edmComplexType.Name)) : clientTemplate.GetFixedName(edmComplexType.Name), clientTemplate);
             }
             else
             {
-                IEdmEnumType edmEnumType = edmType as IEdmEnumType;
-                if (edmEnumType != null)
+                if (edmType is IEdmEnumType edmEnumType)
                 {
                     clrTypeName = context.GetPrefixedFullName(edmEnumType,
                         context.EnableNamingAlias ? clientTemplate.GetFixedName(Customization.CustomizeNaming(edmEnumType.Name)) : clientTemplate.GetFixedName(edmEnumType.Name), clientTemplate, needGlobalPrefix);
@@ -2702,8 +2698,7 @@ internal static class Utils
                 }
                 else 
                 {
-                    IEdmEntityType edmEntityType = edmType as IEdmEntityType;
-                    if (edmEntityType != null)
+                    if (edmType is IEdmEntityType edmEntityType)
                     {
                         clrTypeName = context.GetPrefixedFullName(edmEntityType,
                             context.EnableNamingAlias
@@ -2713,29 +2708,50 @@ internal static class Utils
                     }
                     else
                     {
-                        IEdmCollectionType edmCollectionType = (IEdmCollectionType)edmType;
-                        IEdmTypeReference elementTypeReference = edmCollectionType.ElementType;
-                        IEdmPrimitiveType primitiveElementType = elementTypeReference.Definition as IEdmPrimitiveType;
-                        if (primitiveElementType != null)
+                        if (edmType is IEdmCollectionType edmCollectionType)
                         {
-                            clrTypeName = Utils.GetClrTypeName(primitiveElementType, clientTemplate);
+                            IEdmTypeReference elementTypeReference = edmCollectionType.ElementType;
+                            if (elementTypeReference.Definition is IEdmPrimitiveType primitiveElementType)
+                            {
+                                clrTypeName = Utils.GetClrTypeName(primitiveElementType, clientTemplate);
+                            }
+                            else
+                            {
+                                IEdmSchemaElement schemaElement = (IEdmSchemaElement)elementTypeReference.Definition;
+                                clrTypeName = context.GetPrefixedFullName(schemaElement,
+                                    context.EnableNamingAlias ? clientTemplate.GetFixedName(Customization.CustomizeNaming(schemaElement.Name)) : clientTemplate.GetFixedName(schemaElement.Name), clientTemplate);
+                            }
+
+                            string collectionTypeName = isOperationParameter
+                                ? clientTemplate.ICollectionOfTStructureTemplate
+                                : (useDataServiceCollection
+                                    ? (elementTypeReference.TypeKind() == EdmTypeKind.Entity
+                                        ? clientTemplate.DataServiceCollectionStructureTemplate
+                                        : clientTemplate.ObservableCollectionStructureTemplate)
+                                    : clientTemplate.ObjectModelCollectionStructureTemplate);
+
+                            clrTypeName = string.Format(collectionTypeName, clrTypeName);
                         }
                         else
                         {
-                            IEdmSchemaElement schemaElement = (IEdmSchemaElement)elementTypeReference.Definition;
-                            clrTypeName = context.GetPrefixedFullName(schemaElement,
-                                context.EnableNamingAlias ? clientTemplate.GetFixedName(Customization.CustomizeNaming(schemaElement.Name)) : clientTemplate.GetFixedName(schemaElement.Name), clientTemplate);
-                        }    
-                
-                        string collectionTypeName = isOperationParameter
-                                                        ? clientTemplate.ICollectionOfTStructureTemplate
-                                                        : (useDataServiceCollection
-                                                            ? (elementTypeReference.TypeKind() == EdmTypeKind.Entity
-                                                                ? clientTemplate.DataServiceCollectionStructureTemplate
-                                                                : clientTemplate.ObservableCollectionStructureTemplate)
-                                                            : clientTemplate.ObjectModelCollectionStructureTemplate);
+                            if (edmType is IEdmTypeDefinition edmTypeDefinition)
+                            {
+                                if (edmTypeDefinition is IEdmSchemaElement schemaElement)
+                                {
+                                    clrTypeName = context.GetPrefixedFullName(schemaElement,
+                                        context.EnableNamingAlias ? clientTemplate.GetFixedName(Customization.CustomizeNaming(schemaElement.Name)) : clientTemplate.GetFixedName(schemaElement.Name), clientTemplate);
+                                }
+                                else
+                                {
+                                    
+                                }
+                            }
+                            else
+                            {
+                                
+                            }
 
-                        clrTypeName = string.Format(collectionTypeName, clrTypeName);
+                        }
                     }
                 }
             }

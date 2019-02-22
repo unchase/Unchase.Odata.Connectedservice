@@ -7,6 +7,9 @@
 //     the code is regenerated.
 // </auto-generated>
 // ------------------------------------------------------------------------------
+
+using System.Reflection;
+
 namespace Unchase.OData.ConnectedService.Templates
 {
     using System;
@@ -36,76 +39,73 @@ namespace Unchase.OData.ConnectedService.Templates
         /// </summary>
         public virtual string TransformText()
         {
+            /*
+            OData Client T4 Template ver. #VersionNumber#
+            Copyright (c) Microsoft Corporation
+            All rights reserved. 
+            MIT License
+            Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-/*
-OData Client T4 Template ver. #VersionNumber#
-Copyright (c) Microsoft Corporation
-All rights reserved. 
-MIT License
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+            The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+            THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+            */
 
-THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+            CodeGenerationContext context;
+            if (!string.IsNullOrWhiteSpace(this.Edmx))
+            {
+                context = new CodeGenerationContext(this.Edmx, this.NamespacePrefix)
+                {
+                    UseDataServiceCollection = this.UseDataServiceCollection,
+                    TargetLanguage = this.TargetLanguage,
+                    EnableNamingAlias = this.EnableNamingAlias,
+                    TempFilePath = this.TempFilePath,
+                    IgnoreUnexpectedElementsAndAttributes = this.IgnoreUnexpectedElementsAndAttributes
+                };
+            }
+            else
+            {
+                this.ApplyParametersFromCommandLine();
+                if (string.IsNullOrEmpty(metadataDocumentUri))
+                {
+                    this.ApplyParametersFromConfigurationClass();
+                }
 
+                context = new CodeGenerationContext(new Uri(this.MetadataDocumentUri, UriKind.Absolute), this.NamespacePrefix)
+                {
+                    UseDataServiceCollection = this.UseDataServiceCollection,
+                    TargetLanguage = this.TargetLanguage,
+                    EnableNamingAlias = this.EnableNamingAlias,
+                    TempFilePath = this.TempFilePath,
+                    IgnoreUnexpectedElementsAndAttributes = this.IgnoreUnexpectedElementsAndAttributes
+                };
+            }
 
-    CodeGenerationContext context;
-    if (!string.IsNullOrWhiteSpace(this.Edmx))
-    {
-        context = new CodeGenerationContext(this.Edmx, this.NamespacePrefix)
-        {
-            UseDataServiceCollection = this.UseDataServiceCollection,
-            TargetLanguage = this.TargetLanguage,
-            EnableNamingAlias = this.EnableNamingAlias,
-            TempFilePath = this.TempFilePath,
-            IgnoreUnexpectedElementsAndAttributes = this.IgnoreUnexpectedElementsAndAttributes
-        };
-    }
-    else
-    {
-        this.ApplyParametersFromCommandLine();
-        if (string.IsNullOrEmpty(metadataDocumentUri))
-        {
-            this.ApplyParametersFromConfigurationClass();
-        }
+            if (this.GetReferencedModelReaderFunc != null)
+            {
+                context.GetReferencedModelReaderFunc = this.GetReferencedModelReaderFunc;
+            }
 
-        context = new CodeGenerationContext(new Uri(this.MetadataDocumentUri, UriKind.Absolute), this.NamespacePrefix)
-        {
-            UseDataServiceCollection = this.UseDataServiceCollection,
-            TargetLanguage = this.TargetLanguage,
-            EnableNamingAlias = this.EnableNamingAlias,
-            TempFilePath = this.TempFilePath,
-            IgnoreUnexpectedElementsAndAttributes = this.IgnoreUnexpectedElementsAndAttributes
-        };
-    }
+            ODataClientTemplate template;
+            switch(this.TargetLanguage)
+            {
+                case LanguageOption.CSharp:
+                    template = new ODataClientCSharpTemplate(context);
+                    break;
+                case LanguageOption.VB:
+                    template = new ODataClientVBTemplate(context);
+                    break;
 
-    if (this.GetReferencedModelReaderFunc != null)
-    {
-        context.GetReferencedModelReaderFunc = this.GetReferencedModelReaderFunc;
-    }
-
-    ODataClientTemplate template;
-    switch(this.TargetLanguage)
-    {
-        case LanguageOption.CSharp:
-            template = new ODataClientCSharpTemplate(context);
-            break;
-        case LanguageOption.VB:
-            template = new ODataClientVBTemplate(context);
-            break;
-
-        default:
-            throw new NotSupportedException(string.Format("Code gen for the target language '{0}' is not supported.", this.TargetLanguage.ToString()));
-    }
-
+                default:
+                    throw new NotSupportedException($"Code gen for the target language '{this.TargetLanguage.ToString()}' is not supported.");
+            }
 
             this.Write(this.ToStringHelper.ToStringWithCulture(template.TransformText()));
 
-    foreach (string warning in context.Warnings)
-    {
-        this.Warning(warning);
-    }
+            foreach (string warning in context.Warnings)
+            {
+                this.Warning(warning);
+            }
 
             return this.GenerationEnvironment.ToString();
         }
@@ -153,6 +153,9 @@ public static class Configuration
 	// This flag indicates whether to ignore unexpected elements and attributes in the metadata document and generate
 	// the client code if any. The value must be set to true or false.
 	public const bool IgnoreUnexpectedElementsAndAttributes = true;
+
+    // 
+    public const string T4Version = "2.4.0";
 }
 
 public static class Customization
@@ -359,7 +362,7 @@ public void ValidateAndSetUseDataServiceCollectionFromString(string stringValue)
         // custom tool inside Visual Studio, update the .odata.config file in the project with a valid parameter
         // value then hit Ctrl-S to save the .tt file to refresh the code generation.
         // ********************************************************************************************************
-        throw new ArgumentException(string.Format("The value \"{0}\" cannot be assigned to the UseDataServiceCollection parameter because it is not a valid boolean value.", stringValue));
+        throw new ArgumentException($"The value \"{stringValue}\" cannot be assigned to the UseDataServiceCollection parameter because it is not a valid boolean value.");
     }
 
     this.UseDataServiceCollection = boolValue;
@@ -379,7 +382,7 @@ public void ValidateAndSetTargetLanguageFromString(string stringValue)
         // custom tool inside Visual Studio, update the .odata.config file in the project with a valid parameter
         // value then hit Ctrl-S to save the .tt file to refresh the code generation.
         // ********************************************************************************************************
-        throw new ArgumentException(string.Format("The value \"{0}\" cannot be assigned to the TargetLanguage parameter because it is not a valid LanguageOption. The supported LanguageOptions are \"CSharp\" and \"VB\".", stringValue));
+        throw new ArgumentException($"The value \"{stringValue}\" cannot be assigned to the TargetLanguage parameter because it is not a valid LanguageOption. The supported LanguageOptions are \"CSharp\" and \"VB\".");
     }
 
     this.TargetLanguage = option;
@@ -596,7 +599,7 @@ public class CodeGenerationContext
                 Debug.Assert(this.edmx != null, "this.edmx != null");
 
                 IEnumerable<Microsoft.OData.Edm.Validation.EdmError> errors;
-                CsdlReaderSettings edmxReaderSettings = new CsdlReaderSettings()
+                CsdlReaderSettings edmxReaderSettings = new CsdlReaderSettings
                 {
                     GetReferencedModelReaderFunc = this.GetReferencedModelReaderFuncWrapper,
                     IgnoreUnexpectedAttributesAndElements = this.IgnoreUnexpectedElementsAndAttributes
@@ -750,7 +753,7 @@ public class CodeGenerationContext
                     if (this.NamespacesInModel.Count() == 1)
                     {
                         IEdmEntityContainer container = this.EdmModel.EntityContainer;
-                        string containerNamespace = container == null ? null : container.Namespace;
+                        string containerNamespace = container?.Namespace;
                         this.namespaceMap = this.NamespacesInModel
                             .Distinct()
                             .ToDictionary(
@@ -855,8 +858,7 @@ public class CodeGenerationContext
             {
                 IEdmEntityContainer container = valueAnnotation.Target as IEdmEntityContainer;
                 IEdmTerm valueTerm = valueAnnotation.Term;
-                IEdmStringConstantExpression expression = valueAnnotation.Value as IEdmStringConstantExpression;
-                if (container != null && valueTerm != null && expression != null)
+                if (container != null && valueTerm != null && valueAnnotation.Value is IEdmStringConstantExpression expression)
                 {
                     if (valueTerm.Namespace == ConventionTermNamespace &&
                         valueTerm.Name == ConventionTermName &&
@@ -986,8 +988,7 @@ public class CodeGenerationContext
             }
             catch (WebException e)
             {
-                HttpWebResponse webResponse = e.Response as HttpWebResponse;
-                if (webResponse != null && webResponse.StatusCode == HttpStatusCode.Unauthorized)
+                if (e.Response is HttpWebResponse webResponse && webResponse.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     throw new WebException("Failed to access the metadata document. The OData service requires authentication for accessing it. Please download the metadata, store it into a local file, and set the value of “MetadataDocumentUri” in the .odata.config file to the file path. After that, run custom tool again to generate the OData Client code.");
                 }
@@ -1021,7 +1022,8 @@ public class CodeGenerationContext
                 tmp.FindDeclaredTerm(CapabilitiesVocabularyConstants.ChangeTracking) != null ||
                 tmp.FindDeclaredTerm(AlternateKeysVocabularyConstants.AlternateKeys) != null ||
                 tmp.FindDeclaredTerm("Org.OData.Authorization.V1.Authorizations") != null ||
-                tmp.FindDeclaredTerm("Org.OData.Validation.V1.DerivedTypeConstraint") != null)
+                tmp.FindDeclaredTerm("Org.OData.Validation.V1.DerivedTypeConstraint") != null ||
+                tmp.FindDeclaredTerm("Org.OData.Community.V1.UrlEscapeFunction") != null)
             {
                 continue;
             }
@@ -1038,7 +1040,7 @@ public class CodeGenerationContext
 /// </summary>
 public abstract class ODataClientTemplate : TemplateBase
 {
-    protected const string T4Version  = "#VersionNumber#";
+    protected const string T4Version  = Configuration.T4Version;
 
     /// <summary>
     /// The code generation context.
@@ -1248,8 +1250,7 @@ public abstract class ODataClientTemplate : TemplateBase
             if (operation.IsBound)
             {
                 IEdmType edmType = operation.Parameters.First().Type.Definition;
-                IEdmStructuredType edmStructuredType = edmType as IEdmStructuredType;
-                if (edmStructuredType != null)
+                if (edmType is IEdmStructuredType edmStructuredType)
                 {
                     List<IEdmOperation> operationList;
                     if (!boundOperationsMap.TryGetValue(edmStructuredType, out operationList))
@@ -1266,26 +1267,24 @@ public abstract class ODataClientTemplate : TemplateBase
         Dictionary<IEdmStructuredType, List<IEdmStructuredType>> structuredBaseTypeMap = new Dictionary<IEdmStructuredType, List<IEdmStructuredType>>();
         foreach(IEdmSchemaType type in schemaElements.OfType<IEdmSchemaType>())
         {
-            IEdmEnumType enumType = type as IEdmEnumType;
-            if (enumType != null)
+            if (type is IEdmEnumType enumType)
             {
                 this.WriteEnumType(enumType);
             }
             else
             {
-                IEdmComplexType complexType = type as IEdmComplexType;
-                if (complexType != null)
+                if (type is IEdmComplexType complexType)
                 {
                     this.WriteComplexType(complexType, boundOperationsMap);
                 }
                 else
                 {
-                    IEdmEntityType entityType = type as IEdmEntityType;
-                    this.WriteEntityType(entityType, boundOperationsMap);
+                    if (type is IEdmEntityType entityType)
+                        this.WriteEntityType(entityType, boundOperationsMap);
                 }
 
                 IEdmStructuredType structuredType = type as IEdmStructuredType;
-                if (structuredType.BaseType != null)
+                if (structuredType?.BaseType != null)
                 {
                     List<IEdmStructuredType> derivedTypes;
                     if (!structuredBaseTypeMap.TryGetValue(structuredType.BaseType, out derivedTypes))
@@ -1355,7 +1354,7 @@ public abstract class ODataClientTemplate : TemplateBase
                     string returnTypeName = GetSourceOrReturnTypeName(function.ReturnType);
                     string returnTypeNameWithSingleSuffix = GetSourceOrReturnTypeName(function.ReturnType, true);
                     string fixedFunctionName = GetFixedName(functionName);
-                    string func = string.Format("{0}({1},{2})", fixedFunctionName, sourceTypeName, parameterTypes );
+                    string func = $"{fixedFunctionName}({sourceTypeName},{parameterTypes})";
 
                     if (!boundOperations.Contains(func))
                     {
@@ -1392,7 +1391,7 @@ public abstract class ODataClientTemplate : TemplateBase
                             currentParameters[0] = derivedTypeReference;
 
                             sourceTypeName = string.Format(edmTypeReference.IsCollection() ? this.DataServiceQueryStructureTemplate : this.DataServiceQuerySingleStructureTemplate, GetSourceOrReturnTypeName(derivedTypeReference));
-                            string currentFunc = string.Format("{0}({1},{2})", fixedFunctionName, sourceTypeName, parameterTypes );
+                            string currentFunc = $"{fixedFunctionName}({sourceTypeName},{parameterTypes})";
                             if (!boundOperations.Contains(currentFunc))
                             {
                                 boundOperations.Add(currentFunc);
@@ -1441,7 +1440,7 @@ public abstract class ODataClientTemplate : TemplateBase
                     }
 
                     string fixedActionName = GetFixedName(actionName);
-                    string ac = string.Format("{0}({1},{2})", fixedActionName, sourceTypeName, parameterTypes );
+                    string ac = $"{fixedActionName}({sourceTypeName},{parameterTypes})";
                     if (!boundOperations.Contains(ac))
                     {
                         boundOperations.Add(ac);
@@ -1469,7 +1468,7 @@ public abstract class ODataClientTemplate : TemplateBase
                             currentParameters[0] = derivedTypeReference;
 
                             sourceTypeName = string.Format(edmTypeReference.IsCollection() ? this.DataServiceQueryStructureTemplate : this.DataServiceQuerySingleStructureTemplate, GetSourceOrReturnTypeName(derivedTypeReference));
-                            string currentAc = string.Format("{0}({1},{2})", fixedActionName, sourceTypeName, parameterTypes );
+                            string currentAc = $"{fixedActionName}({sourceTypeName},{parameterTypes})";
                             if (!boundOperations.Contains(currentAc))
                             {
                                 boundOperations.Add(currentAc);
@@ -1799,7 +1798,15 @@ public abstract class ODataClientTemplate : TemplateBase
 
         this.WriteBoundOperations(entityType, boundOperationsMap);
 
-        this.WriteClassEndForStructuredType();
+        try
+        {
+            this.WriteClassEndForStructuredType();
+        }
+        catch (Exception e)
+        {
+            
+        }
+       
     }
 
     internal void WriteComplexType(IEdmComplexType complexType, Dictionary<IEdmStructuredType, List<IEdmOperation>> boundOperationsMap)
@@ -2061,8 +2068,7 @@ public abstract class ODataClientTemplate : TemplateBase
     {
         string clrTypeName;
         IEdmType edmType = param.Type.Definition;
-        IEdmPrimitiveType edmPrimitiveType = edmType as IEdmPrimitiveType;
-        if (edmPrimitiveType != null)
+        if (edmType is IEdmPrimitiveType edmPrimitiveType)
         {
             clrTypeName = Utils.GetClrTypeName(edmPrimitiveType, this);                
             if (param.Type.IsNullable && !this.ClrReferenceTypes.Contains(edmPrimitiveType.PrimitiveKind))
@@ -2295,8 +2301,7 @@ public abstract class ODataClientTemplate : TemplateBase
             string value = string.Empty;
             if (member.Value != null)
             {
-                IEdmEnumMemberValue integerValue = member.Value as IEdmEnumMemberValue;
-                if (integerValue != null)
+                if (member.Value is IEdmEnumMemberValue integerValue)
                 {
                     value = " = " + integerValue.Value.ToString(CultureInfo.InvariantCulture);
                 }
@@ -2777,10 +2782,9 @@ internal static class Utils
     /// <returns>The clr type name of the type reference.</returns>
     internal static string GetClrTypeName(IEdmTypeReference edmTypeReference, bool useDataServiceCollection, ODataClientTemplate clientTemplate, CodeGenerationContext context, bool addNullableTemplate = true, bool needGlobalPrefix = true, bool isOperationParameter = false, bool isEntitySingleType = false)
     {
-        string clrTypeName;
+        string clrTypeName = null;
         IEdmType edmType = edmTypeReference.Definition;
-        IEdmPrimitiveType edmPrimitiveType = edmType as IEdmPrimitiveType;
-        if (edmPrimitiveType != null)
+        if (edmType is IEdmPrimitiveType edmPrimitiveType)
         {
             clrTypeName = Utils.GetClrTypeName(edmPrimitiveType, clientTemplate);
             if (edmTypeReference.IsNullable && !clientTemplate.ClrReferenceTypes.Contains(edmPrimitiveType.PrimitiveKind) && addNullableTemplate)
@@ -2790,16 +2794,14 @@ internal static class Utils
         }
         else
         {
-            IEdmComplexType edmComplexType = edmType as IEdmComplexType;
-            if (edmComplexType != null)
+            if (edmType is IEdmComplexType edmComplexType)
             {
                 clrTypeName = context.GetPrefixedFullName(edmComplexType,
                     context.EnableNamingAlias ? clientTemplate.GetFixedName(Customization.CustomizeNaming(edmComplexType.Name)) : clientTemplate.GetFixedName(edmComplexType.Name), clientTemplate);
             }
             else
             {
-                IEdmEnumType edmEnumType = edmType as IEdmEnumType;
-                if (edmEnumType != null)
+                if (edmType is IEdmEnumType edmEnumType)
                 {
                     clrTypeName = context.GetPrefixedFullName(edmEnumType,
                         context.EnableNamingAlias ? clientTemplate.GetFixedName(Customization.CustomizeNaming(edmEnumType.Name)) : clientTemplate.GetFixedName(edmEnumType.Name), clientTemplate, needGlobalPrefix);
@@ -2810,8 +2812,7 @@ internal static class Utils
                 }
                 else 
                 {
-                    IEdmEntityType edmEntityType = edmType as IEdmEntityType;
-                    if (edmEntityType != null)
+                    if (edmType is IEdmEntityType edmEntityType)
                     {
                         clrTypeName = context.GetPrefixedFullName(edmEntityType,
                             context.EnableNamingAlias
@@ -2821,29 +2822,50 @@ internal static class Utils
                     }
                     else
                     {
-                        IEdmCollectionType edmCollectionType = (IEdmCollectionType)edmType;
-                        IEdmTypeReference elementTypeReference = edmCollectionType.ElementType;
-                        IEdmPrimitiveType primitiveElementType = elementTypeReference.Definition as IEdmPrimitiveType;
-                        if (primitiveElementType != null)
+                        if (edmType is IEdmCollectionType edmCollectionType)
                         {
-                            clrTypeName = Utils.GetClrTypeName(primitiveElementType, clientTemplate);
+                            IEdmTypeReference elementTypeReference = edmCollectionType.ElementType;
+                            if (elementTypeReference.Definition is IEdmPrimitiveType primitiveElementType)
+                            {
+                                clrTypeName = Utils.GetClrTypeName(primitiveElementType, clientTemplate);
+                            }
+                            else
+                            {
+                                IEdmSchemaElement schemaElement = (IEdmSchemaElement)elementTypeReference.Definition;
+                                clrTypeName = context.GetPrefixedFullName(schemaElement,
+                                    context.EnableNamingAlias ? clientTemplate.GetFixedName(Customization.CustomizeNaming(schemaElement.Name)) : clientTemplate.GetFixedName(schemaElement.Name), clientTemplate);
+                            }
+
+                            string collectionTypeName = isOperationParameter
+                                ? clientTemplate.ICollectionOfTStructureTemplate
+                                : (useDataServiceCollection
+                                    ? (elementTypeReference.TypeKind() == EdmTypeKind.Entity
+                                        ? clientTemplate.DataServiceCollectionStructureTemplate
+                                        : clientTemplate.ObservableCollectionStructureTemplate)
+                                    : clientTemplate.ObjectModelCollectionStructureTemplate);
+
+                            clrTypeName = string.Format(collectionTypeName, clrTypeName);
                         }
                         else
                         {
-                            IEdmSchemaElement schemaElement = (IEdmSchemaElement)elementTypeReference.Definition;
-                            clrTypeName = context.GetPrefixedFullName(schemaElement,
-                                context.EnableNamingAlias ? clientTemplate.GetFixedName(Customization.CustomizeNaming(schemaElement.Name)) : clientTemplate.GetFixedName(schemaElement.Name), clientTemplate);
-                        }    
-                
-                        string collectionTypeName = isOperationParameter
-                                                        ? clientTemplate.ICollectionOfTStructureTemplate
-                                                        : (useDataServiceCollection
-                                                            ? (elementTypeReference.TypeKind() == EdmTypeKind.Entity
-                                                                ? clientTemplate.DataServiceCollectionStructureTemplate
-                                                                : clientTemplate.ObservableCollectionStructureTemplate)
-                                                            : clientTemplate.ObjectModelCollectionStructureTemplate);
+                            if (edmType is IEdmTypeDefinition edmTypeDefinition)
+                            {
+                                if (edmTypeDefinition is IEdmSchemaElement schemaElement)
+                                {
+                                    clrTypeName = context.GetPrefixedFullName(schemaElement,
+                                        context.EnableNamingAlias ? clientTemplate.GetFixedName(Customization.CustomizeNaming(schemaElement.Name)) : clientTemplate.GetFixedName(schemaElement.Name), clientTemplate);
+                                }
+                                else
+                                {
+                                    
+                                }
+                            }
+                            else
+                            {
+                                
+                            }
 
-                        clrTypeName = string.Format(collectionTypeName, clrTypeName);
+                        }
                     }
                 }
             }

@@ -28,6 +28,9 @@ public static class Configuration
 	// This flag indicates whether to ignore unexpected elements and attributes in the metadata document and generate
 	// the client code if any. The value must be set to true or false.
 	public const bool IgnoreUnexpectedElementsAndAttributes = true;
+
+	// 
+    public const string T4Version = "2.4.0";
 }
 
 public static class Customization

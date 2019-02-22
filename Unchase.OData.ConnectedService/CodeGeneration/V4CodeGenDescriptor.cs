@@ -5,6 +5,7 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EnvDTE;
@@ -106,14 +107,13 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
 
             using (var writer = File.CreateText(tempFile))
             {
-                await writer.WriteAsync(t4CodeGenerator.TransformText());
+                var proxyClassText = t4CodeGenerator.TransformText();
+                await writer.WriteAsync(proxyClassText);
                 await writer.FlushAsync();
                 if (t4CodeGenerator.Errors != null && t4CodeGenerator.Errors.Count > 0)
                 {
                     foreach (var err in t4CodeGenerator.Errors)
-                    {
                         await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Warning, err.ToString());
-                    }
                 }
             }
 

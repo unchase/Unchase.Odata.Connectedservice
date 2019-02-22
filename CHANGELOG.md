@@ -56,5 +56,11 @@
 
 - Fixed setting web-proxy credentials.
 
+### Version 0.3.9:
+
+*Fixes:*
+
+- Fixed errors in  OData V4 generator class: fix casting IEdmTypeDefinition to clrTypeName.
+
 
  
