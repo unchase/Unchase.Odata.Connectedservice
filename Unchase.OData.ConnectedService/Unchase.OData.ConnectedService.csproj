@@ -63,11 +63,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Provider.cs" />
     <Compile Include="Templates\ODataT4CodeGenerator.cs" />
-    <Compile Include="Templates\ODataV3ExtensionsT4CodeGenerator.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ODataV3ExtensionsT4CodeGenerator.tt</DependentUpon>
-    </Compile>
     <Compile Include="ViewModels\AdvancedSettingsViewModel.cs" />
     <Compile Include="ViewModels\ConfigODataEndpointViewModel.cs" />
     <Compile Include="Wizard.cs" />

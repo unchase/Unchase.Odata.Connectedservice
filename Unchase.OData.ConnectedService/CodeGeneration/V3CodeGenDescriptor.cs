@@ -39,38 +39,38 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
         {
             await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Adding Nuget Packages for OData V3...");
 
-            var wcfDSInstallLocation = CodeGeneratorUtils.GetWCFDSInstallLocation();
-            var packageSource = Path.Combine(wcfDSInstallLocation, @"bin\NuGet");
-            if (string.IsNullOrEmpty(wcfDSInstallLocation))
-                packageSource = Common.Constants.NuGetOnlineRepository;
-            else
-            {
-                if (Directory.Exists(packageSource))
-                {
-                    var files = Directory.EnumerateFiles(packageSource, "*.nupkg").ToList();
+            //var wcfDSInstallLocation = CodeGeneratorUtils.GetWCFDSInstallLocation();
+            //var packageSource = Path.Combine(wcfDSInstallLocation, @"bin\NuGet");
+            //if (string.IsNullOrEmpty(wcfDSInstallLocation))
+            var packageSource = Common.Constants.NuGetOnlineRepository;
+            //else
+            //{
+            //    if (Directory.Exists(packageSource))
+            //    {
+            //        var files = Directory.EnumerateFiles(packageSource, "*.nupkg").ToList();
 
-                    if (files.Count == 0)
-                        packageSource = Common.Constants.NuGetOnlineRepository;
-                    else
-                    {
-                        foreach (var nugetPackage in Common.Constants.V3NuGetPackages)
-                        {
-                            if (!files.Any(f => Regex.IsMatch(f, nugetPackage + @"(.\d){2,4}.nupkg")))
-                                packageSource = Common.Constants.NuGetOnlineRepository;
-                        }
-                    }
-                }
-                else
-                    packageSource = Common.Constants.NuGetOnlineRepository;
-            }
+            //        if (files.Count == 0)
+            //            packageSource = Common.Constants.NuGetOnlineRepository;
+            //        else
+            //        {
+            //            foreach (var nugetPackage in Common.Constants.V3NuGetPackages)
+            //            {
+            //                if (!files.Any(f => Regex.IsMatch(f, nugetPackage + @"(.\d){2,4}.nupkg")))
+            //                    packageSource = Common.Constants.NuGetOnlineRepository;
+            //            }
+            //        }
+            //    }
+            //    else
+            //        packageSource = Common.Constants.NuGetOnlineRepository;
+            //}
 
             if (this.ServiceConfiguration.IncludeExtensionsT4File)
-                await CheckAndInstallNuGetPackage(packageSource, this.ValueTupleNuGetPackageName);
+                await CheckAndInstallNuGetPackage(Common.Constants.NuGetOnlineRepository, this.ValueTupleNuGetPackageName);
 
-            await CheckAndInstallNuGetPackage(packageSource, this.SystemComponentModelAnnotationsNuGetPackageName);
+            await CheckAndInstallNuGetPackage(Common.Constants.NuGetOnlineRepository, this.SystemComponentModelAnnotationsNuGetPackageName);
 
             if (this.ServiceConfiguration.IncludeExtensionsT4File && this.ServiceConfiguration.GenerateFunctionImports && this.ServiceConfiguration.FunctionImportsGenerator == Constants.FunctionImportsGenerator.SimpleOData)
-                await CheckAndInstallNuGetPackage(packageSource, this.SimpleODataClientNuGetPackageName);
+                await CheckAndInstallNuGetPackage(Common.Constants.NuGetOnlineRepository, this.SimpleODataClientNuGetPackageName);
 
             if (packageSource == Common.Constants.NuGetOnlineRepository)
             {

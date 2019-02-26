@@ -115,14 +115,8 @@ namespace Unchase.OData.ConnectedService.Templates
         /// </summary>
         public virtual global::Microsoft.VisualStudio.TextTemplating.ITextTemplatingEngineHost Host
         {
-            get
-            {
-                return this.hostValue;
-            }
-            set
-            {
-                this.hostValue = value;
-            }
+            get => this.hostValue;
+            set => this.hostValue = value;
         }
 
 public static class Configuration
@@ -220,10 +214,7 @@ public string Edmx
 /// </summary>
 public string MetadataDocumentUri
 {
-    get
-    {
-        return this.metadataDocumentUri;
-    }
+    get => this.metadataDocumentUri;
 
     set
     {
@@ -271,22 +262,9 @@ public Func<Uri,XmlReader> GetReferencedModelReaderFunc
 /// </summary>
 public string NamespacePrefix
 {
-    get
-    {
-        return this.namespacePrefix;
-    }
+    get => this.namespacePrefix;
 
-    set
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            this.namespacePrefix = null;
-        }
-        else
-        {
-            this.namespacePrefix = value;
-        }
-    }
+    set => this.namespacePrefix = string.IsNullOrWhiteSpace(value) ? null : value;
 }
 
 private string namespacePrefix;
@@ -402,7 +380,7 @@ public void ValidateAndSetEnableNamingAliasFromString(string stringValue)
         // custom tool inside Visual Studio, update the .odata.config file in the project with a valid parameter
         // value then hit Ctrl-S to save the .tt file to refresh the code generation.
         // ********************************************************************************************************
-        throw new ArgumentException(string.Format("The value \"{0}\" cannot be assigned to the EnableNamingAlias parameter because it is not a valid boolean value.", stringValue));
+        throw new ArgumentException($"The value \"{stringValue}\" cannot be assigned to the EnableNamingAlias parameter because it is not a valid boolean value.");
     }
 
     this.EnableNamingAlias = boolValue;
@@ -422,7 +400,7 @@ public void ValidateAndSetIgnoreUnexpectedElementsAndAttributesFromString(string
         // custom tool inside Visual Studio, update the .odata.config file in the project with a valid parameter
         // value then hit Ctrl-S to save the .tt file to refresh the code generation.
         // ********************************************************************************************************
-        throw new ArgumentException(string.Format("The value \"{0}\" cannot be assigned to the IgnoreUnexpectedElementsAndAttributes parameter because it is not a valid boolean value.", stringValue));
+        throw new ArgumentException($"The value \"{stringValue}\" cannot be assigned to the IgnoreUnexpectedElementsAndAttributes parameter because it is not a valid boolean value.");
     }
 
     this.IgnoreUnexpectedElementsAndAttributes = boolValue;
@@ -582,11 +560,8 @@ public class CodeGenerationContext
     /// <summary>
     /// The EdmModel to generate code for.
     /// </summary>
-    public XElement Edmx
-    {
-        get { return this.edmx; }
-    }
-    
+    public XElement Edmx => this.edmx;
+
     /// <summary>
     /// The EdmModel to generate code for.
     /// </summary>
@@ -627,8 +602,8 @@ public class CodeGenerationContext
     /// </summary>
     public Func<Uri,XmlReader> GetReferencedModelReaderFunc
     {
-        get { return getReferencedModelReaderFunc; }
-        set { this.getReferencedModelReaderFunc = value; }
+        get => getReferencedModelReaderFunc;
+        set => this.getReferencedModelReaderFunc = value;
     }
 
     /// <summary>
@@ -699,10 +674,7 @@ public class CodeGenerationContext
     /// <summary>
     /// The array of warnings occured when parsing edm model.
     /// </summary>
-    public string[] Warnings
-    {
-        get { return this.warnings ?? (this.warnings = new string[] {}); }
-    }
+    public string[] Warnings => this.warnings ?? (this.warnings = new string[] {});
 
     /// <summary>
     /// true if the model contains any structural type with inheritance, false otherwise.
@@ -725,18 +697,12 @@ public class CodeGenerationContext
     /// <summary>
     /// true if we need to generate the ResolveNameFromType method, false otherwise.
     /// </summary>
-    public bool NeedResolveNameFromType
-    {
-        get    { return this.ModelHasInheritance || this.NamespaceMap.Count > 0 || this.EnableNamingAlias; }
-    }
+    public bool NeedResolveNameFromType => this.ModelHasInheritance || this.NamespaceMap.Count > 0 || this.EnableNamingAlias;
 
     /// <summary>
     /// true if we need to generate the ResolveTypeFromName method, false otherwise.
     /// </summary>
-    public bool NeedResolveTypeFromName
-    {
-        get { return this.NamespaceMap.Count > 0 || this.EnableNamingAlias; }
-    }
+    public bool NeedResolveTypeFromName => this.NamespaceMap.Count > 0 || this.EnableNamingAlias;
 
     /// <summary>
     /// If the namespacePrefix is not null, this contains the mapping of namespaces in the model to the corresponding prefixed namespaces.
@@ -836,13 +802,7 @@ public class CodeGenerationContext
     /// <summary>
     /// Maps the element type of an entity set to the entity set.
     /// </summary>
-    public Dictionary<IEdmEntityType, List<IEdmNavigationSource>> ElementTypeToNavigationSourceMap
-    {
-        get
-        {
-            return this.elementTypeToNavigationSourceMap ?? (this.elementTypeToNavigationSourceMap = new Dictionary<IEdmEntityType, List<IEdmNavigationSource>>(EqualityComparer<IEdmEntityType>.Default));
-        }
-    }
+    public Dictionary<IEdmEntityType, List<IEdmNavigationSource>> ElementTypeToNavigationSourceMap => this.elementTypeToNavigationSourceMap ?? (this.elementTypeToNavigationSourceMap = new Dictionary<IEdmEntityType, List<IEdmNavigationSource>>(EqualityComparer<IEdmEntityType>.Default));
 
     /// <summary>
     /// true if this EntityContainer need to set the UrlConvention to KeyAsSegment, false otherwise.
@@ -917,8 +877,7 @@ public class CodeGenerationContext
             return null;
         }
 
-        string prefixedNamespace;
-        if (!this.NamespaceMap.TryGetValue(ns, out prefixedNamespace))
+        if (!this.NamespaceMap.TryGetValue(ns, out var prefixedNamespace))
         {
             prefixedNamespace = ns;
         }
@@ -1061,10 +1020,7 @@ public abstract class ODataClientTemplate : TemplateBase
         this.context = context;
     }
 
-    internal string SingleSuffix
-    {
-        get { return "Single"; }
-    }
+    internal string SingleSuffix => "Single";
 
     #region Get Language specific keyword names.
     internal abstract string GlobalPrefix { get; }
@@ -1252,8 +1208,7 @@ public abstract class ODataClientTemplate : TemplateBase
                 IEdmType edmType = operation.Parameters.First().Type.Definition;
                 if (edmType is IEdmStructuredType edmStructuredType)
                 {
-                    List<IEdmOperation> operationList;
-                    if (!boundOperationsMap.TryGetValue(edmStructuredType, out operationList))
+                    if (!boundOperationsMap.TryGetValue(edmStructuredType, out var operationList))
                     {
                         operationList = new List<IEdmOperation>();
                     }
@@ -1286,8 +1241,7 @@ public abstract class ODataClientTemplate : TemplateBase
                 IEdmStructuredType structuredType = type as IEdmStructuredType;
                 if (structuredType?.BaseType != null)
                 {
-                    List<IEdmStructuredType> derivedTypes;
-                    if (!structuredBaseTypeMap.TryGetValue(structuredType.BaseType, out derivedTypes))
+                    if (!structuredBaseTypeMap.TryGetValue(structuredType.BaseType, out var derivedTypes))
                     {
                        structuredBaseTypeMap[structuredType.BaseType] = new List<IEdmStructuredType>();
                     }
@@ -1346,9 +1300,7 @@ public abstract class ODataClientTemplate : TemplateBase
                 {
                     IEdmTypeReference edmTypeReference = function.Parameters.First().Type;
                     string functionName = this.context.EnableNamingAlias ? Customization.CustomizeNaming(function.Name) : function.Name;
-                    string parameterString, parameterExpressionString, parameterTypes, parameterValues;
-                    bool useEntityReference;
-                    this.GetParameterStrings(function.IsBound, false, function.Parameters.ToArray(), out parameterString, out parameterTypes, out parameterExpressionString, out parameterValues, out useEntityReference);
+                    this.GetParameterStrings(function.IsBound, false, function.Parameters.ToArray(), out var parameterString, out var parameterTypes, out var parameterExpressionString, out var parameterValues, out var useEntityReference);
                     string sourceTypeName = GetSourceOrReturnTypeName(edmTypeReference);
                     sourceTypeName = string.Format(edmTypeReference.IsCollection() ? this.DataServiceQueryStructureTemplate : this.DataServiceQuerySingleStructureTemplate, sourceTypeName);
                     string returnTypeName = GetSourceOrReturnTypeName(function.ReturnType);
@@ -1381,8 +1333,7 @@ public abstract class ODataClientTemplate : TemplateBase
                         structuredType = (IEdmStructuredType)edmTypeReference.Definition;
                     }
 
-                    List<IEdmStructuredType> derivedTypes;
-                        if (structuredBaseTypeMap.TryGetValue(structuredType, out derivedTypes))
+                    if (structuredBaseTypeMap.TryGetValue(structuredType, out var derivedTypes))
                     {
                         foreach (IEdmStructuredType type in derivedTypes)
                         {
@@ -1416,23 +1367,16 @@ public abstract class ODataClientTemplate : TemplateBase
                 {
                     IEdmTypeReference edmTypeReference = action.Parameters.First().Type;
                     string actionName = this.context.EnableNamingAlias ? Customization.CustomizeNaming(action.Name) : action.Name;
-                    string parameterString, parameterExpressionString, parameterTypes, parameterValues;
-                    bool useEntityReference;
-                    this.GetParameterStrings(action.IsBound, true, action.Parameters.ToArray(), out parameterString, out parameterTypes, out parameterExpressionString, out parameterValues, out useEntityReference);
+                    this.GetParameterStrings(action.IsBound, true, action.Parameters.ToArray(), out var parameterString, out var parameterTypes, out var parameterExpressionString, out var parameterValues, out var useEntityReference);
                     string sourceTypeName = GetSourceOrReturnTypeName(edmTypeReference);
                     sourceTypeName = string.Format(edmTypeReference.IsCollection() ? this.DataServiceQueryStructureTemplate : this.DataServiceQuerySingleStructureTemplate, sourceTypeName);
                     string returnTypeName;
                     if (action.ReturnType != null)
                     {
                         returnTypeName = GetSourceOrReturnTypeName(action.ReturnType);
-                        if (action.ReturnType.IsCollection())
-                        {
-                            returnTypeName = string.Format(this.DataServiceActionQueryOfTStructureTemplate, returnTypeName);
-                        }
-                        else
-                        {
-                            returnTypeName = string.Format(this.DataServiceActionQuerySingleOfTStructureTemplate, returnTypeName);
-                        }
+                        returnTypeName = string.Format(action.ReturnType.IsCollection() 
+                            ? this.DataServiceActionQueryOfTStructureTemplate 
+                            : this.DataServiceActionQuerySingleOfTStructureTemplate, returnTypeName);
                     }
                     else
                     {
@@ -1458,8 +1402,7 @@ public abstract class ODataClientTemplate : TemplateBase
                         structuredType = (IEdmStructuredType)edmTypeReference.Definition;
                     }
 
-                    List<IEdmStructuredType> derivedTypes;
-                    if (structuredBaseTypeMap.TryGetValue(structuredType, out derivedTypes))
+                    if (structuredBaseTypeMap.TryGetValue(structuredType, out var derivedTypes))
                     {
                         foreach (IEdmStructuredType type in derivedTypes)
                         {
@@ -1487,9 +1430,9 @@ public abstract class ODataClientTemplate : TemplateBase
     
     internal bool HasBoundOperations(IEnumerable<IEdmOperation> operations)
     {
-        foreach (IEdmOperation opeartion in operations)
+        foreach (IEdmOperation operation in operations)
         {
-            if (opeartion.IsBound)
+            if (operation.IsBound)
             {
                 return true;
             }
@@ -1529,8 +1472,7 @@ public abstract class ODataClientTemplate : TemplateBase
             }
 
             this.WriteContextEntitySetProperty(camelCaseEntitySetName, GetFixedName(camelCaseEntitySetName), entitySet.Name, GetFixedName(entitySetElementTypeName));
-            List<IEdmNavigationSource> edmNavigationSourceList = null;
-            if (!this.context.ElementTypeToNavigationSourceMap.TryGetValue(entitySet.EntityType(), out edmNavigationSourceList))
+            if (!this.context.ElementTypeToNavigationSourceMap.TryGetValue(entitySet.EntityType(), out var edmNavigationSourceList))
             {
                 edmNavigationSourceList = new List<IEdmNavigationSource>();
                 this.context.ElementTypeToNavigationSourceMap.Add(entitySet.EntityType(), edmNavigationSourceList);
@@ -1569,8 +1511,7 @@ public abstract class ODataClientTemplate : TemplateBase
 
             this.WriteContextSingletonProperty(camelCaseSingletonName, GetFixedName(camelCaseSingletonName), singleton.Name, singletonElementTypeName + "Single");
 
-            List<IEdmNavigationSource> edmNavigationSourceList = null;
-            if (this.context.ElementTypeToNavigationSourceMap.TryGetValue(singleton.EntityType(), out edmNavigationSourceList))
+            if (this.context.ElementTypeToNavigationSourceMap.TryGetValue(singleton.EntityType(), out var edmNavigationSourceList))
             {
                 edmNavigationSourceList.Add(singleton);
             }
@@ -1581,9 +1522,7 @@ public abstract class ODataClientTemplate : TemplateBase
         bool hasOperationImport = container.OperationImports().OfType<IEdmOperationImport>().Any();
         foreach (IEdmFunctionImport functionImport in container.OperationImports().OfType<IEdmFunctionImport>())
         {
-            string parameterString, parameterTypes, parameterExpressionString, parameterValues;
-            bool useEntityReference;
-            this.GetParameterStrings(false, false, functionImport.Function.Parameters.ToArray(), out parameterString, out parameterTypes, out parameterExpressionString, out parameterValues, out useEntityReference);
+            this.GetParameterStrings(false, false, functionImport.Function.Parameters.ToArray(), out var parameterString, out var parameterTypes, out var parameterExpressionString, out var parameterValues, out var useEntityReference);
             string returnTypeName = GetSourceOrReturnTypeName(functionImport.Function.ReturnType);
             string returnTypeNameWithSingleSuffix = GetSourceOrReturnTypeName(functionImport.Function.ReturnType, true);
             string fixedContainerName = this.GetFixedName(functionImport.Container.Name);
@@ -1607,23 +1546,16 @@ public abstract class ODataClientTemplate : TemplateBase
         
         foreach (IEdmActionImport actionImport in container.OperationImports().OfType<IEdmActionImport>())
         {
-            string parameterString, parameterTypes, parameterExpressionString, parameterValues;
-            bool useEntityReference;
-            this.GetParameterStrings(false, true, actionImport.Action.Parameters.ToArray(), out parameterString, out parameterTypes, out parameterExpressionString, out parameterValues, out useEntityReference);
+            this.GetParameterStrings(false, true, actionImport.Action.Parameters.ToArray(), out var parameterString, out var parameterTypes, out var parameterExpressionString, out var parameterValues, out var useEntityReference);
             string returnTypeName = null;
             string fixedContainerName = this.GetFixedName(actionImport.Container.Name);
 
             if (actionImport.Action.ReturnType != null)
             {
                 returnTypeName = GetSourceOrReturnTypeName(actionImport.Action.ReturnType);
-                if (actionImport.Action.ReturnType.IsCollection())
-                {
-                    returnTypeName = string.Format(this.DataServiceActionQueryOfTStructureTemplate, returnTypeName);
-            }
-                else
-                {
-                    returnTypeName = string.Format(this.DataServiceActionQuerySingleOfTStructureTemplate, returnTypeName);
-                }
+                returnTypeName = string.Format(actionImport.Action.ReturnType.IsCollection() 
+                    ? this.DataServiceActionQueryOfTStructureTemplate 
+                    : this.DataServiceActionQuerySingleOfTStructureTemplate, returnTypeName);
             }
             else
             {
@@ -1740,7 +1672,7 @@ public abstract class ODataClientTemplate : TemplateBase
         string entityTypeName = ((IEdmSchemaElement)entityType).Name;
         entityTypeName = this.context.EnableNamingAlias ? Customization.CustomizeNaming(entityTypeName) : entityTypeName;
         this.WriteSummaryCommentForStructuredType(entityTypeName + this.SingleSuffix);
-        this.WriteStructurdTypeDeclaration(entityType,
+        this.WriteStructuredTypeDeclaration(entityType,
             this.ClassInheritMarker + string.Format(this.DataServiceQuerySingleStructureTemplate, GetFixedName(entityTypeName)),
             this.SingleSuffix);
         string singleTypeName = (this.context.EnableNamingAlias ?
@@ -1771,8 +1703,7 @@ public abstract class ODataClientTemplate : TemplateBase
 
         if (this.context.UseDataServiceCollection)
         {
-            List<IEdmNavigationSource> navigationSourceList;
-            if (this.context.ElementTypeToNavigationSourceMap.TryGetValue(entityType, out navigationSourceList))
+            if (this.context.ElementTypeToNavigationSourceMap.TryGetValue(entityType, out var navigationSourceList))
             {
                 if(navigationSourceList.Count == 1)
                 {
@@ -1786,7 +1717,7 @@ public abstract class ODataClientTemplate : TemplateBase
             this.WriteEntityHasStreamAttribute();
         }
 
-        this.WriteStructurdTypeDeclaration(entityType, this.BaseEntityType);
+        this.WriteStructuredTypeDeclaration(entityType, this.BaseEntityType);
         this.SetPropertyIdentifierMappingsIfNameConflicts(entityType.Name, entityType);
         this.WriteTypeStaticCreateMethod(entityType.Name, entityType);
         this.WritePropertiesForStructuredType(entityType.DeclaredProperties);
@@ -1812,7 +1743,7 @@ public abstract class ODataClientTemplate : TemplateBase
     internal void WriteComplexType(IEdmComplexType complexType, Dictionary<IEdmStructuredType, List<IEdmOperation>> boundOperationsMap)
     {
         this.WriteSummaryCommentForStructuredType(this.context.EnableNamingAlias ? Customization.CustomizeNaming(complexType.Name) : complexType.Name);
-        this.WriteStructurdTypeDeclaration(complexType, string.Empty);
+        this.WriteStructuredTypeDeclaration(complexType, string.Empty);
         this.SetPropertyIdentifierMappingsIfNameConflicts(complexType.Name, complexType);
         this.WriteTypeStaticCreateMethod(complexType.Name, complexType);
         this.WritePropertiesForStructuredType(complexType.DeclaredProperties);
@@ -1827,15 +1758,12 @@ public abstract class ODataClientTemplate : TemplateBase
 
     internal void WriteBoundOperations(IEdmStructuredType structuredType, Dictionary<IEdmStructuredType, List<IEdmOperation>> boundOperationsMap)
     {
-        List<IEdmOperation> operations;
-        if (boundOperationsMap.TryGetValue(structuredType, out operations))
+        if (boundOperationsMap.TryGetValue(structuredType, out var operations))
         {
             foreach (IEdmFunction function in operations.OfType<IEdmFunction>())
             {
-                string parameterString, parameterExpressionString, parameterTypes, parameterValues;
-                bool useEntityReference;
                 bool hideBaseMethod = this.CheckMethodsInBaseClass(structuredType.BaseType, function, boundOperationsMap);
-                this.GetParameterStrings(function.IsBound, false, function.Parameters.ToArray(), out parameterString, out parameterTypes, out parameterExpressionString, out parameterValues, out useEntityReference);
+                this.GetParameterStrings(function.IsBound, false, function.Parameters.ToArray(), out var parameterString, out var parameterTypes, out var parameterExpressionString, out var parameterValues, out var useEntityReference);
                 string returnTypeName = GetSourceOrReturnTypeName(function.ReturnType);
                 string returnTypeNameWithSingleSuffix = GetSourceOrReturnTypeName(function.ReturnType, true);
                 string functionName = function.Name;
@@ -1856,22 +1784,15 @@ public abstract class ODataClientTemplate : TemplateBase
 
             foreach (IEdmAction action in operations.OfType<IEdmAction>())
             {
-                string parameterString, parameterExpressionString, parameterTypes, parameterValues;
-                bool useEntityReference;
                 bool hideBaseMethod = this.CheckMethodsInBaseClass(structuredType.BaseType, action, boundOperationsMap);
-                this.GetParameterStrings(action.IsBound, true, action.Parameters.ToArray(), out parameterString, out parameterTypes, out parameterExpressionString, out parameterValues, out useEntityReference);
+                this.GetParameterStrings(action.IsBound, true, action.Parameters.ToArray(), out var parameterString, out var parameterTypes, out var parameterExpressionString, out var parameterValues, out var useEntityReference);
                 string returnTypeName;
                 if (action.ReturnType != null)
                 {
                     returnTypeName = GetSourceOrReturnTypeName(action.ReturnType);
-                    if (action.ReturnType.IsCollection())
-                    {
-                        returnTypeName = string.Format(this.DataServiceActionQueryOfTStructureTemplate, returnTypeName);
-                    }
-                    else
-                    {
-                        returnTypeName = string.Format(this.DataServiceActionQuerySingleOfTStructureTemplate, returnTypeName);
-                    }
+                    returnTypeName = string.Format(action.ReturnType.IsCollection() 
+                        ? this.DataServiceActionQueryOfTStructureTemplate 
+                        : this.DataServiceActionQuerySingleOfTStructureTemplate, returnTypeName);
                 }
                 else
                 {
@@ -1893,8 +1814,7 @@ public abstract class ODataClientTemplate : TemplateBase
     {
         if (structuredType != null)
         {
-            List<IEdmOperation> operations;
-            if (boundOperationsMap.TryGetValue(structuredType, out operations))
+            if (boundOperationsMap.TryGetValue(structuredType, out var operations))
             {
                 foreach (IEdmOperation op in operations)
                 {
@@ -1957,7 +1877,7 @@ public abstract class ODataClientTemplate : TemplateBase
         this.WriteEnumEnd();
     }
 
-    internal void WriteStructurdTypeDeclaration(IEdmStructuredType structuredType, string baseEntityType, string typeNameSuffix = null)
+    internal void WriteStructuredTypeDeclaration(IEdmStructuredType structuredType, string baseEntityType, string typeNameSuffix = null)
     {
         string abstractModifier = structuredType.IsAbstract && typeNameSuffix == null ? this.AbstractModifier : string.Empty;
         string baseTypeName = baseEntityType;
@@ -2066,11 +1986,10 @@ public abstract class ODataClientTemplate : TemplateBase
 
     internal string GetParameterExpressionString(IEdmOperationParameter param, string typeName)
     {
-        string clrTypeName;
         IEdmType edmType = param.Type.Definition;
         if (edmType is IEdmPrimitiveType edmPrimitiveType)
         {
-            clrTypeName = Utils.GetClrTypeName(edmPrimitiveType, this);                
+            var clrTypeName = Utils.GetClrTypeName(edmPrimitiveType, this);                
             if (param.Type.IsNullable && !this.ClrReferenceTypes.Contains(edmPrimitiveType.PrimitiveKind))
             {
                 clrTypeName += "?";
@@ -2105,12 +2024,12 @@ public abstract class ODataClientTemplate : TemplateBase
         var propertyToBeRenamedGroups = propertyGroups.Where(g => g.Count() > 1 || !allowPropertyNameSameWithTypeName && g.Key == typeName);
 
         var knownIdentifiers = propertyGroups.Select(g => customizePropertyName(g.First().Name)).ToList();
-        if(!allowPropertyNameSameWithTypeName && !knownIdentifiers.Contains(typeName))
+        if (!allowPropertyNameSameWithTypeName && !knownIdentifiers.Contains(typeName))
         {
             knownIdentifiers.Add(typeName);
         }
-        UniqueIdentifierService uniqueIdentifierService =
-            new UniqueIdentifierService(knownIdentifiers, isLanguageCaseSensitive);
+
+        UniqueIdentifierService uniqueIdentifierService = new UniqueIdentifierService(knownIdentifiers, isLanguageCaseSensitive);
 
         IdentifierMappings.Clear();
         foreach (IGrouping<string, IEdmProperty> g in propertyToBeRenamedGroups)
@@ -2122,7 +2041,7 @@ public abstract class ODataClientTemplate : TemplateBase
                 var property = g.ElementAt(i);
                 var customizedPropertyName = customizePropertyName(property.Name);
 
-                if(this.context.EnableNamingAlias && customizedPropertyName == property.Name)
+                if (this.context.EnableNamingAlias && customizedPropertyName == property.Name)
                 {
                     hasPropertyNameSameWithCustomizedPropertyName = true;
                 }
@@ -2370,10 +2289,7 @@ public abstract class TemplateBase
             }
             return this.generationEnvironmentField;
         }
-        set
-        {
-            this.generationEnvironmentField = value;
-        }
+        set => this.generationEnvironmentField = value;
     }
     /// <summary>
     /// The error collection for the generation process
@@ -2406,26 +2322,15 @@ public abstract class TemplateBase
     /// <summary>
     /// Gets the current indent we use when adding lines to the output
     /// </summary>
-    public string CurrentIndent
-    {
-        get
-        {
-            return this.currentIndentField;
-        }
-    }
+    public string CurrentIndent => this.currentIndentField;
+
     /// <summary>
     /// Current transformation session
     /// </summary>
     public virtual global::System.Collections.Generic.IDictionary<string, object> Session
     {
-        get
-        {
-            return this.sessionField;
-        }
-        set
-        {
-            this.sessionField = value;
-        }
+        get => this.sessionField;
+        set => this.sessionField = value;
     }
     #endregion
 
@@ -2570,10 +2475,7 @@ public abstract class TemplateBase
         /// </summary>
         public System.IFormatProvider FormatProvider
         {
-            get
-            {
-                return this.formatProviderField ;
-            }
+            get => this.formatProviderField;
             set
             {
                 if ((value != null))
@@ -2609,13 +2511,8 @@ public abstract class TemplateBase
     /// <summary>
     /// Helper to produce culture-oriented representation of an object as a string
     /// </summary>
-    public ToStringInstanceHelper ToStringHelper
-    {
-        get
-        {
-            return this.toStringHelperField;
-        }
-    }
+    public ToStringInstanceHelper ToStringHelper => this.toStringHelperField;
+
     #endregion
 }
 
@@ -2857,12 +2754,12 @@ internal static class Utils
                                 }
                                 else
                                 {
-                                    
+                                    throw new NotSupportedException("Unknown edm-type.");
                                 }
                             }
                             else
                             {
-                                
+                                throw new NotSupportedException("Unknown edm-type.");
                             }
 
                         }
@@ -2889,8 +2786,7 @@ internal static class Utils
         IEdmCollectionTypeReference edmCollectionTypeReference = edmTypeReference as IEdmCollectionTypeReference;
         if (edmCollectionTypeReference == null)
         {
-            IEdmStructuralProperty structuredProperty = property as IEdmStructuralProperty;
-            if (structuredProperty != null)
+            if (property is IEdmStructuralProperty structuredProperty)
             {
                 if (!string.IsNullOrEmpty(structuredProperty.DefaultValueString))
                 {
@@ -2900,7 +2796,7 @@ internal static class Utils
                     if (edmTypeReference.Definition.TypeKind == EdmTypeKind.Enum)
                     {
                         var enumValues = defaultValue.Split(',');
-                        string fullenumTypeName = GetClrTypeName(edmTypeReference, useDataServiceCollection, clientTemplate, context);
+                        string fullEnumTypeName = GetClrTypeName(edmTypeReference, useDataServiceCollection, clientTemplate, context);
                         string enumTypeName = GetClrTypeName(edmTypeReference, useDataServiceCollection, clientTemplate, context, false, false);
                         List<string> customizedEnumValues = new List<string>();
                         foreach(var enumValue in enumValues)
@@ -2916,7 +2812,7 @@ internal static class Utils
                             var customizedEnumValue = context.EnableNamingAlias ? Customization.CustomizeNaming(currentEnumValue) : currentEnumValue;
                             if (isCSharpTemplate)
                             {
-                                currentEnumValue = "(" + fullenumTypeName + ")" + clientTemplate.EnumTypeName + ".Parse(" + clientTemplate.SystemTypeTypeName + ".GetType(\"" + enumTypeName + "\"), \"" + customizedEnumValue  + "\")";
+                                currentEnumValue = "(" + fullEnumTypeName + ")" + clientTemplate.EnumTypeName + ".Parse(" + clientTemplate.SystemTypeTypeName + ".GetType(\"" + enumTypeName + "\"), \"" + customizedEnumValue  + "\")";
                             }
                             else
                             {
@@ -3177,74 +3073,75 @@ public sealed class ODataClientCSharpTemplate : ODataClientTemplate
     {
     }
 
-    internal override string GlobalPrefix { get {return "global::"; } }
-    internal override string SystemTypeTypeName { get { return "global::System.Type"; } }
-    internal override string AbstractModifier { get { return " abstract"; } }
-    internal override string DataServiceActionQueryTypeName { get { return "global::Microsoft.OData.Client.DataServiceActionQuery"; } }
-    internal override string DataServiceActionQuerySingleOfTStructureTemplate { get { return "global::Microsoft.OData.Client.DataServiceActionQuerySingle<{0}>"; } }
-    internal override string DataServiceActionQueryOfTStructureTemplate { get { return "global::Microsoft.OData.Client.DataServiceActionQuery<{0}>"; } }
-    internal override string NotifyPropertyChangedModifier { get { return "global::System.ComponentModel.INotifyPropertyChanged"; } }
-    internal override string ClassInheritMarker { get { return " : "; } }
-    internal override string ParameterSeparator { get { return ", \r\n                    "; } }
-    internal override string KeyParameterSeparator { get { return ", \r\n            "; } }
-    internal override string KeyDictionaryItemSeparator { get { return ", \r\n                "; } }
-    internal override string SystemNullableStructureTemplate { get { return "global::System.Nullable<{0}>"; } }
-    internal override string ICollectionOfTStructureTemplate { get { return "global::System.Collections.Generic.ICollection<{0}>"; } }
-    internal override string DataServiceCollectionStructureTemplate { get { return "global::Microsoft.OData.Client.DataServiceCollection<{0}>"; } }
-    internal override string DataServiceQueryStructureTemplate { get { return "global::Microsoft.OData.Client.DataServiceQuery<{0}>"; } }
-    internal override string DataServiceQuerySingleStructureTemplate { get { return "global::Microsoft.OData.Client.DataServiceQuerySingle<{0}>"; } }
-    internal override string ObservableCollectionStructureTemplate { get { return "global::System.Collections.ObjectModel.ObservableCollection<{0}>"; } }
-    internal override string ObjectModelCollectionStructureTemplate { get { return "global::System.Collections.ObjectModel.Collection<{0}>"; } }
-    internal override string DataServiceCollectionConstructorParameters { get { return "(null, global::Microsoft.OData.Client.TrackingMode.None)"; } }
-    internal override string NewModifier { get { return "new "; } }
-    internal override string GeoTypeInitializePattern { get { return "global::Microsoft.Spatial.SpatialImplementation.CurrentImplementation.CreateWellKnownTextSqlFormatter(false).Read<{0}>(new global::System.IO.StringReader(\"{1}\"))"; } }
-    internal override string Int32TypeName { get { return "int"; } }
-    internal override string StringTypeName { get { return "string"; } }
-    internal override string BinaryTypeName { get { return "byte[]"; } }
-    internal override string DecimalTypeName { get { return "decimal"; } }
-    internal override string Int16TypeName { get { return "short"; } }
-    internal override string SingleTypeName { get { return "float"; } }
-    internal override string BooleanTypeName { get { return "bool"; } }
-    internal override string DoubleTypeName { get { return "double"; } }
-    internal override string GuidTypeName { get { return "global::System.Guid"; } }
-    internal override string ByteTypeName { get { return "byte"; } }
-    internal override string Int64TypeName { get { return "long"; } }
-    internal override string SByteTypeName { get { return "sbyte"; } }
-    internal override string DataServiceStreamLinkTypeName { get { return "global::Microsoft.OData.Client.DataServiceStreamLink"; } }
-    internal override string GeographyTypeName { get { return "global::Microsoft.Spatial.Geography"; } }
-    internal override string GeographyPointTypeName { get { return "global::Microsoft.Spatial.GeographyPoint"; } }
-    internal override string GeographyLineStringTypeName { get { return "global::Microsoft.Spatial.GeographyLineString"; } }
-    internal override string GeographyPolygonTypeName { get { return "global::Microsoft.Spatial.GeographyPolygon"; } }
-    internal override string GeographyCollectionTypeName { get { return "global::Microsoft.Spatial.GeographyCollection"; } }
-    internal override string GeographyMultiPolygonTypeName { get { return "global::Microsoft.Spatial.GeographyMultiPolygon"; } }
-    internal override string GeographyMultiLineStringTypeName { get { return "global::Microsoft.Spatial.GeographyMultiLineString"; } }
-    internal override string GeographyMultiPointTypeName { get { return "global::Microsoft.Spatial.GeographyMultiPoint"; } }
-    internal override string GeometryTypeName { get { return "global::Microsoft.Spatial.Geometry"; } }
-    internal override string GeometryPointTypeName { get { return "global::Microsoft.Spatial.GeometryPoint"; } }
-    internal override string GeometryLineStringTypeName { get { return "global::Microsoft.Spatial.GeometryLineString"; } }
-    internal override string GeometryPolygonTypeName { get { return "global::Microsoft.Spatial.GeometryPolygon"; } }
-    internal override string GeometryCollectionTypeName { get { return "global::Microsoft.Spatial.GeometryCollection"; } }
-    internal override string GeometryMultiPolygonTypeName { get { return "global::Microsoft.Spatial.GeometryMultiPolygon"; } }
-    internal override string GeometryMultiLineStringTypeName { get { return "global::Microsoft.Spatial.GeometryMultiLineString"; } }
-    internal override string GeometryMultiPointTypeName { get { return "global::Microsoft.Spatial.GeometryMultiPoint"; } }
-    internal override string DateTypeName { get { return "global::Microsoft.OData.Edm.Date"; } }
-    internal override string DateTimeOffsetTypeName { get { return "global::System.DateTimeOffset"; } }
-    internal override string DurationTypeName { get { return "global::System.TimeSpan"; } }
-    internal override string TimeOfDayTypeName { get { return "global::Microsoft.OData.Edm.TimeOfDay"; } }
-    internal override string XmlConvertClassName { get { return "global::System.Xml.XmlConvert"; } }
-    internal override string EnumTypeName { get { return "global::System.Enum"; } }
-    internal override string FixPattern { get { return "@{0}"; } }
-    internal override string EnumUnderlyingTypeMarker { get { return " : "; } }
-    internal override string ConstantExpressionConstructorWithType { get { return "global::System.Linq.Expressions.Expression.Constant({0}, typeof({1}))"; } }
-    internal override string TypeofFormatter { get { return "typeof({0})"; } }
-    internal override string UriOperationParameterConstructor { get { return "new global::Microsoft.OData.Client.UriOperationParameter(\"{0}\", {1})"; } }
-    internal override string UriEntityOperationParameterConstructor { get { return "new global::Microsoft.OData.Client.UriEntityOperationParameter(\"{0}\", {1}, {2})"; } }
-    internal override string BodyOperationParameterConstructor { get { return "new global::Microsoft.OData.Client.BodyOperationParameter(\"{0}\", {1})"; } }
-    internal override string BaseEntityType { get { return " : global::Microsoft.OData.Client.BaseEntityType"; } }
-    internal override string OverloadsModifier { get { return "new "; } }
-    internal override string ODataVersion { get { return "global::Microsoft.OData.ODataVersion.V4"; } }
-    internal override string ParameterDeclarationTemplate { get { return "{0} {1}"; } }
-    internal override string DictionaryItemConstructor { get { return "{{ {0}, {1} }}"; } }
+    internal override string GlobalPrefix => "global::";
+    internal override string SystemTypeTypeName => "global::System.Type";
+    internal override string AbstractModifier => " abstract";
+    internal override string DataServiceActionQueryTypeName => "global::Microsoft.OData.Client.DataServiceActionQuery";
+    internal override string DataServiceActionQuerySingleOfTStructureTemplate => "global::Microsoft.OData.Client.DataServiceActionQuerySingle<{0}>";
+    internal override string DataServiceActionQueryOfTStructureTemplate => "global::Microsoft.OData.Client.DataServiceActionQuery<{0}>";
+    internal override string NotifyPropertyChangedModifier => "global::System.ComponentModel.INotifyPropertyChanged";
+    internal override string ClassInheritMarker => " : ";
+    internal override string ParameterSeparator => ", \r\n                    ";
+    internal override string KeyParameterSeparator => ", \r\n            ";
+    internal override string KeyDictionaryItemSeparator => ", \r\n                ";
+    internal override string SystemNullableStructureTemplate => "global::System.Nullable<{0}>";
+    internal override string ICollectionOfTStructureTemplate => "global::System.Collections.Generic.ICollection<{0}>";
+    internal override string DataServiceCollectionStructureTemplate => "global::Microsoft.OData.Client.DataServiceCollection<{0}>";
+    internal override string DataServiceQueryStructureTemplate => "global::Microsoft.OData.Client.DataServiceQuery<{0}>";
+    internal override string DataServiceQuerySingleStructureTemplate => "global::Microsoft.OData.Client.DataServiceQuerySingle<{0}>";
+    internal override string ObservableCollectionStructureTemplate => "global::System.Collections.ObjectModel.ObservableCollection<{0}>";
+    internal override string ObjectModelCollectionStructureTemplate => "global::System.Collections.ObjectModel.Collection<{0}>";
+    internal override string DataServiceCollectionConstructorParameters => "(null, global::Microsoft.OData.Client.TrackingMode.None)";
+    internal override string NewModifier => "new ";
+    internal override string GeoTypeInitializePattern => "global::Microsoft.Spatial.SpatialImplementation.CurrentImplementation.CreateWellKnownTextSqlFormatter(false).Read<{0}>(new global::System.IO.StringReader(\"{1}\"))";
+    internal override string Int32TypeName => "int";
+    internal override string StringTypeName => "string";
+    internal override string BinaryTypeName => "byte[]";
+    internal override string DecimalTypeName => "decimal";
+    internal override string Int16TypeName => "short";
+    internal override string SingleTypeName => "float";
+    internal override string BooleanTypeName => "bool";
+    internal override string DoubleTypeName => "double";
+    internal override string GuidTypeName => "global::System.Guid";
+    internal override string ByteTypeName => "byte";
+    internal override string Int64TypeName => "long";
+    internal override string SByteTypeName => "sbyte";
+    internal override string DataServiceStreamLinkTypeName => "global::Microsoft.OData.Client.DataServiceStreamLink";
+    internal override string GeographyTypeName => "global::Microsoft.Spatial.Geography";
+    internal override string GeographyPointTypeName => "global::Microsoft.Spatial.GeographyPoint";
+    internal override string GeographyLineStringTypeName => "global::Microsoft.Spatial.GeographyLineString";
+    internal override string GeographyPolygonTypeName => "global::Microsoft.Spatial.GeographyPolygon";
+    internal override string GeographyCollectionTypeName => "global::Microsoft.Spatial.GeographyCollection";
+    internal override string GeographyMultiPolygonTypeName => "global::Microsoft.Spatial.GeographyMultiPolygon";
+    internal override string GeographyMultiLineStringTypeName => "global::Microsoft.Spatial.GeographyMultiLineString";
+    internal override string GeographyMultiPointTypeName => "global::Microsoft.Spatial.GeographyMultiPoint";
+    internal override string GeometryTypeName => "global::Microsoft.Spatial.Geometry";
+    internal override string GeometryPointTypeName => "global::Microsoft.Spatial.GeometryPoint";
+    internal override string GeometryLineStringTypeName => "global::Microsoft.Spatial.GeometryLineString";
+    internal override string GeometryPolygonTypeName => "global::Microsoft.Spatial.GeometryPolygon";
+    internal override string GeometryCollectionTypeName => "global::Microsoft.Spatial.GeometryCollection";
+    internal override string GeometryMultiPolygonTypeName => "global::Microsoft.Spatial.GeometryMultiPolygon";
+    internal override string GeometryMultiLineStringTypeName => "global::Microsoft.Spatial.GeometryMultiLineString";
+    internal override string GeometryMultiPointTypeName => "global::Microsoft.Spatial.GeometryMultiPoint";
+    internal override string DateTypeName => "global::Microsoft.OData.Edm.Date";
+    internal override string DateTimeOffsetTypeName => "global::System.DateTimeOffset";
+    internal override string DurationTypeName => "global::System.TimeSpan";
+    internal override string TimeOfDayTypeName => "global::Microsoft.OData.Edm.TimeOfDay";
+    internal override string XmlConvertClassName => "global::System.Xml.XmlConvert";
+    internal override string EnumTypeName => "global::System.Enum";
+    internal override string FixPattern => "@{0}";
+    internal override string EnumUnderlyingTypeMarker => " : ";
+    internal override string ConstantExpressionConstructorWithType => "global::System.Linq.Expressions.Expression.Constant({0}, typeof({1}))";
+    internal override string TypeofFormatter => "typeof({0})";
+    internal override string UriOperationParameterConstructor => "new global::Microsoft.OData.Client.UriOperationParameter(\"{0}\", {1})";
+    internal override string UriEntityOperationParameterConstructor => "new global::Microsoft.OData.Client.UriEntityOperationParameter(\"{0}\", {1}, {2})";
+    internal override string BodyOperationParameterConstructor => "new global::Microsoft.OData.Client.BodyOperationParameter(\"{0}\", {1})";
+    internal override string BaseEntityType => " : global::Microsoft.OData.Client.BaseEntityType";
+    internal override string OverloadsModifier => "new ";
+    internal override string ODataVersion => "global::Microsoft.OData.ODataVersion.V4";
+    internal override string ParameterDeclarationTemplate => "{0} {1}";
+    internal override string DictionaryItemConstructor => "{{ {0}, {1} }}";
+
     internal override HashSet<string> LanguageKeywords { get {
         if (CSharpKeywords == null)
         {
@@ -7232,10 +7129,7 @@ this.Write("End Namespace\r\n");
                 }
                 return this.generationEnvironmentField;
             }
-            set
-            {
-                this.generationEnvironmentField = value;
-            }
+            set => this.generationEnvironmentField = value;
         }
         /// <summary>
         /// The error collection for the generation process
@@ -7268,26 +7162,15 @@ this.Write("End Namespace\r\n");
         /// <summary>
         /// Gets the current indent we use when adding lines to the output
         /// </summary>
-        public string CurrentIndent
-        {
-            get
-            {
-                return this.currentIndentField;
-            }
-        }
+        public string CurrentIndent => this.currentIndentField;
+
         /// <summary>
         /// Current transformation session
         /// </summary>
         public virtual global::System.Collections.Generic.IDictionary<string, object> Session
         {
-            get
-            {
-                return this.sessionField;
-            }
-            set
-            {
-                this.sessionField = value;
-            }
+            get => this.sessionField;
+            set => this.sessionField = value;
         }
         #endregion
         #region Transform-time helpers
@@ -7361,8 +7244,10 @@ this.Write("End Namespace\r\n");
         /// </summary>
         public void Error(string message)
         {
-            System.CodeDom.Compiler.CompilerError error = new global::System.CodeDom.Compiler.CompilerError();
-            error.ErrorText = message;
+            System.CodeDom.Compiler.CompilerError error = new global::System.CodeDom.Compiler.CompilerError
+            {
+                ErrorText = message
+            };
             this.Errors.Add(error);
         }
         /// <summary>
@@ -7370,9 +7255,10 @@ this.Write("End Namespace\r\n");
         /// </summary>
         public void Warning(string message)
         {
-            System.CodeDom.Compiler.CompilerError error = new global::System.CodeDom.Compiler.CompilerError();
-            error.ErrorText = message;
-            error.IsWarning = true;
+            System.CodeDom.Compiler.CompilerError error = new global::System.CodeDom.Compiler.CompilerError
+            {
+                ErrorText = message, IsWarning = true
+            };
             this.Errors.Add(error);
         }
         /// <summary>
@@ -7426,10 +7312,7 @@ this.Write("End Namespace\r\n");
             /// </summary>
             public System.IFormatProvider FormatProvider
             {
-                get
-                {
-                    return this.formatProviderField ;
-                }
+                get => this.formatProviderField;
                 set
                 {
                     if ((value != null))
@@ -7465,13 +7348,8 @@ this.Write("End Namespace\r\n");
         /// <summary>
         /// Helper to produce culture-oriented representation of an object as a string
         /// </summary>
-        public ToStringInstanceHelper ToStringHelper
-        {
-            get
-            {
-                return this.toStringHelperField;
-            }
-        }
+        public ToStringInstanceHelper ToStringHelper => this.toStringHelperField;
+
         #endregion
     }
     #endregion

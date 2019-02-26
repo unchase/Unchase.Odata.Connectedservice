@@ -62,5 +62,11 @@
 
 - Fixed errors in  OData V4 generator class: fix casting IEdmTypeDefinition to clrTypeName.
 
+### Version 0.3.10:
+
+*Minor fixes:*
+
+- Fixed nuget package source to nuget online repository.
+
 
  
