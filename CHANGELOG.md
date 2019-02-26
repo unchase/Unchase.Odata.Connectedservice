@@ -68,5 +68,11 @@
 
 - Fixed nuget package source to nuget online repository.
 
+### Version 0.3.11:
+
+*Minor fixes:*
+
+- Fixed error in method "GetFunctionMethodRegionWithSimpleOdataClient".
+
 
  

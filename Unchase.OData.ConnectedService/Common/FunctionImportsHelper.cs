@@ -184,7 +184,10 @@ namespace Unchase.OData.ConnectedService.Common
                 : "\t\t\t\tvar result = await client");
             if (functionImportModel.FunctionImport.IsBindable && functionImportModel.BindableParameter != null)
             {
-                functionRegion.AppendLine($"\t\t\t\t\t.For<{functionImportModel.BindableParameter.Type.FullName().Replace("IEnumerable<", string.Empty).Replace(">", string.Empty)}>().Key(model.{functionImportModel.BindableParameter.Name})");
+                var bindingParameterTypeFulName = functionImportModel.BindableParameter.Type.FullName();
+                if (functionImportModel.BindableParameter.Type.IsCollection())
+                    bindingParameterTypeFulName = functionImportModel.BindableParameter.Type.AsCollection().ElementType().FullName();
+                functionRegion.AppendLine($"\t\t\t\t\t.For<{bindingParameterTypeFulName?.Replace("IEnumerable<", string.Empty)?.Replace(">", string.Empty)}>().Key(model.{functionImportModel.BindableParameter.Name})");
                 functionRegion.AppendLine($"\t\t\t\t\t.Function(\"{functionImportModel.FunctionImport.Name}\")");
             }
             else
