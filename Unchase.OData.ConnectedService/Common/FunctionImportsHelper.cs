@@ -50,7 +50,7 @@ namespace Unchase.OData.ConnectedService.Common
             {
                 case var pt when pt.IsPrimitive():
                     result = $"global::System.{pt.PrimitiveKind()}";
-                    if (pt.IsNullable)
+                    if (pt.IsNullable && !pt.IsString())
                         result = $"Nullable<{result}>";
                     break;
                 case var pt when pt.IsCollection():

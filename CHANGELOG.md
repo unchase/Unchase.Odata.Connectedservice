@@ -74,5 +74,11 @@
 
 - Fixed error in method "GetFunctionMethodRegionWithSimpleOdataClient".
 
+### Version 0.3.12:
+
+*Minor fixes:*
+
+- Fixed error in method "GetModelRegion".
+
 
  
