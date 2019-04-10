@@ -37,7 +37,7 @@
             <TextBox x:Name="NetworkCredentialsPassword" Text="{Binding NetworkCredentialsPassword}" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"/>
         </DockPanel>
         <DockPanel IsEnabled="{Binding ElementName=UseNetworkCredentials, Path=IsChecked}">
-            <TextBlock x:Name="NetworkCredentialsDomainLabel" Text="Password:" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"></TextBlock>
+            <TextBlock x:Name="NetworkCredentialsDomainLabel" Text="Domain:" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"></TextBlock>
             <TextBox x:Name="NetworkCredentialsDomain" Text="{Binding NetworkCredentialsDomain}" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"/>
         </DockPanel>
 
@@ -67,7 +67,7 @@
                 <TextBox x:Name="WebProxyNetworkCredentialsPassword" Text="{Binding WebProxyNetworkCredentialsPassword}" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"/>
             </DockPanel>
             <DockPanel IsEnabled="{Binding ElementName=UseWebProxyCredentials, Path=IsChecked}">
-                <TextBlock x:Name="WebProxyNetworkCredentialsDomainLabel" Text="Password:" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"></TextBlock>
+                <TextBlock x:Name="WebProxyNetworkCredentialsDomainLabel" Text="Domain:" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"></TextBlock>
                 <TextBox x:Name="WebProxyNetworkCredentialsDomain" Text="{Binding WebProxyNetworkCredentialsDomain}" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"/>
             </DockPanel>
         </StackPanel>
