@@ -22,10 +22,10 @@ namespace Unchase.OData.ConnectedService.Models
         public string NetworkCredentialsUserName { get; set; }
         public string NetworkCredentialsPassword { get; set; }
         public string NetworkCredentialsDomain { get; set; }
-        public string WebProxyUri { get; set; }
         #endregion
 
         #region WebProxy
+        public string WebProxyUri { get; set; }
         public bool UseWebProxy { get; set; }
         public bool UseWebProxyCredentials { get; set; }
         public string WebProxyNetworkCredentialsUserName { get; set; }

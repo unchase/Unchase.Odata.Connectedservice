@@ -210,7 +210,7 @@ namespace Unchase.OData.ConnectedService.Common
                     {
                         functionRegion.AppendLine($"\t\t\t\t\t\t{(!first ? "," : string.Empty)}{functionParameter.Name} = model.{functionParameter.Name}");
                         first = false;
-                    }  
+                    }
                 }
                 functionRegion.AppendLine("\t\t\t\t\t})");
             }
@@ -218,6 +218,7 @@ namespace Unchase.OData.ConnectedService.Common
                 functionRegion.AppendLine("\t\t\t\t\t.ExecuteAsync();");
             else
             {
+                //ToDo: здесь определять по-другому, какой результат возвращает
                 if (functionImportModel.FunctionReturnType.IsCollection())
                 {
                     functionRegion.AppendLine(!functionImportModel.FunctionReturnType.IsPrimitive()

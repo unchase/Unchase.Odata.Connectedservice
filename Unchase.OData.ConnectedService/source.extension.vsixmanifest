@@ -2,7 +2,7 @@
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
         <Identity Id="Unchase.OData.ConnectedService.afc46f39-8c64-4e14-85d0-af6c7c4291f3" Version="0.3" Language="en-US" Publisher="Unchase" />
-        <DisplayName>Unchase.OData.ConnectedService</DisplayName>
+        <DisplayName>Unchase OData ConnectedService</DisplayName>
         <Description xml:space="preserve">OData V1-V4 connected service with extension methods for client-side proxy class</Description>
         <MoreInfo>https://github.com/unchase/Unchase.Odata.Connectedservice</MoreInfo>
         <License>License.txt</License>
