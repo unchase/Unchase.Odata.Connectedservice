@@ -115,7 +115,7 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
             };
 
             // Set up XML secure resolver
-            var xmlUrlResolver = new XmlUrlResolver()
+            var xmlUrlResolver = new XmlUrlResolver
             {
                 Credentials = this.UseNetworkCredentials ? new NetworkCredential(this.NetworkCredentialsUserName, this.NetworkCredentialsPassword, this.NetworkCredentialsDomain) : System.Net.CredentialCache.DefaultNetworkCredentials
             };
@@ -194,15 +194,44 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
 
             var functionMethods = string.Empty;
             if (this.ServiceConfiguration.IncludeExtensionsT4File && this.ServiceConfiguration.GenerateFunctionImports)
-            { 
+            {
                 try
                 {
-                    if (EdmxReader.TryParse(XmlReader.Create(ServiceConfiguration.Endpoint), out var model, out var parseErrors))
-                        functionMethods = FunctionImportsHelper.GetFunctionImportsCode(model, proxyClassName, ServiceConfiguration.Endpoint.Replace("$metadata", string.Empty), this.ServiceConfiguration.FunctionImportsGenerator);
-                    else
+                    // Set up XML secure resolver
+                    var xmlUrlResolver = new XmlUrlResolver
                     {
-                        foreach (var error in parseErrors)
-                            await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Warning, error.ErrorMessage);
+                        Credentials = this.UseNetworkCredentials ? new NetworkCredential(this.NetworkCredentialsUserName, this.NetworkCredentialsPassword, this.NetworkCredentialsDomain) : System.Net.CredentialCache.DefaultNetworkCredentials
+                    };
+                    if (this.UseWebProxy)
+                    {
+                        xmlUrlResolver.Proxy = new WebProxy(this.WebProxyUri, true);
+                        if (this.UseWebProxyCredentials)
+                            xmlUrlResolver.Proxy = new WebProxy(this.WebProxyUri, true, new string[0], new NetworkCredential
+                            {
+                                UserName = WebProxyNetworkCredentialsUserName,
+                                Password = WebProxyNetworkCredentialsPassword,
+                                Domain = WebProxyNetworkCredentialsDomain
+                            });
+                        else
+                            xmlUrlResolver.Proxy = new WebProxy(this.WebProxyUri);
+                    }
+
+                    var permissionSet = new PermissionSet(System.Security.Permissions.PermissionState.Unrestricted);
+
+                    var settings = new XmlReaderSettings()
+                    {
+                        XmlResolver = new XmlSecureResolver(xmlUrlResolver, permissionSet)
+                    };
+
+                    using (var reader = XmlReader.Create(ServiceConfiguration.Endpoint, settings))
+                    {
+                        if (EdmxReader.TryParse(reader, out var model, out var parseErrors))
+                            functionMethods = FunctionImportsHelper.GetFunctionImportsCode(model, proxyClassName, ServiceConfiguration.Endpoint.Replace("$metadata", string.Empty), this.ServiceConfiguration.FunctionImportsGenerator);
+                        else
+                        {
+                            foreach (var error in parseErrors)
+                                await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Warning, error.ErrorMessage);
+                        }
                     }
                 }
                 catch (Exception ex)
