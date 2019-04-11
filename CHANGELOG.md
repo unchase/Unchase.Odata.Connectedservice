@@ -80,5 +80,11 @@
 
 - Fixed error in method "GetModelRegion".
 
+### Version 0.3.14
+
+*Bug fixes:*
+
+- Added bug fix for [issue](https://github.com/unchase/Unchase.Odata.Connectedservice/issues/3).
+
 
  
