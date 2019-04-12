@@ -25,7 +25,7 @@ deploy:
   repository: unchase/Unchase.OData.ConnectedService
   artifact: /.*\.vsix/
   force_update: true
-  # on:
+  # on: 
     #branch: master                # release from master branch only
     #appveyor_repo_tag: false       # deploy on tag push only
 notifications:
