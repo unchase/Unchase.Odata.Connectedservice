@@ -71,3 +71,4 @@ These are the changes to each version that has been released on the official [Vi
 - [x] Add necessary nuget-packages for client-side OData proxy-classes
 - [x] Generate client-side class with proxy-class extension methods for OData protocol versions 1.0-3.0 (with generating functions from `FunctionImports`)
 - [x] Generate client-side C# proxy-classes for OData protocol versions 1.0-4.0
+
