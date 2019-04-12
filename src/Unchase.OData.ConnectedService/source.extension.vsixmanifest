@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+    <Metadata>
+        <Identity Id="Unchase.OData.ConnectedService.afc46f39-8c64-4e14-85d0-af6c7c4291f3" Version="0.4" Language="en-US" Publisher="Unchase" />
+        <DisplayName>Unchase OData ConnectedService</DisplayName>
+        <Description xml:space="preserve">OData V1-V4 connected service with extension methods for client-side proxy class.</Description>
+        <MoreInfo>https://github.com/unchase/Unchase.Odata.Connectedservice</MoreInfo>
+        <License>Resources\EULA.txt</License>
+        <GettingStartedGuide>https://github.com/unchase/Unchase.Odata.Connectedservice/blob/master/README.md</GettingStartedGuide>
+        <ReleaseNotes>https://github.com/unchase/Unchase.Odata.Connectedservice/blob/master/CHANGELOG.md</ReleaseNotes>
+        <Icon>Resources\logo_128x128.png</Icon>
+        <PreviewImage>Resources\preview_200x200.png</PreviewImage>
+        <Tags >OData, REST API, Code Generation, Scaffolding, Connected Service</Tags>
+    </Metadata>
+    <Installation>
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0,)" />
+        <InstallationTarget Version="[15.0,)" Id="Microsoft.VisualStudio.Pro" />
+        <InstallationTarget Version="[15.0,)" Id="Microsoft.VisualStudio.Enterprise" />
+    </Installation>
+    <Dependencies>
+        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+        <Dependency d:Source="Installed" Id="ConnectedServices.897486C9-63BD-48D3-8A33-CB770FBD0723" DisplayName="Microsoft Connected Services" Version="[2.0,)" />
+    </Dependencies>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
+        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+    </Assets>
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.Roslyn.LanguageServices" Version="[15.8.27729.1,)" DisplayName="C# и Visual Basic" />
+    </Prerequisites>
+</PackageManifest>
