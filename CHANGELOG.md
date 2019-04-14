@@ -1,7 +1,7 @@
 # Road map
 
 - [ ] Fix open [issues](https://github.com/unchase/Unchase.OData.Connectedservice/issues/)
-- [ ] Gather [feedback](https://github.com/unchase/Unchase.OData.Connectedservice/issues/new) on [`Unchase OData (Swagger API) Connected Service`](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService) extension for [`Visual Studio`](https://visualstudio.microsoft.com/vs/) and plan further features to implement
+- [ ] Gather [feedback](https://github.com/unchase/Unchase.OData.Connectedservice/issues/new) on [`Unchase OData Connected Service`](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService) extension for [`Visual Studio`](https://visualstudio.microsoft.com/vs/) and plan further features to implement
 
 # Change log
 
