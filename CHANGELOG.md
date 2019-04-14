@@ -12,7 +12,7 @@ These are the changes to each version that has been released on the official [Vi
 - [x] The code has been refactored!
 - [x] Added: in the first page of wizard added checkbox for open generated files on complete
 - [x] Added ability to hide/show settings in the first page of service settings wizard
-- [x] Storage last OpenAPI (Swagger) specification *Endpoint* and *Service name* 
+- [x] Storage last OData metadata *Endpoint* and *Service name* 
 
 ## v0.3.14 `(2019-04-12)`
 
