@@ -7,6 +7,10 @@
 
 These are the changes to each version that has been released on the official [Visual Studio extension gallery](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService).
 
+## v0.4.4 `(2019-04-16)`
+
+- [x] Added minor fix: in `SimpleOData` generation methods added `@`-symbol before the endpoint uri in `new ODataClient(@"<enpoint_uri>")`; bounded parameter type was fixed
+
 ## v0.4.3 `(2019-04-14)`
 
 - [x] Changed [`LICENSE`](LICENSE.md): [MIT License](https://mit-license.org) to [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).

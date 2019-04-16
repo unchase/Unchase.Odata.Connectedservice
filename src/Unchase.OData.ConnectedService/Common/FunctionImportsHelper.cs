@@ -178,7 +178,7 @@ namespace Unchase.OData.ConnectedService.Common
                 ? "\t\t\t\t\treturn validationResult;"
                 : $"\t\t\t\t\treturn (validationResult, default({realFunctionImportReturnType}));");
             functionRegion.AppendLine();
-            functionRegion.AppendLine($"\t\t\t\tvar client = new ODataClient(\"{functionImportModel.EndpointUri}\");");
+            functionRegion.AppendLine($"\t\t\t\tvar client = new ODataClient(@\"{functionImportModel.EndpointUri}\");");
             functionRegion.AppendLine(functionImportModel.FunctionReturnType == null
                 ? "\t\t\t\tawait client"
                 : "\t\t\t\tvar result = await client");
@@ -266,7 +266,12 @@ namespace Unchase.OData.ConnectedService.Common
             var current = 0;
             foreach (var functionImportParameter in functionParameters)
             {
-                var functionImportParameterType = functionImportParameter.Type.ToCodeStringType();
+                string functionImportParameterType;
+                if (isBindable && current == 0 && functionImportParameter.Type.IsCollection())
+                    functionImportParameterType = functionImportParameter.Type.AsCollection().ElementType().ToCodeStringType();
+                else
+                    functionImportParameterType = functionImportParameter.Type.ToCodeStringType();
+
                 regionModel.Append($"\t\t\tpublic {functionImportParameterType} {functionImportParameter.Name}");
                 regionModel.AppendLine(" { get; set; }");
                 if (++current != functionParameters.Count)
