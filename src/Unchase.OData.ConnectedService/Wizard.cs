@@ -34,7 +34,7 @@ namespace Unchase.OData.ConnectedService
             this.UserSettings = UserSettings.Load(context.Logger);
 
             ConfigODataEndpointViewModel = new ConfigODataEndpointViewModel(this.UserSettings);
-            AdvancedSettingsViewModel = new AdvancedSettingsViewModel();
+            AdvancedSettingsViewModel = new AdvancedSettingsViewModel(this.UserSettings);
 
             if (this.Context.IsUpdating)
             {
@@ -161,6 +161,7 @@ namespace Unchase.OData.ConnectedService
                 };
             }
 
+            serviceConfiguration.LanguageOption = ConfigODataEndpointViewModel.UserSettings.LanguageOption;
             serviceConfiguration.ServiceName = ConfigODataEndpointViewModel.UserSettings.ServiceName;
             serviceConfiguration.Endpoint = ConfigODataEndpointViewModel.UserSettings.Endpoint;
             serviceConfiguration.EdmxVersion = ConfigODataEndpointViewModel.EdmxVersion;

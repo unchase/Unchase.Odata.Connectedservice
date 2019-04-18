@@ -3,8 +3,10 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Data.Services.Design;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Security;
 using System.Threading.Tasks;
@@ -44,6 +46,16 @@ namespace Unchase.OData.ConnectedService.ViewModels
         public string WebProxyUri { get; set; }
         #endregion
 
+        public LanguageOption[] LanguageOptions
+        {
+            get
+            {
+                return Enum.GetNames(typeof(LanguageOption))
+                    .Select(t => (LanguageOption)Enum.Parse(typeof(LanguageOption), t))
+                    .ToArray();
+            }
+        }
+
         public ConfigODataEndpointViewModel(UserSettings userSettings) : base()
         {
             this.Title = "Configure metadata endpoint";
@@ -56,6 +68,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.UseNetworkCredentials = false;
             this.UseWebProxy = false;
             this.UseWebProxyCredentials = false;
+            this.UserSettings.LanguageOption = LanguageOption.GenerateCSharpCode;
         }
 
         public override Task<PageNavigationResult> OnPageLeavingAsync(WizardLeavingArgs args)

@@ -16,6 +16,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{525776C4-F5FF-4C4C-ADE8-E22F78863EFB}"
 	ProjectSection(SolutionItems) = preProject
 		..\img\Unchase-OData-Connected-Service-Logo.png = ..\img\Unchase-OData-Connected-Service-Logo.png
+		..\img\Unchase-OData-Connected-Service-VisualBasic.png = ..\img\Unchase-OData-Connected-Service-VisualBasic.png
 		..\img\Unchase-OData-Connected-Service.gif = ..\img\Unchase-OData-Connected-Service.gif
 	EndProjectSection
 EndProject

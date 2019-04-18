@@ -87,7 +87,7 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
         {
             await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Generating Client Proxy for OData V3...");
 
-            var generator = new EntityClassGenerator(LanguageOption.GenerateCSharpCode)
+            var generator = new EntityClassGenerator(this.ServiceConfiguration.LanguageOption)
             {
                 UseDataServiceCollection = this.ServiceConfiguration.UseDataServiceCollection,
                 Version = DataServiceCodeVersion.V3
@@ -142,12 +142,15 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
 
                 if (noErrors)
                 {
-                    var outputFile = Path.Combine(GetReferenceFileFolder(), this.GeneratedFileNamePrefix + ".cs");
+                    var ext = this.ServiceConfiguration.LanguageOption == LanguageOption.GenerateCSharpCode
+                        ? ".cs"
+                        : ".vb";
+                    var outputFile = Path.Combine(GetReferenceFileFolder(), this.GeneratedFileNamePrefix + ext);
                     await this.Context.HandlerHelper.AddFileAsync(tempFile, outputFile, new AddFileOptions { OpenOnComplete = this.Instance.ServiceConfig.OpenGeneratedFilesOnComplete });
 
                     await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Client Proxy for OData V3 was generated.");
 
-                    if (ServiceConfiguration.IncludeExtensionsT4File)
+                    if (ServiceConfiguration.IncludeExtensionsT4File && this.ServiceConfiguration.LanguageOption == LanguageOption.GenerateCSharpCode)
                         await AddGeneratedClientExtensionsCode(outputFile);
                 }
             }

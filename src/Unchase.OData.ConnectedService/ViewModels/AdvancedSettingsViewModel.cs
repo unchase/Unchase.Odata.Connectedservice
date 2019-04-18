@@ -3,10 +3,12 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Data.Services.Design;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.VisualStudio.ConnectedServices;
 using Unchase.OData.ConnectedService.Common;
+using Unchase.OData.ConnectedService.Models;
 using Unchase.OData.ConnectedService.Views;
 
 namespace Unchase.OData.ConnectedService.ViewModels
@@ -38,13 +40,16 @@ namespace Unchase.OData.ConnectedService.ViewModels
         public Constants.FunctionImportsGenerator FunctionImportsGenerator { get; set; }
 
         public bool GenerateFunctionImports { get; set; }
+
+        public UserSettings UserSettings { get; }
         #endregion
 
-        public AdvancedSettingsViewModel() : base()
+        public AdvancedSettingsViewModel(UserSettings userSettings) : base()
         {
             this.Title = "Advanced Settings";
             this.Description = "Advanced settings for generating client proxy and extension methods for call service functions";
             this.Legend = "Advanced Settings";
+            this.UserSettings = userSettings;
             this.IncludeExtensionsT4File = false;
             this.GenerateFunctionImports = false;
             this.IncludeExtensionsT4FileVisibility = Visibility.Collapsed;
@@ -82,6 +87,8 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.GenerateFunctionImports = false;
             this.IncludeExtensionsT4FileVisibility = Visibility.Collapsed;
             this.FunctionImportsGenerator = Constants.FunctionImportsGenerator.Inner;
+            if (this.UserSettings.LanguageOption != LanguageOption.GenerateCSharpCode)
+                this.IncludeExtensionsT4FileVisibility = Visibility.Collapsed;
         }
     }
 }

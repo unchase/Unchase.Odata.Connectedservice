@@ -14,7 +14,7 @@ namespace Unchase.OData.ConnectedService.Common
         public const string ExtensionName = "Uncahse OData Connected Service";
         public const string ExtensionDescription = "OData V1-V4 connected service with extension methods for client-side proxy class.";
         public const string ProviderId = "Unchase.OData.ConnectedService";
-        public const string Version = "0.4";
+        public const string Version = "0.5";
         public const string Website = "https://github.com/unchase/Unchase.OData.Connectedservice/";
         public const string Copyright = "Copyright © 2019";
 

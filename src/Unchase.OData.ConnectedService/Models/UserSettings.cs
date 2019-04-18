@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data.Services.Design;
 using System.Runtime.Serialization;
 using Microsoft.VisualStudio.ConnectedServices;
 using Unchase.OData.ConnectedService.Common;
@@ -33,6 +34,9 @@ namespace Unchase.OData.ConnectedService.Models
 
         [DataMember]
         public bool OpenGeneratedFilesOnComplete { get; set; } = false;
+
+        [DataMember]
+        public LanguageOption LanguageOption { get; set; }
         #endregion
 
         #region Constructors

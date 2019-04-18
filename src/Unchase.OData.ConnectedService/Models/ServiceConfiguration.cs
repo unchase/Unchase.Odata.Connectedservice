@@ -3,6 +3,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Data.Services.Design;
 using Unchase.OData.ConnectedService.Common;
 
 namespace Unchase.OData.ConnectedService.Models
@@ -25,6 +26,8 @@ namespace Unchase.OData.ConnectedService.Models
         public bool UseDataServiceCollection { get; set; }
 
         public bool OpenGeneratedFilesOnComplete { get; set; }
+
+        public LanguageOption LanguageOption { get; set; }
         #endregion
 
         #region Network Credentials

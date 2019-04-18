@@ -7,6 +7,10 @@
 
 These are the changes to each version that has been released on the official [Visual Studio extension gallery](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService).
 
+## v0.5.0 `(2019-04-19)`
+
+- [x] Added feature: Generate client-side VisualBasic proxy-classes for OData protocol versions 1.0-3.0
+
 ## v0.4.4 `(2019-04-16)`
 
 - [x] Added minor fix: in `SimpleOData` generation methods added `@`-symbol before the endpoint uri in `new ODataClient(@"<enpoint_uri>")`; bounded parameter type was fixed

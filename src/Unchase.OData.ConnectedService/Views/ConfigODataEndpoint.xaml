@@ -15,6 +15,10 @@
         <commands:StackPanelChangeVisibilityCommand x:Key="StackPanelChangeVisibilityCommand"/>
     </UserControl.Resources>
     <StackPanel HorizontalAlignment="Stretch" Margin="0, 0, 0, 0" VerticalAlignment="Top">
+        <TextBlock Margin="0, 5, 10, 5" Text="Generating Language (only for OData v3) :" TextWrapping="WrapWithOverflow" FontWeight="Bold" />
+        <ComboBox SelectedItem="{Binding UserSettings.LanguageOption, Mode=TwoWay}"
+                  ItemsSource="{Binding LanguageOptions}" Margin="20, 5, 10, 5" />
+
         <TextBlock FontWeight="Bold" Text="Service name :" TextWrapping="WrapWithOverflow"
                    HorizontalAlignment="Stretch" Margin="0, 5, 10, 5">
         </TextBlock>

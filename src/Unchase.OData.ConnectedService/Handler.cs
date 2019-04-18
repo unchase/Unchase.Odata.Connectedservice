@@ -6,7 +6,6 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using EnvDTE;
 using Microsoft.VisualStudio.ConnectedServices;
 using Unchase.OData.ConnectedService.CodeGeneration;
 using Unchase.OData.ConnectedService.Common;
@@ -14,7 +13,7 @@ using Unchase.OData.ConnectedService.Models;
 
 namespace Unchase.OData.ConnectedService
 {
-    [ConnectedServiceHandlerExport("Unchase.OData.ConnectedService", AppliesTo = "CSharp")]
+    [ConnectedServiceHandlerExport("Unchase.OData.ConnectedService", AppliesTo = "VB | CSharp | Web")]
     internal class Handler : ConnectedServiceHandler
     {
         public override async Task<AddServiceInstanceResult> AddServiceInstanceAsync(ConnectedServiceHandlerContext context, CancellationToken ct)
@@ -25,6 +24,7 @@ namespace Unchase.OData.ConnectedService
             var codeGenInstance = (Instance)context.ServiceInstance;
 
             var codeGenDescriptor = await GenerateCode(codeGenInstance.MetadataTempFilePath, codeGenInstance.ServiceConfig.EdmxVersion, context);
+
             context.SetExtendedDesignerData<ServiceConfiguration>(codeGenInstance.ServiceConfig);
 
             await context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Adding service instance complete!");

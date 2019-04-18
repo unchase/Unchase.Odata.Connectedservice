@@ -20,6 +20,7 @@
 ## Features
 
 - Generate `C#` clients/proxies (client code) from OData specifications for OData protocol versions 1.0-4.0
+- Generate `VisualBasic` clients/proxies (client code) from OData specifications for OData protocol versions 1.0-3.0
 - Generate `C#` proxy-class extension methods for OData protocol versions 1.0-3.0
 - Generate functions to call service methods from OData protocol versions 1.0-3.0 `FunctionImports`
 - Add required dependencies for the `C#` client (before generating):
@@ -41,6 +42,10 @@
 Install from `Tools -> Extensions and Updates` menu inside [Visual Studio](https://visualstudio.microsoft.com/vs/) (including 2019) or [download](http://vsixgallery.com/extensions/Unchase.OData.ConnectedService.afc46f39-8c64-4e14-85d0-af6c7c4291f3/extension.vsix)  as `VSIX` package from VSGallery or [download](https://marketplace.visualstudio.com/items?itemName=unchase.unchaseODataConnectedService)  as `VSIX` package from Visual Studio Marketplace: 
 
 ![Adding Unchase OData Connected Service in Visual Studio](img/Unchase-OData-Connected-Service.gif)
+
+## `VisualBasic` is supported since v0.5.0!
+
+![Unchase OData Connected Service VisualBasic](img/Unchase-OData-Connected-Service-VisualBasic.png)
 
 ## HowTos
 
