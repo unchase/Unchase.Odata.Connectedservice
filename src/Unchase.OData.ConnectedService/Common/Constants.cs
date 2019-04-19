@@ -11,7 +11,7 @@ namespace Unchase.OData.ConnectedService.Common
     {
         public const string Author = "Nikolay Chebotov (Unchase)";
         public const string ExtensionCategory = "OData";
-        public const string ExtensionName = "Uncahse OData Connected Service";
+        public const string ExtensionName = "Unchase OData Connected Service";
         public const string ExtensionDescription = "OData V1-V4 connected service with extension methods for client-side proxy class.";
         public const string ProviderId = "Unchase.OData.ConnectedService";
         public const string Version = "0.5";
