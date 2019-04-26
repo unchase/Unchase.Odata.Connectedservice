@@ -68,7 +68,11 @@ Please feel free to add your [review](https://marketplace.visualstudio.com/items
 
 ## Thank me!
 
-If you like what I am doing and you would like to thank me, please consider [buying me a coffee](https://www.buymeacoffee.com/nikolaychebotov). Thank you for your support!
+If you like what I am doing and you would like to thank me, please consider:
+
+[![Buy me a coffe!](img/buymeacoffe.png)](https://www.buymeacoffee.com/nikolaychebotov)
+
+Thank you for your support!
 
 ----------
 
