@@ -7,6 +7,10 @@
 
 These are the changes to each version that has been released on the official [Visual Studio extension gallery](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService).
 
+## v0.5.3 `(2019-04-30)`
+
+- [x] Added a button in the first wizard page for reporting bugs in github project [issues](https://github.com/unchase/Unchase.OData.Connectedservice/issues)
+
 ## v0.5.0 `(2019-04-19)`
 
 - [x] Added feature: Generate client-side VisualBasic proxy-classes for OData protocol versions 1.0-3.0

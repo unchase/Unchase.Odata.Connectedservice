@@ -5,11 +5,18 @@
 
 > The project is developed and maintained by [Nikolay Chebotov (**Unchase**)](https://github.com/unchase).
 
+## Getting Started
+
+Install from `Tools -> Extensions and Updates` menu inside [Visual Studio](https://visualstudio.microsoft.com/vs/) (including 2019) or [download](http://vsixgallery.com/extensions/Unchase.OData.ConnectedService.afc46f39-8c64-4e14-85d0-af6c7c4291f3/extension.vsix)  as `VSIX` package from VSGallery or [download](https://marketplace.visualstudio.com/items?itemName=unchase.unchaseODataConnectedService)  as `VSIX` package from Visual Studio Marketplace: 
+
+![Adding Unchase OData Connected Service in Visual Studio](img/Unchase-OData-Connected-Service.gif)
+
 ## Builds status
 
 |Status|Value|
 |:----|:---:|
 |Build|[![Build status](https://ci.appveyor.com/api/projects/status/kk4auowp28dy7qme)](https://ci.appveyor.com/project/unchase/unchase.odata.connectedservice)
+|Buid History|![Build history](https://buildstats.info/appveyor/chart/unchase/unchase-odata-connectedservice)
 |GitHub Release|[![GitHub release](https://img.shields.io/github/release/unchase/Unchase.Odata.Connectedservice.svg)](https://github.com/unchase/Unchase.Odata.Connectedservice/releases/latest)
 |GitHub Release Date|[![GitHub Release Date](https://img.shields.io/github/release-date/unchase/Unchase.Odata.Connectedservice.svg)](https://github.com/unchase/Unchase.Odata.Connectedservice/releases/latest)
 |GitHub Release Downloads|[![Github Releases](https://img.shields.io/github/downloads/unchase/Unchase.Odata.Connectedservice/total.svg)](https://github.com/unchase/Unchase.Odata.Connectedservice/releases/latest)
@@ -37,12 +44,6 @@
 		4. Microsoft.Spatial ([NuGet](https://www.nuget.org/packages/Microsoft.Spatial))
 - Storage of the last 10 endpoints (json-specification path)
 
-## Getting Started
-
-Install from `Tools -> Extensions and Updates` menu inside [Visual Studio](https://visualstudio.microsoft.com/vs/) (including 2019) or [download](http://vsixgallery.com/extensions/Unchase.OData.ConnectedService.afc46f39-8c64-4e14-85d0-af6c7c4291f3/extension.vsix)  as `VSIX` package from VSGallery or [download](https://marketplace.visualstudio.com/items?itemName=unchase.unchaseODataConnectedService)  as `VSIX` package from Visual Studio Marketplace: 
-
-![Adding Unchase OData Connected Service in Visual Studio](img/Unchase-OData-Connected-Service.gif)
-
 ## `VisualBasic` is supported since v0.5.0!
 
 ![Unchase OData Connected Service VisualBasic](img/Unchase-OData-Connected-Service-VisualBasic.png)
@@ -64,7 +65,9 @@ See the [changelog](CHANGELOG.md) for the further development plans and version 
 
 ## Feedback
 
-Please feel free to add your [review](https://marketplace.visualstudio.com/items?itemName=unchase.unchaseODataConnectedService&ssr=false#review-details), [request a feature](https://github.com/unchase/Unchase.OData.Connectedservice/issues/new?title=FEATURE), [report a bug](https://github.com/unchase/Unchase.OData.Connectedservice/issues/new?title=BUG) or [ask a question](https://marketplace.visualstudio.com/items?itemName=unchase.unchaseODataConnectedService&ssr=false#qna). Thank you in advance!
+Please feel free to add your [review](https://marketplace.visualstudio.com/items?itemName=unchase.unchaseODataConnectedService&ssr=false#review-details), [request a feature](https://github.com/unchase/Unchase.OData.Connectedservice/issues/new?title=FEATURE), [ask a question](https://marketplace.visualstudio.com/items?itemName=unchase.unchaseODataConnectedService&ssr=false#qna) or [report a bug](https://github.com/unchase/Unchase.OData.Connectedservice/issues/new?title=BUG) including in connected service:
+![Unchase OData Connected Service Report a Bug](img/Unchase-OData-Connected-Service-ReportBug.png)
+Thank you in advance!
 
 ## Thank me!
 
