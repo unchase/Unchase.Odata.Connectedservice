@@ -5,6 +5,8 @@
 
 > The project is developed and maintained by [Nikolay Chebotov (**Unchase**)](https://github.com/unchase).
 
+> Starting from Visual Studio Community 2019 Preview v16.2.0 extensions based on `Microsoft Connected Services` now work fine.
+
 ## Getting Started
 
 Install from `Tools -> Extensions and Updates` menu inside [Visual Studio](https://visualstudio.microsoft.com/vs/) (including 2019) or [download](http://vsixgallery.com/extensions/Unchase.OData.ConnectedService.afc46f39-8c64-4e14-85d0-af6c7c4291f3/extension.vsix)  as `VSIX` package from VSGallery or [download](https://marketplace.visualstudio.com/items?itemName=unchase.unchaseODataConnectedService)  as `VSIX` package from Visual Studio Marketplace: 
@@ -58,6 +60,8 @@ Install from `Tools -> Extensions and Updates` menu inside [Visual Studio](https
 ### Installation completes but I can't see the Service in the list of connected services (Visual Studio 2019)
 
 - Relevant [bug report](https://developercommunity.visualstudio.com/content/problem/468751/vs2019-preview-cannot-install-connected-service-ex.html). Connected Services will be restored in the first update to [Visual Studio](https://visualstudio.microsoft.com/vs/) 2019 (version 16.1).
+
+> Starting from Visual Studio Community 2019 Preview v16.2.0 extensions based on `Microsoft Connected Services` now work fine.
 
 ## Roadmap
 
