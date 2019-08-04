@@ -14,6 +14,8 @@ namespace Unchase.OData.ConnectedService.Models
     [DataContract]
     internal class UserSettings
     {
+        #region Properties and fields
+
         #region Private
         private const string Name = "Settings";
 
@@ -22,7 +24,6 @@ namespace Unchase.OData.ConnectedService.Models
         private ConnectedServiceLogger logger;
         #endregion
 
-        #region Public properties
         [DataMember]
         public ObservableCollection<string> MruEndpoints { get; private set; }
 
@@ -46,7 +47,7 @@ namespace Unchase.OData.ConnectedService.Models
         }
         #endregion
 
-        #region Public methods
+        #region Methods
         public void Save()
         {
             UserSettingsPersistenceHelper.Save(this, Constants.ProviderId, UserSettings.Name, null, this.logger);
@@ -54,7 +55,7 @@ namespace Unchase.OData.ConnectedService.Models
 
         public static UserSettings Load(ConnectedServiceLogger logger)
         {
-            UserSettings userSettings = UserSettingsPersistenceHelper.Load<UserSettings>(
+            var userSettings = UserSettingsPersistenceHelper.Load<UserSettings>(
                 Constants.ProviderId, UserSettings.Name, null, logger) ?? new UserSettings();
             userSettings.logger = logger;
 
@@ -67,7 +68,7 @@ namespace Unchase.OData.ConnectedService.Models
             if (index >= 0)
             {
                 // Ensure there aren't any duplicates in the list.
-                for (int i = mruList.Count - 1; i > index; i--)
+                for (var i = mruList.Count - 1; i > index; i--)
                 {
                     if (EqualityComparer<T>.Default.Equals(mruList[i], item))
                     {

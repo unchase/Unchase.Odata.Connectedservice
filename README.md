@@ -3,9 +3,10 @@
 
 [Unchase OData Connected Service](https://marketplace.visualstudio.com/items?itemName=Unchase.unchaseODataConnectedService) is a Visual Studio extension to generate `C#` client code for `OData` web service.
 
-> The project is developed and maintained by [Nikolay Chebotov (**Unchase**)](https://github.com/unchase).
 
-> Starting from Visual Studio Community 2019 Preview v16.2.0 extensions based on `Microsoft Connected Services` now work fine.
+> Starting from Visual Studio Community 2019 v16.1.3 extensions based on `Microsoft Connected Services` now work fine.
+
+> The project is developed and maintained by [Nikolay Chebotov (**Unchase**)](https://github.com/unchase).
 
 ## Getting Started
 
@@ -59,9 +60,7 @@ Install from `Tools -> Extensions and Updates` menu inside [Visual Studio](https
 
 ### Installation completes but I can't see the Service in the list of connected services (Visual Studio 2019)
 
-- Relevant [bug report](https://developercommunity.visualstudio.com/content/problem/468751/vs2019-preview-cannot-install-connected-service-ex.html). Connected Services will be restored in the first update to [Visual Studio](https://visualstudio.microsoft.com/vs/) 2019 (version 16.1).
-
-> Starting from Visual Studio Community 2019 Preview v16.2.0 extensions based on `Microsoft Connected Services` now work fine.
+- Relevant [bug report](https://developercommunity.visualstudio.com/content/problem/468751/vs2019-preview-cannot-install-connected-service-ex.html). `Connected Services` restored in the v16.1.3 update to [Visual Studio](https://visualstudio.microsoft.com/vs/) 2019.
 
 ## Roadmap
 
@@ -70,7 +69,9 @@ See the [changelog](CHANGELOG.md) for the further development plans and version 
 ## Feedback
 
 Please feel free to add your [review](https://marketplace.visualstudio.com/items?itemName=unchase.unchaseODataConnectedService&ssr=false#review-details), [request a feature](https://github.com/unchase/Unchase.OData.Connectedservice/issues/new?title=FEATURE), [ask a question](https://marketplace.visualstudio.com/items?itemName=unchase.unchaseODataConnectedService&ssr=false#qna) or [report a bug](https://github.com/unchase/Unchase.OData.Connectedservice/issues/new?title=BUG) including in connected service:
+
 ![Unchase OData Connected Service Report a Bug](img/Unchase-OData-Connected-Service-ReportBug.png)
+
 Thank you in advance!
 
 ## Thank me!

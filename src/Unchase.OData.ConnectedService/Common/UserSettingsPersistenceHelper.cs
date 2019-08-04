@@ -13,6 +13,7 @@ namespace Unchase.OData.ConnectedService.Common
 {
     internal class UserSettingsPersistenceHelper
     {
+        #region Methods
         /// <summary>
         /// Saves user settings to isolated storage.  The data is stored with the user's roaming profile.
         /// </summary>
@@ -60,7 +61,7 @@ namespace Unchase.OData.ConnectedService.Common
         /// Loads user settings from isolated storage.
         /// </summary>
         /// <remarks>
-        /// Non-critical exceptions are handled by writing an error message in the output window and 
+        /// Non-critical exceptions are handled by writing an error message in the output window and
         /// returning null.
         /// </remarks>
         public static T Load<T>(string providerId, string name, Action<T> onLoaded, ConnectedServiceLogger logger) where T : class
@@ -137,5 +138,6 @@ namespace Unchase.OData.ConnectedService.Common
                 logger.WriteMessageAsync(LoggerMessageCategory.Warning, failureMessage, failureMessageArg, ex);
             }
         }
+        #endregion
     }
 }

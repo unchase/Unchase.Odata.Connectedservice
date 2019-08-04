@@ -16,8 +16,11 @@ namespace Unchase.OData.ConnectedService.Common
     /// </summary>
     internal static class ProjectHelper
     {
+        #region Properties and fields
         public const int VshpropidVshpropidExtObject = -2027;
+        #endregion
 
+        #region Methods
         public static Project GetProject(this IVsHierarchy projectHierarchy)
         {
             Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
@@ -83,5 +86,6 @@ namespace Unchase.OData.ConnectedService.Common
         {
             return $"\"{item?.FileNames[1]}\""; // Indexing starts from 1
         }
+        #endregion
     }
 }

@@ -10,14 +10,18 @@ namespace Unchase.OData.ConnectedService
 {
     internal class Instance : ConnectedServiceInstance
     {
+        #region Properties and fields
         public ServiceConfiguration ServiceConfig { get; set; }
 
         public string MetadataTempFilePath { get; set; }
+        #endregion
 
+        #region Constructors
         public Instance()
         {
             InstanceId = Constants.ExtensionCategory;
             Name = Constants.DefaultServiceName;
         }
+        #endregion
     }
 }

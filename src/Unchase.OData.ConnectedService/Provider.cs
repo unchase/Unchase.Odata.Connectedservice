@@ -17,6 +17,7 @@ namespace Unchase.OData.ConnectedService
     [ConnectedServiceProviderExport("Unchase.OData.ConnectedService", SupportsUpdate = true)]
     internal class Provider : ConnectedServiceProvider
     {
+        #region Constructors
         public Provider()
         {
             Category = Constants.ExtensionCategory;
@@ -33,7 +34,9 @@ namespace Unchase.OData.ConnectedService
             Version = typeof(Provider).Assembly.GetName().Version;
             MoreInfoUri = new Uri(Constants.Website);
         }
+        #endregion
 
+        #region Methods
         public override IEnumerable<Tuple<string, Uri>> GetSupportedTechnologyLinks()
         {
             yield return Tuple.Create("OData Website", new Uri("http://www.odata.org/"));
@@ -45,5 +48,6 @@ namespace Unchase.OData.ConnectedService
             var wizard = new Wizard(context);
             return Task.FromResult<ConnectedServiceConfigurator>(wizard);
         }
+        #endregion
     }
 }

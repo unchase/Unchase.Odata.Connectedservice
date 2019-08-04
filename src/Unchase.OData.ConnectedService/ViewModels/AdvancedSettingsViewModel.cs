@@ -15,7 +15,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
 {
     internal class AdvancedSettingsViewModel : ConnectedServiceWizardPage
     {
-        #region Properties
+        #region Properties and fields
         public Constants.FunctionImportsGenerator[] FunctionImportsGenerators =>
             new[] { Constants.FunctionImportsGenerator.Inner, Constants.FunctionImportsGenerator.SimpleOData};
 
@@ -23,13 +23,26 @@ namespace Unchase.OData.ConnectedService.ViewModels
 
         public bool UseNamespacePrefix { get; set; }
 
-        public string NamespacePrefix { get; set; }
+        private string _namespacePrefix;
+        public string NamespacePrefix
+        {
+            get => _namespacePrefix;
+            set
+            {
+                _namespacePrefix = value;
+                OnPropertyChanged(NamespacePrefix);
+            }
+        }
 
         public bool EnableNamingAlias { get; set; }
 
         public bool IgnoreUnexpectedElementsAndAttributes { get; set; }
 
+        public bool GeneratedFileNameEnabled { get; set; }
+
         public string GeneratedFileName { get; set; }
+
+        public bool IncludeT4FileEnabled { get; set; }
 
         public bool IncludeT4File { get; set; }
 
@@ -44,6 +57,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
         public UserSettings UserSettings { get; }
         #endregion
 
+        #region Constructors
         public AdvancedSettingsViewModel(UserSettings userSettings) : base()
         {
             this.Title = "Advanced Settings";
@@ -52,11 +66,14 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.UserSettings = userSettings;
             this.IncludeExtensionsT4File = false;
             this.GenerateFunctionImports = false;
+            this.GeneratedFileNameEnabled = true;
             this.IncludeExtensionsT4FileVisibility = Visibility.Collapsed;
             this.FunctionImportsGenerator = Constants.FunctionImportsGenerator.Inner;
             this.ResetDataContext();
         }
+        #endregion
 
+        #region Methods
         public event EventHandler<EventArgs> PageEntering;
 
         public override async Task OnPageEnteringAsync(WizardEnteringArgs args)
@@ -81,6 +98,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.UseDataServiceCollection = true;
             this.IgnoreUnexpectedElementsAndAttributes = false;
             this.EnableNamingAlias = false;
+            this.GeneratedFileNameEnabled = true;
             this.GeneratedFileName = Common.Constants.DefaultReferenceFileName;
             this.IncludeT4File = false;
             this.IncludeExtensionsT4File = false;
@@ -90,5 +108,6 @@ namespace Unchase.OData.ConnectedService.ViewModels
             if (this.UserSettings.LanguageOption != LanguageOption.GenerateCSharpCode)
                 this.IncludeExtensionsT4FileVisibility = Visibility.Collapsed;
         }
+        #endregion
     }
 }

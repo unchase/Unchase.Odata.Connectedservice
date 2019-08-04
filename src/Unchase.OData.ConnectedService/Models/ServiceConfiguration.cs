@@ -10,7 +10,7 @@ namespace Unchase.OData.ConnectedService.Models
 {
     internal class ServiceConfiguration
     {
-        #region Properties
+        #region Properties and fields
         public string ServiceName { get; set; }
 
         public string Endpoint { get; set; }
@@ -28,7 +28,6 @@ namespace Unchase.OData.ConnectedService.Models
         public bool OpenGeneratedFilesOnComplete { get; set; }
 
         public LanguageOption LanguageOption { get; set; }
-        #endregion
 
         #region Network Credentials
         public bool UseNetworkCredentials { get; set; }
@@ -45,20 +44,26 @@ namespace Unchase.OData.ConnectedService.Models
         public string WebProxyNetworkCredentialsPassword { get; set; }
         public string WebProxyNetworkCredentialsDomain { get; set; }
         #endregion
+
+        #endregion
     }
 
-    #region Constructors
+    #region Child classes
     internal class ServiceConfigurationV3 : ServiceConfiguration
     {
         public Constants.FunctionImportsGenerator FunctionImportsGenerator { get; set; }
+
         public bool IncludeExtensionsT4File { get; set; }
+
         public bool GenerateFunctionImports { get; set; }
     }
 
     internal class ServiceConfigurationV4 : ServiceConfigurationV3
     {
         public bool EnableNamingAlias { get; set; }
+
         public bool IgnoreUnexpectedElementsAndAttributes { get; set; }
+
         public bool IncludeT4File { get; set; }
     }
     #endregion

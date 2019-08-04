@@ -14,7 +14,7 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
 {
     internal abstract class BaseCodeGenDescriptor
     {
-        #region Properties
+        #region Properties and fields
         public IVsPackageInstaller PackageInstaller { get; private set; }
 
         public IVsPackageInstallerServices PackageInstallerServices { get; private set; }
@@ -41,7 +41,6 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
         protected string CurrentAssemblyPath => Path.GetDirectoryName(this.GetType().Assembly.Location);
 
         public Instance Instance { get; private set; }
-        #endregion
 
         #region Network Credentials
         public bool UseNetworkCredentials { get; set; }
@@ -59,6 +58,9 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
         public string WebProxyUri { get; set; }
         #endregion
 
+        #endregion
+
+        #region Constructors
         protected BaseCodeGenDescriptor(ConnectedServiceHandlerContext context, Instance serviceInstance)
         {
             this.InitNuGetInstaller();
@@ -68,7 +70,9 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
             this.Context = context;
             this.Project = context.ProjectHierarchy.GetProject();
         }
+        #endregion
 
+        #region Methods
         private void InitNuGetInstaller()
         {
             var componentModel = (IComponentModel)Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(SComponentModel));
@@ -86,5 +90,6 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
 
             return Path.Combine(ProjectHelper.GetProjectFullPath(this.Project), serviceReferenceFolderName, this.Context.ServiceInstance.Name);
         }
+        #endregion
     }
 }

@@ -7,6 +7,13 @@
 
 These are the changes to each version that has been released on the official [Visual Studio extension gallery](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService).
 
+## v0.6.0 `(2019-08-04)`
+
+- [x] Add bug fix for [issue #7](https://github.com/unchase/Unchase.Odata.Connectedservice/issues/7):
+  - [x] Fix updating with more than one endpoints. Now works correctly
+  - [x] Add the check for untrusted certificate when connecting to ssl Service
+- [x] Add bug fix: fix parameter's namespaces for `FunctionImports` in `SimpleOData` generation 
+
 ## v0.5.3 `(2019-04-30)`
 
 - [x] Add a button in the first wizard page for reporting bugs in github project [issues](https://github.com/unchase/Unchase.OData.Connectedservice/issues)

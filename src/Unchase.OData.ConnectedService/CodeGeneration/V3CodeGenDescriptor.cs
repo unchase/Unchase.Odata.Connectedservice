@@ -21,6 +21,11 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
 {
     internal class V3CodeGenDescriptor : BaseCodeGenDescriptor
     {
+        #region Properties and fields
+        private ServiceConfigurationV3 ServiceConfiguration { get; }
+        #endregion
+
+        #region Constructors
         public V3CodeGenDescriptor(ConnectedServiceHandlerContext context, Instance serviceInstance)
             : base(context, serviceInstance)
         {
@@ -31,8 +36,9 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
             this.ClientDocUri = Common.Constants.V3DocUri;
             this.ServiceConfiguration = base.Instance.ServiceConfig as ServiceConfigurationV3;
         }
+        #endregion
 
-        private new ServiceConfigurationV3 ServiceConfiguration { get; set; }
+        #region Methods
 
         #region NuGet
         public override async Task AddNugetPackages()
@@ -204,7 +210,7 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
                     using (var reader = XmlReader.Create(ServiceConfiguration.Endpoint, settings))
                     {
                         if (EdmxReader.TryParse(reader, out var model, out var parseErrors))
-                            functionMethods = FunctionImportsHelper.GetFunctionImportsCode(model, proxyClassName, ServiceConfiguration.Endpoint.Replace("$metadata", string.Empty), this.ServiceConfiguration.FunctionImportsGenerator);
+                            functionMethods = FunctionImportsHelper.GetFunctionImportsCode(model, proxyClassNamespace, proxyClassName, ServiceConfiguration.Endpoint.Replace("$metadata", string.Empty), this.ServiceConfiguration.FunctionImportsGenerator);
                         else
                         {
                             foreach (var error in parseErrors)
@@ -237,5 +243,7 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
 
             await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Client Proxy extensions class for OData V3 was generated.");
         }
+
+        #endregion
     }
 }

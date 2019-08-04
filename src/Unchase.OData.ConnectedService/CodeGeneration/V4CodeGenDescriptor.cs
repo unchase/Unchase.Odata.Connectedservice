@@ -15,6 +15,11 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
 {
     internal class V4CodeGenDescriptor : BaseCodeGenDescriptor
     {
+        #region Properties and fields
+        private ServiceConfigurationV4 ServiceConfiguration { get; }
+        #endregion
+
+        #region Constructors
         public V4CodeGenDescriptor(ConnectedServiceHandlerContext context, Instance serviceInstance)
             : base(context, serviceInstance)
         {
@@ -22,8 +27,9 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
             this.ClientDocUri = Common.Constants.V4DocUri;
             this.ServiceConfiguration = base.Instance.ServiceConfig as ServiceConfigurationV4;
         }
+        #endregion
 
-        private new ServiceConfigurationV4 ServiceConfiguration { get; set; }
+        #region Methods
 
         #region NuGet
         public override async Task AddNugetPackages()
@@ -134,5 +140,6 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
 
             await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Client Proxy for OData V4 was generated.");
         }
+        #endregion
     }
 }

@@ -16,6 +16,7 @@ namespace Unchase.OData.ConnectedService
     [ConnectedServiceHandlerExport("Unchase.OData.ConnectedService", AppliesTo = "VB | CSharp | Web")]
     internal class Handler : ConnectedServiceHandler
     {
+        #region Methods
         public override async Task<AddServiceInstanceResult> AddServiceInstanceAsync(ConnectedServiceHandlerContext context, CancellationToken ct)
         {
             await context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Adding service instance...");
@@ -85,5 +86,6 @@ namespace Unchase.OData.ConnectedService
 
             return codeGenDescriptor;
         }
+        #endregion
     }
 }

@@ -11,7 +11,7 @@
         <StackPanel x:Name="SettingsPanel" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="125">
             <TextBlock x:Name="ReferenceFileNameLabel" Text="Enter the file name (without extension):"
                            HorizontalAlignment="Left" Margin="0, 5, 0, 0"/>
-            <TextBox x:Name="ReferenceFileName" Text="{Binding GeneratedFileName}"
+            <TextBox x:Name="ReferenceFileName" Text="{Binding GeneratedFileName}" IsEnabled="{Binding GeneratedFileNameEnabled}"
                          HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="480" Margin="20, 5, 0, 0"/>
             <TextBlock x:Name="Label" TextWrapping="WrapWithOverflow" Margin="0, 20, 40, 0">
                 You can generate the client proxy based on the default settings, or you can click following link for further configuration.
@@ -54,7 +54,7 @@
             		HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0, 5">
                     <TextBlock TextWrapping="Wrap" Margin="0, 0, 40, 0">Ignore unknown elements (Whether to ignore unexpected elements and attributes in the metadata document and generate the client code if any).</TextBlock>
                 </CheckBox>
-                <CheckBox x:Name="IncludeT4File" Content="Add code templates (Whether to include the T4 files into this project)." IsChecked="{Binding IncludeT4File}"
+                <CheckBox x:Name="IncludeT4File" Content="Add code templates (Whether to include the T4 files into this project)." IsChecked="{Binding IncludeT4File}" IsEnabled="{Binding IncludeT4FileEnabled}"
             		HorizontalAlignment="Left" VerticalAlignment="Top" Width="500"  Height="25" Margin="0, 5" FontWeight="Medium"/>
             </StackPanel>
         </StackPanel>

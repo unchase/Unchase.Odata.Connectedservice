@@ -14,6 +14,7 @@ namespace Unchase.OData.ConnectedService
 {
     internal class Wizard : ConnectedServiceWizard
     {
+        #region Properties and fields
         private Instance _serviceInstance;
 
         public ConfigODataEndpointViewModel ConfigODataEndpointViewModel { get; set; }
@@ -27,7 +28,9 @@ namespace Unchase.OData.ConnectedService
         public Version EdmxVersion => this.ConfigODataEndpointViewModel.EdmxVersion;
 
         public UserSettings UserSettings { get; }
+        #endregion
 
+        #region Constructors
         public Wizard(ConnectedServiceProviderContext context)
         {
             this.Context = context;
@@ -38,7 +41,7 @@ namespace Unchase.OData.ConnectedService
 
             if (this.Context.IsUpdating)
             {
-                //Since ServiceConfigurationV4 is a derived type of ServiceConfiguration. So we can deserialize a ServiceConfiguration into a ServiceConfigurationV4.
+                // Since ServiceConfigurationV4 is a derived type of ServiceConfiguration. So we can deserialize a ServiceConfiguration into a ServiceConfigurationV4.
                 var serviceConfig = this.Context.GetExtendedDesignerData<ServiceConfigurationV4>();
                 ConfigODataEndpointViewModel.Endpoint = serviceConfig.Endpoint;
                 ConfigODataEndpointViewModel.EdmxVersion = serviceConfig.EdmxVersion;
@@ -55,7 +58,25 @@ namespace Unchase.OData.ConnectedService
                 if (ConfigODataEndpointViewModel.View is ConfigODataEndpoint configODataEndpoint)
                     configODataEndpoint.IsEnabled = false;
 
-                //Restore the advanced settings to UI elements.
+                // The Viewmodel should always be filled otherwise if the wizard is completed without visiting this page  the generated code becomes wrong
+                AdvancedSettingsViewModel.GeneratedFileNameEnabled = false; // advancedSettings.ReferenceFileName.IsEnabled = false;
+                AdvancedSettingsViewModel.GeneratedFileName = serviceConfig.GeneratedFileNamePrefix;
+                AdvancedSettingsViewModel.UseNamespacePrefix = serviceConfig.UseNameSpacePrefix;
+                AdvancedSettingsViewModel.NamespacePrefix = serviceConfig.NamespacePrefix;
+                AdvancedSettingsViewModel.UseDataServiceCollection = serviceConfig.UseDataServiceCollection;
+                AdvancedSettingsViewModel.FunctionImportsGenerator = serviceConfig.FunctionImportsGenerator;
+                AdvancedSettingsViewModel.GenerateFunctionImports = serviceConfig.GenerateFunctionImports;
+
+                if (serviceConfig.EdmxVersion == Common.Constants.EdmxVersion4)
+                {
+                    AdvancedSettingsViewModel.IgnoreUnexpectedElementsAndAttributes =
+                        serviceConfig.IgnoreUnexpectedElementsAndAttributes;
+                    AdvancedSettingsViewModel.EnableNamingAlias = serviceConfig.EnableNamingAlias;
+                    AdvancedSettingsViewModel.IncludeT4File = serviceConfig.IncludeT4File;
+                    AdvancedSettingsViewModel.IncludeT4FileEnabled = false; // advancedSettings.IncludeT4File.IsEnabled = false;
+                }
+
+                // Restore the advanced settings to UI elements.
                 AdvancedSettingsViewModel.PageEntering += (sender, args) =>
                 {
                     if (sender is AdvancedSettingsViewModel advancedSettingsViewModel)
@@ -67,6 +88,8 @@ namespace Unchase.OData.ConnectedService
                             advancedSettingsViewModel.UseNamespacePrefix = serviceConfig.UseNameSpacePrefix;
                             advancedSettingsViewModel.NamespacePrefix = serviceConfig.NamespacePrefix;
                             advancedSettingsViewModel.UseDataServiceCollection = serviceConfig.UseDataServiceCollection;
+                            advancedSettingsViewModel.FunctionImportsGenerator = serviceConfig.FunctionImportsGenerator;
+                            advancedSettingsViewModel.GenerateFunctionImports = serviceConfig.GenerateFunctionImports;
 
                             if (serviceConfig.EdmxVersion == Common.Constants.EdmxVersion4)
                             {
@@ -96,7 +119,9 @@ namespace Unchase.OData.ConnectedService
             this.Pages.Add(AdvancedSettingsViewModel);
             this.IsFinishEnabled = true;
         }
+        #endregion
 
+        #region Methods
         public override Task<ConnectedServiceInstance> GetFinishedServiceInstanceAsync()
         {
             this.UserSettings.Save();
@@ -211,5 +236,6 @@ namespace Unchase.OData.ConnectedService
                 base.Dispose(disposing);
             }
         }
+        #endregion
     }
 }
