@@ -41,7 +41,7 @@
         <TextBlock
             Margin="0,5,10,5"
             FontWeight="Bold"
-            Text="Generating Language (only for OData v3) :"
+            Text="Generating Language :"
             TextWrapping="WrapWithOverflow" />
         <ComboBox
             Margin="20,5,10,5"
