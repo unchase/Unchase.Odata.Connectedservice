@@ -135,10 +135,10 @@
     <PackageReference Include="Microsoft.VisualStudio.ConnectedServices">
       <Version>15.3.47</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="16.0.202" ExcludeAssets="runtime">
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="15.9.3" ExcludeAssets="runtime">
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="16.3.2093">
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="15.9.3039">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

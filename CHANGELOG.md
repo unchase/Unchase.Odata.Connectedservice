@@ -7,6 +7,10 @@
 
 These are the changes to each version that has been released on the official [Visual Studio extension gallery](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService).
 
+## v1.0.2. `2019-08-11`
+
+- [x] Add bug fix: downgrade some NuGet-packages for supporting Visual Studio 2017
+
 ## v1.0.0 `2019-08-11`
 
 - [x] Full code refactoring
