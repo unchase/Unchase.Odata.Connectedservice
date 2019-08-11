@@ -1,9 +1,7 @@
-﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
-// Updated by Unchase (https://github.com/unchase).
-// Licensed under the MIT License.  See License.txt in the project root for license information.
+﻿// Copyright (c) 2018 Unchase (https://github.com/unchase).  All rights reserved.
+// Licensed under the Apache License 2.0.  See License.txt in the project root for license information.
 
 using System;
-using System.ComponentModel;
 using System.Data.Services.Design;
 using System.Globalization;
 using System.IO;
@@ -114,6 +112,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.UserSettings = userSettings;
             this.ServiceName = userSettings.ServiceName ?? Constants.DefaultServiceName;
             this.Endpoint = userSettings.Endpoint;
+            this.LanguageOption = userSettings.LanguageOption;
             this.UseNetworkCredentials = false;
             this.UseWebProxy = false;
             this.UseWebProxyCredentials = false;
@@ -144,7 +143,6 @@ namespace Unchase.OData.ConnectedService.ViewModels
         }
 
         private string GetMetadata(out Version edmxVersion)
-
         {
             if (string.IsNullOrEmpty(this.UserSettings.Endpoint))
             {

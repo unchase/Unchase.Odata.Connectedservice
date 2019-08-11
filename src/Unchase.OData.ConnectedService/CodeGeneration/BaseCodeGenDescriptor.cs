@@ -1,6 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
-// Updated by Unchase (https://github.com/unchase).
-// Licensed under the MIT License.  See License.txt in the project root for license information.
+﻿// Copyright (c) 2018 Unchase (https://github.com/unchase).  All rights reserved.
+// Licensed under the Apache License 2.0.  See License.txt in the project root for license information.
 
 using System.IO;
 using System.Threading.Tasks;
@@ -42,6 +41,15 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
 
         public Instance Instance { get; private set; }
 
+        public string ReferenceFileFolder
+        {
+            get
+            {
+                Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+                return this.GetReferenceFileFolder();
+            }
+        }
+
         #region Network Credentials
         public bool UseNetworkCredentials { get; set; }
         public string NetworkCredentialsUserName { get; set; }
@@ -80,12 +88,13 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
             this.PackageInstaller = componentModel.GetService<IVsPackageInstaller>();
         }
 
-        public abstract Task AddNugetPackages();
+        public abstract Task AddNugetPackagesAsync();
 
-        public abstract Task AddGeneratedClientCode();
+        public abstract Task AddGeneratedClientCodeAsync();
 
         protected string GetReferenceFileFolder()
         {
+            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             var serviceReferenceFolderName = this.Context.HandlerHelper.GetServiceArtifactsRootFolder();
 
             return Path.Combine(ProjectHelper.GetProjectFullPath(this.Project), serviceReferenceFolderName, this.Context.ServiceInstance.Name);

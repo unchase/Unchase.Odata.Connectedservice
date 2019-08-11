@@ -1,18 +1,18 @@
 #
 ![Unchase OData (Swagger) Connected Service Logo](img/Unchase-OData-Connected-Service-Logo.png)
 
-[Unchase OData Connected Service](https://marketplace.visualstudio.com/items?itemName=Unchase.unchaseODataConnectedService) is a Visual Studio extension to generate `C#` client code for `OData` web service.
+[Unchase OData Connected Service](https://marketplace.visualstudio.com/items?itemName=Unchase.unchaseODataConnectedService) is a Visual Studio extension to generate `C#` or `VB` client code for `OData` web service.
 
 
 > Starting from Visual Studio Community 2019 v16.1.3 extensions based on `Microsoft Connected Services` now work fine.
-
-> The project is developed and maintained by [Nikolay Chebotov (**Unchase**)](https://github.com/unchase).
 
 ## Getting Started
 
 Install from `Tools -> Extensions and Updates` menu inside [Visual Studio](https://visualstudio.microsoft.com/vs/) (including 2019) or [download](http://vsixgallery.com/extensions/Unchase.OData.ConnectedService.afc46f39-8c64-4e14-85d0-af6c7c4291f3/extension.vsix)  as `VSIX` package from VSGallery or [download](https://marketplace.visualstudio.com/items?itemName=unchase.unchaseODataConnectedService)  as `VSIX` package from Visual Studio Marketplace: 
 
 ![Adding Unchase OData Connected Service in Visual Studio](img/Unchase-OData-Connected-Service.gif)
+
+> The project is developed and maintained by [Nikolay Chebotov (**Unchase**)](https://github.com/unchase).
 
 ## Builds status
 
@@ -29,10 +29,10 @@ Install from `Tools -> Extensions and Updates` menu inside [Visual Studio](https
 
 ## Features
 
-- Generate `C#` clients/proxies (client code) from OData specifications for OData protocol versions 1.0-4.0
-- Generate `VisualBasic` clients/proxies (client code) from OData specifications for OData protocol versions 1.0-3.0
+- Generate `C#` and `VB` clients/proxies (client code) from OData specifications for OData protocol versions 1.0-4.0
 - Generate `C#` proxy-class extension methods for OData protocol versions 1.0-3.0
 - Generate functions to call service methods from OData protocol versions 1.0-3.0 `FunctionImports`
+  - You can select the necessary methods that will be added after generation for OData protocol versions 1.0-3.0
 - Add required dependencies for the `C#` client (before generating):
 	- Libraries for `OData v3` Client:
 		1. Microsoft.Data.Services.Client ([NuGet](https://www.nuget.org/packages/Microsoft.Data.Services.Client))
@@ -47,9 +47,15 @@ Install from `Tools -> Extensions and Updates` menu inside [Visual Studio](https
 		4. Microsoft.Spatial ([NuGet](https://www.nuget.org/packages/Microsoft.Spatial))
 - Storage of the last 10 endpoints (json-specification path)
 
-## `VisualBasic` is supported since v0.5.0!
+## Features are supported since v1.0.0
+
+### Generation `VB` client code for OData protocol versions 1.0-4.0
 
 ![Unchase OData Connected Service VisualBasic](img/Unchase-OData-Connected-Service-VisualBasic.png)
+
+### Selection `FunctionImports` that will be generated for OData protocol versions 1.0-3.0
+
+![Unchase OData Connected Service FunctionImports](img/Unchase-OData-Connected-Service-FunctionImports.png)
 
 ## HowTos
 

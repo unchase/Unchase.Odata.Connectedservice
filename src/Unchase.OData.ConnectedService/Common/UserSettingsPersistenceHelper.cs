@@ -1,6 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
-// Updated by Unchase (https://github.com/unchase).
-// Licensed under the MIT License.  See License.txt in the project root for license information.
+﻿// Copyright (c) 2018 Unchase (https://github.com/unchase).  All rights reserved.
+// Licensed under the Apache License 2.0.  See License.txt in the project root for license information.
 
 using System;
 using System.IO;
@@ -11,7 +10,7 @@ using Microsoft.VisualStudio.ConnectedServices;
 
 namespace Unchase.OData.ConnectedService.Common
 {
-    internal class UserSettingsPersistenceHelper
+    internal static class UserSettingsPersistenceHelper
     {
         #region Methods
         /// <summary>
@@ -135,7 +134,8 @@ namespace Unchase.OData.ConnectedService.Common
             }
             catch (Exception ex)
             {
-                logger.WriteMessageAsync(LoggerMessageCategory.Warning, failureMessage, failureMessageArg, ex);
+                var loggerTask = logger.WriteMessageAsync(LoggerMessageCategory.Warning, failureMessage, failureMessageArg, ex);
+                loggerTask.RunSynchronously();
             }
         }
         #endregion

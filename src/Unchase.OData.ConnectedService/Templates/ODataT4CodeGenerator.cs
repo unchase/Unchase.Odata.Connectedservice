@@ -1733,7 +1733,7 @@ public abstract class ODataClientTemplate : TemplateBase
         {
             this.WriteClassEndForStructuredType();
         }
-        catch (Exception e)
+        catch
         {
             
         }

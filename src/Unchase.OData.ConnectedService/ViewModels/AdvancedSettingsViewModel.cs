@@ -1,6 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
-// Updated by Unchase (https://github.com/unchase).
-// Licensed under the MIT License.  See License.txt in the project root for license information.
+﻿// Copyright (c) 2018 Unchase (https://github.com/unchase).  All rights reserved.
+// Licensed under the Apache License 2.0.  See License.txt in the project root for license information.
 
 using System;
 using System.Data.Services.Design;
@@ -55,10 +54,12 @@ namespace Unchase.OData.ConnectedService.ViewModels
         public bool GenerateFunctionImports { get; set; }
 
         public UserSettings UserSettings { get; }
+
+        public Wizard InternalWizard;
         #endregion
 
         #region Constructors
-        public AdvancedSettingsViewModel(UserSettings userSettings) : base()
+        public AdvancedSettingsViewModel(UserSettings userSettings, Wizard wizard) : base()
         {
             this.Title = "Advanced Settings";
             this.Description = "Advanced settings for generating client proxy and extension methods for call service functions";
@@ -69,6 +70,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.GeneratedFileNameEnabled = true;
             this.IncludeExtensionsT4FileVisibility = Visibility.Collapsed;
             this.FunctionImportsGenerator = Constants.FunctionImportsGenerator.Inner;
+            this.InternalWizard = wizard;
             this.ResetDataContext();
         }
         #endregion
@@ -80,7 +82,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
         {
             await base.OnPageEnteringAsync(args);
 
-            this.View = new AdvancedSettings();
+            this.View = new AdvancedSettings(this.InternalWizard);
             this.ResetDataContext();
             this.View.DataContext = this;
             PageEntering?.Invoke(this, EventArgs.Empty);

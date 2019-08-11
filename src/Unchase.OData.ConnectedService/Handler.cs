@@ -1,6 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
-// Updated by Unchase (https://github.com/unchase).
-// Licensed under the MIT License.  See License.txt in the project root for license information.
+﻿// Copyright (c) 2018 Unchase (https://github.com/unchase).  All rights reserved.
+// Licensed under the Apache License 2.0.  See License.txt in the project root for license information.
 
 using System;
 using System.Globalization;
@@ -8,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.ConnectedServices;
 using Unchase.OData.ConnectedService.CodeGeneration;
-using Unchase.OData.ConnectedService.Common;
 using Unchase.OData.ConnectedService.Models;
 
 namespace Unchase.OData.ConnectedService
@@ -21,10 +19,11 @@ namespace Unchase.OData.ConnectedService
         {
             await context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Adding service instance...");
 
-            var project = ProjectHelper.GetProjectFromHierarchy(context.ProjectHierarchy);
             var codeGenInstance = (Instance)context.ServiceInstance;
 
-            var codeGenDescriptor = await GenerateCode(codeGenInstance.MetadataTempFilePath, codeGenInstance.ServiceConfig.EdmxVersion, context);
+            var codeGenDescriptor = await GenerateCodeAsync(codeGenInstance.MetadataTempFilePath, codeGenInstance.ServiceConfig.EdmxVersion, context);
+
+            codeGenInstance.ServiceConfig.FunctionImports = null;
 
             context.SetExtendedDesignerData<ServiceConfiguration>(codeGenInstance.ServiceConfig);
 
@@ -37,10 +36,12 @@ namespace Unchase.OData.ConnectedService
         {
             await context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Updating service instance...");
 
-            var project = ProjectHelper.GetProjectFromHierarchy(context.ProjectHierarchy);
             var codeGenInstance = (Instance)context.ServiceInstance;
 
-            var codeGenDescriptor = await GenerateCode(codeGenInstance.ServiceConfig.Endpoint, codeGenInstance.ServiceConfig.EdmxVersion, context);
+            var codeGenDescriptor = await GenerateCodeAsync(codeGenInstance.ServiceConfig.Endpoint, codeGenInstance.ServiceConfig.EdmxVersion, context);
+
+            codeGenInstance.ServiceConfig.FunctionImports = null;
+
             context.SetExtendedDesignerData<ServiceConfiguration>(codeGenInstance.ServiceConfig);
 
             await context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Updating service instance complete.");
@@ -48,7 +49,7 @@ namespace Unchase.OData.ConnectedService
             return new UpdateServiceInstanceResult { GettingStartedDocument = new GettingStartedDocument(new Uri(codeGenDescriptor.ClientDocUri)) };
         }
 
-        private static async Task<BaseCodeGenDescriptor> GenerateCode(string metadataUri, Version edmxVersion, ConnectedServiceHandlerContext context)
+        private static async Task<BaseCodeGenDescriptor> GenerateCodeAsync(string metadataUri, Version edmxVersion, ConnectedServiceHandlerContext context)
         {
             var instance = (Instance)context.ServiceInstance;
             BaseCodeGenDescriptor codeGenDescriptor;
@@ -68,21 +69,20 @@ namespace Unchase.OData.ConnectedService
                 throw new Exception(string.Format(CultureInfo.InvariantCulture, "Not supported Edmx Version{0}", (edmxVersion != null ? $" {edmxVersion}." : ". Try with Endpoint ends \"/$metadata\".")));
             }
 
-            var codeGenInstance = (Instance)context.ServiceInstance;
-            codeGenDescriptor.UseNetworkCredentials = codeGenInstance.ServiceConfig.UseNetworkCredentials;
-            codeGenDescriptor.NetworkCredentialsUserName = codeGenInstance.ServiceConfig.NetworkCredentialsUserName;
-            codeGenDescriptor.NetworkCredentialsPassword = codeGenInstance.ServiceConfig.NetworkCredentialsPassword;
-            codeGenDescriptor.NetworkCredentialsDomain = codeGenInstance.ServiceConfig.NetworkCredentialsDomain;
+            codeGenDescriptor.UseNetworkCredentials = instance.ServiceConfig.UseNetworkCredentials;
+            codeGenDescriptor.NetworkCredentialsUserName = instance.ServiceConfig.NetworkCredentialsUserName;
+            codeGenDescriptor.NetworkCredentialsPassword = instance.ServiceConfig.NetworkCredentialsPassword;
+            codeGenDescriptor.NetworkCredentialsDomain = instance.ServiceConfig.NetworkCredentialsDomain;
 
-            codeGenDescriptor.UseWebProxy = codeGenInstance.ServiceConfig.UseWebProxy;
-            codeGenDescriptor.UseWebProxyCredentials = codeGenInstance.ServiceConfig.UseWebProxyCredentials;
-            codeGenDescriptor.WebProxyNetworkCredentialsUserName = codeGenInstance.ServiceConfig.WebProxyNetworkCredentialsUserName;
-            codeGenDescriptor.WebProxyNetworkCredentialsPassword = codeGenInstance.ServiceConfig.WebProxyNetworkCredentialsPassword;
-            codeGenDescriptor.WebProxyNetworkCredentialsDomain = codeGenInstance.ServiceConfig.WebProxyNetworkCredentialsDomain;
-            codeGenDescriptor.WebProxyUri = codeGenInstance.ServiceConfig.WebProxyUri;
+            codeGenDescriptor.UseWebProxy = instance.ServiceConfig.UseWebProxy;
+            codeGenDescriptor.UseWebProxyCredentials = instance.ServiceConfig.UseWebProxyCredentials;
+            codeGenDescriptor.WebProxyNetworkCredentialsUserName = instance.ServiceConfig.WebProxyNetworkCredentialsUserName;
+            codeGenDescriptor.WebProxyNetworkCredentialsPassword = instance.ServiceConfig.WebProxyNetworkCredentialsPassword;
+            codeGenDescriptor.WebProxyNetworkCredentialsDomain = instance.ServiceConfig.WebProxyNetworkCredentialsDomain;
+            codeGenDescriptor.WebProxyUri = instance.ServiceConfig.WebProxyUri;
 
-            await codeGenDescriptor.AddNugetPackages();
-            await codeGenDescriptor.AddGeneratedClientCode();
+            await codeGenDescriptor.AddNugetPackagesAsync();
+            await codeGenDescriptor.AddGeneratedClientCodeAsync();
 
             return codeGenDescriptor;
         }

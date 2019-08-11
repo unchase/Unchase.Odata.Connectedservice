@@ -1,60 +1,29 @@
 ﻿// Copyright (c) 2018 Unchase (https://github.com/unchase).  All rights reserved.
-// Licensed under the MIT License.  See License.txt in the project root for license information.
+// Licensed under the Apache License 2.0.  See License.txt in the project root for license information.
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Security;
 using System.Text;
+using System.Xml;
 using Microsoft.Data.Edm;
-using Microsoft.Data.OData;
+using Microsoft.Data.Edm.Csdl;
+using Microsoft.VisualStudio.ConnectedServices;
+using Unchase.OData.ConnectedService.Models;
 
 namespace Unchase.OData.ConnectedService.Common
 {
-    internal struct FunctionImportModel
-    {
-        #region Properties and fields
-        internal IEdmFunctionImport FunctionImport { get; }
-
-        internal string EndpointUri { get; }
-
-        internal List<IEdmFunctionParameter> FunctionParameters { get; set; }
-
-        internal IEdmFunctionParameter BindableParameter { get; }
-
-        internal bool HasParameters => FunctionParameters.Count > 0;
-
-        internal string EntitySetName { get; }
-
-        internal string HttpMethod { get; }
-
-        internal IEdmTypeReference FunctionReturnType { get; }
-        #endregion
-
-        #region Constructors
-        internal FunctionImportModel(IEdmModel model, IEdmFunctionImport functionImport, string endpointUri, string proxyClassNamespace)
-        {
-            FunctionImport = functionImport;
-            EndpointUri = endpointUri;
-            HttpMethod = model.GetHttpMethod(functionImport) ?? "POST";
-            FunctionParameters = functionImport.Parameters.ToList();
-            BindableParameter = FunctionParameters.FirstOrDefault(fp => fp.Type.IsEntity() || fp.Type.IsCollection() && fp.Type.AsCollection().ElementType().IsEntity());
-            EntitySetName = functionImport.IsBindable && BindableParameter != null
-                ? (BindableParameter.Type.IsCollection() ? BindableParameter.Type.AsCollection().ElementType().FullNameWithNamespace(proxyClassNamespace).Split('.').Last() : BindableParameter.Type.FullNameWithNamespace(proxyClassNamespace).Split('.').Last())
-                : string.Empty;
-            FunctionReturnType = functionImport.ReturnType;
-        }
-        #endregion
-    }
-
-    internal static class Extensions
+    internal static class FunctionImportsExtensions
     {
         #region Extension methods
-        public static string FullNameWithNamespace(this IEdmTypeReference type, string proxyClassNamespace)
+        internal static string FullNameWithNamespace(this IEdmTypeReference type, string proxyClassNamespace)
         {
             var definition = type?.Definition as IEdmSchemaElement;
             return definition?.FullNameWithNamespace(proxyClassNamespace);
         }
 
-        public static string FullNameWithNamespace(this IEdmSchemaElement element, string proxyClassNamespace)
+        internal static string FullNameWithNamespace(this IEdmSchemaElement element, string proxyClassNamespace)
         {
             if (element?.Namespace != null)
                 return (string.IsNullOrWhiteSpace(proxyClassNamespace) ? element.Namespace ?? string.Empty : proxyClassNamespace) + "." + (element?.Name ?? string.Empty);
@@ -90,37 +59,92 @@ namespace Unchase.OData.ConnectedService.Common
             }
             return result;
         }
+
+        internal static XmlReader GetXmlReaderForEndpoint(this ServiceConfiguration serviceConfiguration)
+        {
+            var xmlUrlResolver = new XmlUrlResolver
+            {
+                Credentials = serviceConfiguration.UseNetworkCredentials ? new NetworkCredential(serviceConfiguration.NetworkCredentialsUserName, serviceConfiguration.NetworkCredentialsPassword, serviceConfiguration.NetworkCredentialsDomain) : System.Net.CredentialCache.DefaultNetworkCredentials
+            };
+            if (serviceConfiguration.UseWebProxy)
+            {
+                xmlUrlResolver.Proxy = new WebProxy(serviceConfiguration.WebProxyUri, true);
+                if (serviceConfiguration.UseWebProxyCredentials)
+                    xmlUrlResolver.Proxy = new WebProxy(serviceConfiguration.WebProxyUri, true, new string[0], new NetworkCredential
+                    {
+                        UserName = serviceConfiguration.WebProxyNetworkCredentialsUserName,
+                        Password = serviceConfiguration.WebProxyNetworkCredentialsPassword,
+                        Domain = serviceConfiguration.WebProxyNetworkCredentialsDomain
+                    });
+                else
+                    xmlUrlResolver.Proxy = new WebProxy(serviceConfiguration.WebProxyUri);
+            }
+
+            var settings = new XmlReaderSettings
+            {
+                XmlResolver = new XmlSecureResolver(xmlUrlResolver, new PermissionSet(System.Security.Permissions.PermissionState.Unrestricted))
+            };
+
+            return XmlReader.Create(serviceConfiguration.Endpoint, settings);
+        }
+
+        internal static IEdmModel GetEdmModel(this ServiceConfiguration serviceConfiguration, ConnectedServiceHandlerContext context = null)
+        {
+            using (var reader = serviceConfiguration.GetXmlReaderForEndpoint())
+            {
+                if (EdmxReader.TryParse(reader, out var model, out var parseErrors))
+                    return model;
+                else if (context != null)
+                {
+                    foreach (var error in parseErrors)
+                    {
+                        var task = context.Logger.WriteMessageAsync(LoggerMessageCategory.Warning, error.ErrorMessage);
+                        task.RunSynchronously();
+                    }
+                }
+            }
+
+            return null;
+        }
         #endregion
     }
 
-    internal class FunctionImportsHelper
+    internal static class FunctionImportsHelper
     {
-        #region Properties and fields
-        private static string _proxyClassNamespace;
-        #endregion
-
         #region Methods
-        public static string GetFunctionImportsCode(IEdmModel model, string proxyClassNamespace, string proxyClassName, string endpointUri, Constants.FunctionImportsGenerator generator = Constants.FunctionImportsGenerator.Inner)
+        internal static List<FunctionImportModel> GetFunctionImports(IEdmModel model, string proxyClassNamespace, string endpointUri)
         {
-            _proxyClassNamespace = proxyClassNamespace;
+            var result = new List<FunctionImportModel>();
 
-            var declaredEntityContainer = model.FindDeclaredEntityContainer(proxyClassName);
-            var functionImports = declaredEntityContainer.FunctionImports().ToList();
+            foreach (var modelEntityContainer in model.EntityContainers())
+            {
+                if (string.IsNullOrWhiteSpace(proxyClassNamespace))
+                    proxyClassNamespace = modelEntityContainer.Namespace;
+
+                foreach (var functionImport in modelEntityContainer.FunctionImports())
+                    result.Add(new FunctionImportModel(model, functionImport, endpointUri, proxyClassNamespace));
+            }
+
+            return result;
+        }
+
+        internal static string GetFunctionImportsCode(ServiceConfigurationV3 serviceConfiguration)
+        {
+            var generator = serviceConfiguration.FunctionImportsGenerator;
 
             var functionMethods = new StringBuilder();
             functionMethods.AppendLine("\t\t#region FunctionImports");
             functionMethods.AppendLine();
-            foreach (var functionImport in functionImports)
+            foreach (var functionImport in serviceConfiguration.FunctionImports.Where(fi => fi.IsChecked))
             {
-                var functionImportModel = new FunctionImportModel(model, functionImport, endpointUri, _proxyClassNamespace);
                 var functionRegion = string.Empty;
                 switch (generator)
                 {
                     case Constants.FunctionImportsGenerator.Inner:
-                        functionRegion = GetFunctionMethodRegionWithInnerMethods(functionImportModel);
+                        functionRegion = GetFunctionMethodRegionWithInnerMethods(functionImport);
                         break;
                     case Constants.FunctionImportsGenerator.SimpleOData:
-                        functionRegion = GetFunctionMethodRegionWithSimpleOdataClient(functionImportModel);
+                        functionRegion = GetFunctionMethodRegionWithSimpleOdataClient(functionImport);
                         break;
                     case Constants.FunctionImportsGenerator.Vipr:
                         //ToDo: need to add
@@ -139,7 +163,7 @@ namespace Unchase.OData.ConnectedService.Common
                 return string.Empty;
 
             var methodName = functionImportModel.EntitySetName + functionImportModel.FunctionImport.Name;
-            var realFunctionImportReturnType = functionImportModel.FunctionReturnType?.ToCodeStringType(_proxyClassNamespace);
+            var realFunctionImportReturnType = functionImportModel.FunctionReturnType?.ToCodeStringType(functionImportModel.Namespace);
 
             var functionRegion = new StringBuilder();
             functionRegion.AppendLine($"\t\t#region {methodName}Async");
@@ -151,7 +175,7 @@ namespace Unchase.OData.ConnectedService.Common
 
             // add model class if parameters count gt 0
             if (functionImportModel.HasParameters)
-                functionRegion.AppendLine(GetModelRegion($"{methodName}Model", functionImportModel.FunctionParameters, functionImportModel.FunctionImport.IsBindable));
+                functionRegion.AppendLine(GetModelRegion($"{methodName}Model", functionImportModel.Namespace, functionImportModel.FunctionParameters, functionImportModel.FunctionImport.IsBindable));
             functionRegion.AppendLine();
 
             if (functionImportModel.FunctionReturnType == null)
@@ -179,10 +203,10 @@ namespace Unchase.OData.ConnectedService.Common
         private static string GetFunctionMethodRegionWithSimpleOdataClient(FunctionImportModel functionImportModel)
         {
             var methodName = functionImportModel.EntitySetName + functionImportModel.FunctionImport.Name;
-            var realFunctionImportReturnType = functionImportModel.FunctionReturnType?.ToCodeStringType(_proxyClassNamespace);
+            var realFunctionImportReturnType = functionImportModel.FunctionReturnType?.ToCodeStringType(functionImportModel.Namespace);
             var realFunctionImportReturnElementCollectionType = string.Empty;
             if (functionImportModel.FunctionReturnType != null && functionImportModel.FunctionReturnType.IsCollection())
-                realFunctionImportReturnElementCollectionType = functionImportModel.FunctionReturnType?.AsCollection()?.ElementType()?.ToCodeStringType(_proxyClassNamespace);
+                realFunctionImportReturnElementCollectionType = functionImportModel.FunctionReturnType?.AsCollection()?.ElementType()?.ToCodeStringType(functionImportModel.Namespace);
 
             var functionRegion = new StringBuilder();
             functionRegion.AppendLine($"\t\t#region {methodName}Async");
@@ -190,7 +214,7 @@ namespace Unchase.OData.ConnectedService.Common
 
             // add model class if parameters count gt 0
             if (functionImportModel.HasParameters)
-                functionRegion.AppendLine(GetModelRegion($"{methodName}Model", functionImportModel.FunctionParameters, functionImportModel.FunctionImport.IsBindable));
+                functionRegion.AppendLine(GetModelRegion($"{methodName}Model", functionImportModel.Namespace, functionImportModel.FunctionParameters, functionImportModel.FunctionImport.IsBindable));
 
             functionRegion.AppendLine(functionImportModel.FunctionReturnType == null
                 ? $"\t\tpublic static async Task<ODataStandartResponse> {methodName}Async({(functionImportModel.HasParameters ? $"{methodName}Model model" : string.Empty)})"
@@ -210,9 +234,9 @@ namespace Unchase.OData.ConnectedService.Common
                 : "\t\t\t\tvar result = await client");
             if (functionImportModel.FunctionImport.IsBindable && functionImportModel.BindableParameter != null)
             {
-                var bindingParameterTypeFulName = functionImportModel.BindableParameter.Type.FullNameWithNamespace(_proxyClassNamespace);
+                var bindingParameterTypeFulName = functionImportModel.BindableParameter.Type.FullNameWithNamespace(functionImportModel.Namespace);
                 if (functionImportModel.BindableParameter.Type.IsCollection())
-                    bindingParameterTypeFulName = functionImportModel.BindableParameter.Type.AsCollection().ElementType().FullNameWithNamespace(_proxyClassNamespace);
+                    bindingParameterTypeFulName = functionImportModel.BindableParameter.Type.AsCollection().ElementType().FullNameWithNamespace(functionImportModel.Namespace);
                 functionRegion.AppendLine($"\t\t\t\t\t.For<{bindingParameterTypeFulName?.Replace("IEnumerable<", string.Empty)?.Replace(">", string.Empty)}>().Key(model.{functionImportModel.BindableParameter.Name})");
                 functionRegion.AppendLine($"\t\t\t\t\t.Function(\"{functionImportModel.FunctionImport.Name}\")");
             }
@@ -244,7 +268,6 @@ namespace Unchase.OData.ConnectedService.Common
                 functionRegion.AppendLine("\t\t\t\t\t.ExecuteAsync();");
             else
             {
-                //ToDo: здесь определять по-другому, какой результат возвращает
                 if (functionImportModel.FunctionReturnType.IsCollection())
                 {
                     functionRegion.AppendLine(!functionImportModel.FunctionReturnType.IsPrimitive()
@@ -279,7 +302,7 @@ namespace Unchase.OData.ConnectedService.Common
             return functionRegion.ToString();
         }
 
-        private static string GetModelRegion(string modelClassName, List<IEdmFunctionParameter> functionParameters, bool isBindable = false)
+        private static string GetModelRegion(string modelClassName, string proxyClassNamespace, List<IEdmFunctionParameter> functionParameters, bool isBindable = false)
         {
             // if has no parameters returns empty string
             if (functionParameters.Count == 0)
@@ -294,9 +317,9 @@ namespace Unchase.OData.ConnectedService.Common
             {
                 string functionImportParameterType;
                 if (isBindable && current == 0 && functionImportParameter.Type.IsCollection())
-                    functionImportParameterType = functionImportParameter.Type.AsCollection().ElementType().ToCodeStringType(_proxyClassNamespace);
+                    functionImportParameterType = functionImportParameter.Type.AsCollection().ElementType().ToCodeStringType(proxyClassNamespace);
                 else
-                    functionImportParameterType = functionImportParameter.Type.ToCodeStringType(_proxyClassNamespace);
+                    functionImportParameterType = functionImportParameter.Type.ToCodeStringType(proxyClassNamespace);
 
                 regionModel.Append($"\t\t\tpublic {functionImportParameterType} {functionImportParameter.Name}");
                 regionModel.AppendLine(" { get; set; }");

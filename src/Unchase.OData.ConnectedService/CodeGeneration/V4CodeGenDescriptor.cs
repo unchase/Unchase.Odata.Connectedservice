@@ -1,8 +1,8 @@
-﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
-// Updated by Unchase (https://github.com/unchase).
-// Licensed under the MIT License.  See License.txt in the project root for license information.
+﻿// Copyright (c) 2018 Unchase (https://github.com/unchase).  All rights reserved.
+// Licensed under the Apache License 2.0.  See License.txt in the project root for license information.
 
 using System;
+using System.Data.Services.Design;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -32,17 +32,17 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
         #region Methods
 
         #region NuGet
-        public override async Task AddNugetPackages()
+        public override async Task AddNugetPackagesAsync()
         {
             await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Adding Nuget Packages for OData V4...");
 
             foreach (var nugetPackage in Common.Constants.V4NuGetPackages)
-                await CheckAndInstallNuGetPackage(Common.Constants.NuGetOnlineRepository, nugetPackage);
+                await CheckAndInstallNuGetPackageAsync(Common.Constants.NuGetOnlineRepository, nugetPackage);
 
             await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Nuget Packages for OData V4 were installed.");
         }
 
-        internal async Task CheckAndInstallNuGetPackage(string packageSource, string nugetPackage)
+        internal async Task CheckAndInstallNuGetPackageAsync(string packageSource, string nugetPackage)
         {
             try
             {
@@ -65,25 +65,26 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
         }
         #endregion
 
-        public override async Task AddGeneratedClientCode()
+        public override async Task AddGeneratedClientCodeAsync()
         {
             if (this.ServiceConfiguration.IncludeT4File)
             {
-                await AddT4File();
+                await AddT4FileAsync();
             }
             else
             {
-                await AddGeneratedCSharpCode();
+                await AddGeneratedCodeAsync();
             }
         }
 
-        private async Task AddT4File()
+        private async Task AddT4FileAsync()
         {
             await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Adding T4 file for OData V4...");
 
             var tempFile = Path.GetTempFileName();
             var t4Folder = Path.Combine(this.CurrentAssemblyPath, "Templates");
 
+            // generate .tt
             using (var writer = File.CreateText(tempFile))
             {
                 var text = File.ReadAllText(Path.Combine(t4Folder, "ODataT4CodeGenerator.tt"));
@@ -92,22 +93,37 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
                 text = Regex.Replace(text, "(public const string MetadataDocumentUri = )\"\";", "$1\"" + ServiceConfiguration.Endpoint + "\";");
                 text = Regex.Replace(text, "(public const bool UseDataServiceCollection = ).*;", "$1" + ServiceConfiguration.UseDataServiceCollection.ToString().ToLower(CultureInfo.InvariantCulture) + ";");
                 text = Regex.Replace(text, "(public const string NamespacePrefix = )\"\\$rootnamespace\\$\";", "$1\"" + ServiceConfiguration.NamespacePrefix + "\";");
-                text = Regex.Replace(text, "(public const string TargetLanguage = )\"OutputLanguage\";", "$1\"CSharp\";");
+                if (this.ServiceConfiguration.LanguageOption == LanguageOption.GenerateCSharpCode)
+                    text = Regex.Replace(text, "(public const string TargetLanguage = )\"OutputLanguage\";", "$1\"CSharp\";");
+                else if (this.ServiceConfiguration.LanguageOption == LanguageOption.GenerateVBCode)
+                    text = Regex.Replace(text, "(public const string TargetLanguage = )\"OutputLanguage\";", "$1\"VB\";");
+
                 text = Regex.Replace(text, "(public const bool EnableNamingAlias = )true;", "$1" + this.ServiceConfiguration.EnableNamingAlias.ToString().ToLower(CultureInfo.InvariantCulture) + ";");
                 text = Regex.Replace(text, "(public const bool IgnoreUnexpectedElementsAndAttributes = )true;", "$1" + this.ServiceConfiguration.IgnoreUnexpectedElementsAndAttributes.ToString().ToLower(CultureInfo.InvariantCulture) + ";");
 
                 await writer.WriteAsync(text);
                 await writer.FlushAsync();
             }
+            await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            await this.Context.HandlerHelper.AddFileAsync(tempFile, Path.Combine(this.ReferenceFileFolder, this.GeneratedFileNamePrefix + ".tt"), new AddFileOptions { OpenOnComplete = this.Instance.ServiceConfig.OpenGeneratedFilesOnComplete });
 
-            var referenceFolder = GetReferenceFileFolder();
-            await this.Context.HandlerHelper.AddFileAsync(Path.Combine(t4Folder, "ODataT4CodeGenerator.ttinclude"), Path.Combine(referenceFolder, this.GeneratedFileNamePrefix + ".ttinclude"), new AddFileOptions { OpenOnComplete = this.Instance.ServiceConfig.OpenGeneratedFilesOnComplete });
-            await this.Context.HandlerHelper.AddFileAsync(tempFile, Path.Combine(referenceFolder, this.GeneratedFileNamePrefix + ".tt"), new AddFileOptions { OpenOnComplete = this.Instance.ServiceConfig.OpenGeneratedFilesOnComplete });
+            // generate .ttinclude
+            tempFile = Path.GetTempFileName();
+            using (var writer = File.CreateText(tempFile))
+            {
+                var includeText = File.ReadAllText(Path.Combine(t4Folder, "ODataT4CodeGenerator.ttinclude"));
+                if (this.ServiceConfiguration.LanguageOption == LanguageOption.GenerateVBCode)
+                    includeText = Regex.Replace(includeText, "(output extension=)\".cs\"", "$1\".vb\"");
+                await writer.WriteAsync(includeText);
+                await writer.FlushAsync();
+            }
+
+            await this.Context.HandlerHelper.AddFileAsync(tempFile, Path.Combine(this.ReferenceFileFolder, this.GeneratedFileNamePrefix + ".ttinclude"), new AddFileOptions { OpenOnComplete = this.Instance.ServiceConfig.OpenGeneratedFilesOnComplete });
 
             await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "T4 file for OData V4 was added.");
         }
 
-        private async Task AddGeneratedCSharpCode()
+        private async Task AddGeneratedCodeAsync()
         {
             await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Generating Client Proxy for OData V4...");
 
@@ -115,7 +131,7 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
             {
                 MetadataDocumentUri = MetadataUri,
                 UseDataServiceCollection = this.ServiceConfiguration.UseDataServiceCollection,
-                TargetLanguage = ODataT4CodeGenerator.LanguageOption.CSharp,
+                TargetLanguage = this.ServiceConfiguration.LanguageOption == LanguageOption.GenerateCSharpCode ? ODataT4CodeGenerator.LanguageOption.CSharp : ODataT4CodeGenerator.LanguageOption.VB,
                 IgnoreUnexpectedElementsAndAttributes = this.ServiceConfiguration.IgnoreUnexpectedElementsAndAttributes,
                 EnableNamingAlias = this.ServiceConfiguration.EnableNamingAlias,
                 NamespacePrefix = this.ServiceConfiguration.NamespacePrefix
@@ -134,8 +150,8 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
                         await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Warning, err.ToString());
                 }
             }
-
-            var outputFile = Path.Combine(GetReferenceFileFolder(), this.GeneratedFileNamePrefix + ".cs");
+            await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            var outputFile = Path.Combine(this.ReferenceFileFolder, $"{this.GeneratedFileNamePrefix}{(this.ServiceConfiguration.LanguageOption == LanguageOption.GenerateCSharpCode ? ".cs" : ".vb")}");
             await this.Context.HandlerHelper.AddFileAsync(tempFile, outputFile, new AddFileOptions { OpenOnComplete = this.Instance.ServiceConfig.OpenGeneratedFilesOnComplete });
 
             await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Client Proxy for OData V4 was generated.");

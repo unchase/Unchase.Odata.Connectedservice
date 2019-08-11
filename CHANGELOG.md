@@ -7,6 +7,13 @@
 
 These are the changes to each version that has been released on the official [Visual Studio extension gallery](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService).
 
+## v1.0.0 `2019-08-11`
+
+- [x] Full code refactoring
+- [x] Add wizard page for `OData V3` that allows to select function imports that will be generated
+- [x] Add generation `VB` client code for OData protocol version 4.0
+- [x] Add many little fixes
+
 ## v0.6.0 `(2019-08-04)`
 
 - [x] Add bug fix for [issue #7](https://github.com/unchase/Unchase.Odata.Connectedservice/issues/7):

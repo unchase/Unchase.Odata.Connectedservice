@@ -1,8 +1,8 @@
-﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
-// Updated by Unchase (https://github.com/unchase).
-// Licensed under the MIT License.  See License.txt in the project root for license information.
+﻿// Copyright (c) 2018 Unchase (https://github.com/unchase).  All rights reserved.
+// Licensed under the Apache License 2.0.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Data.Services.Design;
 using Unchase.OData.ConnectedService.Common;
 
@@ -28,6 +28,8 @@ namespace Unchase.OData.ConnectedService.Models
         public bool OpenGeneratedFilesOnComplete { get; set; }
 
         public LanguageOption LanguageOption { get; set; }
+
+        public List<FunctionImportModel> FunctionImports { get; set; }
 
         #region Network Credentials
         public bool UseNetworkCredentials { get; set; }

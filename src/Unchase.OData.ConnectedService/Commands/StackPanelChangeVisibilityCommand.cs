@@ -5,7 +5,7 @@ using Unchase.OData.ConnectedService.Common;
 
 namespace Unchase.OData.ConnectedService.Commands
 {
-    class StackPanelChangeVisibilityCommand : ICommand
+    internal class StackPanelChangeVisibilityCommand : ICommand
     {
         public bool CanExecute(object parameter)
         {
@@ -14,7 +14,8 @@ namespace Unchase.OData.ConnectedService.Commands
 
         public void Execute(object parameter)
         {
-            (parameter as StackPanel)?.ChangeStackPanelVisibility();
+            if (CanExecuteChanged != null)
+                (parameter as StackPanel)?.ChangeStackPanelVisibility();
         }
 
         public event EventHandler CanExecuteChanged;

@@ -1,33 +1,36 @@
-﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
-// Updated by Unchase (https://github.com/unchase).
-// Licensed under the MIT License.  See License.txt in the project root for license information.
+﻿// Copyright (c) 2018 Unchase (https://github.com/unchase).  All rights reserved.
+// Licensed under the Apache License 2.0.  See License.txt in the project root for license information.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.VisualStudio.ConnectedServices;
+using Unchase.OData.ConnectedService.Common;
 using Unchase.OData.ConnectedService.Models;
 using Unchase.OData.ConnectedService.ViewModels;
 using Unchase.OData.ConnectedService.Views;
 
 namespace Unchase.OData.ConnectedService
 {
-    internal class Wizard : ConnectedServiceWizard
+    public class Wizard : ConnectedServiceWizard
     {
         #region Properties and fields
         private Instance _serviceInstance;
 
-        public ConfigODataEndpointViewModel ConfigODataEndpointViewModel { get; set; }
+        internal ConfigODataEndpointViewModel ConfigODataEndpointViewModel { get; set; }
 
-        public AdvancedSettingsViewModel AdvancedSettingsViewModel { get; set; }
+        internal AdvancedSettingsViewModel AdvancedSettingsViewModel { get; set; }
+
+        internal FunctionImportsViewModel FunctionImportsViewModel { get; set; }
 
         public ConnectedServiceProviderContext Context { get; set; }
 
-        public Instance ServiceInstance => this._serviceInstance ?? (this._serviceInstance = new Instance());
+        internal Instance ServiceInstance => this._serviceInstance ?? (this._serviceInstance = new Instance());
 
         public Version EdmxVersion => this.ConfigODataEndpointViewModel.EdmxVersion;
 
-        public UserSettings UserSettings { get; }
+        internal UserSettings UserSettings { get; }
         #endregion
 
         #region Constructors
@@ -37,7 +40,9 @@ namespace Unchase.OData.ConnectedService
             this.UserSettings = UserSettings.Load(context.Logger);
 
             ConfigODataEndpointViewModel = new ConfigODataEndpointViewModel(this.UserSettings);
-            AdvancedSettingsViewModel = new AdvancedSettingsViewModel(this.UserSettings);
+            AdvancedSettingsViewModel = new AdvancedSettingsViewModel(this.UserSettings, this);
+            FunctionImportsViewModel = new FunctionImportsViewModel(this.UserSettings);
+
 
             if (this.Context.IsUpdating)
             {
@@ -73,7 +78,7 @@ namespace Unchase.OData.ConnectedService
                         serviceConfig.IgnoreUnexpectedElementsAndAttributes;
                     AdvancedSettingsViewModel.EnableNamingAlias = serviceConfig.EnableNamingAlias;
                     AdvancedSettingsViewModel.IncludeT4File = serviceConfig.IncludeT4File;
-                    AdvancedSettingsViewModel.IncludeT4FileEnabled = false; // advancedSettings.IncludeT4File.IsEnabled = false;
+                    AdvancedSettingsViewModel.IncludeT4FileEnabled = true;
                 }
 
                 // Restore the advanced settings to UI elements.
@@ -97,11 +102,19 @@ namespace Unchase.OData.ConnectedService
                                     serviceConfig.IgnoreUnexpectedElementsAndAttributes;
                                 advancedSettingsViewModel.EnableNamingAlias = serviceConfig.EnableNamingAlias;
                                 advancedSettingsViewModel.IncludeT4File = serviceConfig.IncludeT4File;
-                                advancedSettings.IncludeT4File.IsEnabled = false;
+                                advancedSettingsViewModel.IncludeT4FileEnabled = true;
+                                advancedSettings.IncludeT4File.IsEnabled = true;
                             }
+
+                            if (!advancedSettingsViewModel.GenerateFunctionImports)
+                                RemoveFunctionImportsSettingsPage();
+                            else
+                                AddFunctionImportsSettingsPage();
                         }
                     }
                 };
+
+                FunctionImportsViewModel.FunctionImports = serviceConfig.FunctionImports;
             }
 
             AdvancedSettingsViewModel.PageEntering += (sender, args) =>
@@ -112,6 +125,24 @@ namespace Unchase.OData.ConnectedService
                     advancedSettingsViewModel.IncludeExtensionsT4FileVisibility = ConfigODataEndpointViewModel.EdmxVersion != Common.Constants.EdmxVersion4 ? Visibility.Visible : Visibility.Collapsed;
                     advancedSettingsViewModel.FunctionImportsGenerator = AdvancedSettingsViewModel.FunctionImportsGenerator;
                     advancedSettingsViewModel.GenerateFunctionImports = AdvancedSettingsViewModel.GenerateFunctionImports;
+                    advancedSettingsViewModel.IncludeT4FileEnabled = true;
+                    if (!advancedSettingsViewModel.GenerateFunctionImports)
+                        RemoveFunctionImportsSettingsPage();
+                    else
+                        AddFunctionImportsSettingsPage();
+                }
+            };
+
+            FunctionImportsViewModel.PageEntering += (sender, args) =>
+            {
+                if (sender is FunctionImportsViewModel functionImportsViewModel)
+                {
+                    if (FunctionImportsViewModel.FunctionImports == null || !FunctionImportsViewModel.FunctionImports.Any() || FunctionImportsViewModel.FunctionImports.Any(fi => !ConfigODataEndpointViewModel.Endpoint.Contains(fi.EndpointUri)))
+                        FunctionImportsViewModel.FunctionImports = FunctionImportsHelper.GetFunctionImports(
+                            this.CreateServiceConfiguration().GetEdmModel(),
+                            AdvancedSettingsViewModel.UseNamespacePrefix ? AdvancedSettingsViewModel.NamespacePrefix : null,
+                            ConfigODataEndpointViewModel.Endpoint.Replace("$metadata", string.Empty));
+                    functionImportsViewModel.FunctionImports = FunctionImportsViewModel.FunctionImports;
                 }
             };
 
@@ -122,6 +153,18 @@ namespace Unchase.OData.ConnectedService
         #endregion
 
         #region Methods
+        public void AddFunctionImportsSettingsPage()
+        {
+            if (!this.Pages.Contains(FunctionImportsViewModel))
+                this.Pages.Add(FunctionImportsViewModel);
+        }
+
+        public void RemoveFunctionImportsSettingsPage()
+        {
+            if (this.Pages.Contains(FunctionImportsViewModel))
+                this.Pages.Remove(FunctionImportsViewModel);
+        }
+
         public override Task<ConnectedServiceInstance> GetFinishedServiceInstanceAsync()
         {
             this.UserSettings.Save();
@@ -129,33 +172,6 @@ namespace Unchase.OData.ConnectedService
             this.ServiceInstance.Name = ConfigODataEndpointViewModel.UserSettings.ServiceName;
             this.ServiceInstance.MetadataTempFilePath = ConfigODataEndpointViewModel.MetadataTempPath;
             this.ServiceInstance.ServiceConfig = this.CreateServiceConfiguration();
-
-            #region Network Credentials
-            this.ServiceInstance.ServiceConfig.UseNetworkCredentials =
-                ConfigODataEndpointViewModel.UseNetworkCredentials;
-            this.ServiceInstance.ServiceConfig.NetworkCredentialsUserName =
-                ConfigODataEndpointViewModel.NetworkCredentialsUserName;
-            this.ServiceInstance.ServiceConfig.NetworkCredentialsPassword =
-                ConfigODataEndpointViewModel.NetworkCredentialsPassword;
-            this.ServiceInstance.ServiceConfig.NetworkCredentialsDomain =
-                ConfigODataEndpointViewModel.NetworkCredentialsDomain;
-            #endregion
-
-            #region Web-proxy
-            this.ServiceInstance.ServiceConfig.UseWebProxy =
-                ConfigODataEndpointViewModel.UseWebProxy;
-            this.ServiceInstance.ServiceConfig.UseWebProxyCredentials =
-                ConfigODataEndpointViewModel.UseWebProxyCredentials;
-            this.ServiceInstance.ServiceConfig.WebProxyNetworkCredentialsUserName =
-                ConfigODataEndpointViewModel.WebProxyNetworkCredentialsUserName;
-            this.ServiceInstance.ServiceConfig.WebProxyNetworkCredentialsPassword =
-                ConfigODataEndpointViewModel.WebProxyNetworkCredentialsPassword;
-            this.ServiceInstance.ServiceConfig.WebProxyNetworkCredentialsDomain =
-                ConfigODataEndpointViewModel.WebProxyNetworkCredentialsDomain;
-            this.ServiceInstance.ServiceConfig.WebProxyUri =
-                ConfigODataEndpointViewModel.WebProxyUri;
-            #endregion
-
             return Task.FromResult<ConnectedServiceInstance>(this.ServiceInstance);
         }
 
@@ -182,7 +198,8 @@ namespace Unchase.OData.ConnectedService
                 {
                     IncludeExtensionsT4File = AdvancedSettingsViewModel.IncludeExtensionsT4File,
                     FunctionImportsGenerator = AdvancedSettingsViewModel.FunctionImportsGenerator,
-                    GenerateFunctionImports = AdvancedSettingsViewModel.GenerateFunctionImports
+                    GenerateFunctionImports = AdvancedSettingsViewModel.GenerateFunctionImports,
+                    FunctionImports = FunctionImportsViewModel.FunctionImports
                 };
             }
 
@@ -198,6 +215,32 @@ namespace Unchase.OData.ConnectedService
             {
                 serviceConfiguration.NamespacePrefix = AdvancedSettingsViewModel.NamespacePrefix;
             }
+
+            #region Network Credentials
+            serviceConfiguration.UseNetworkCredentials =
+                ConfigODataEndpointViewModel.UseNetworkCredentials;
+            serviceConfiguration.NetworkCredentialsUserName =
+                ConfigODataEndpointViewModel.NetworkCredentialsUserName;
+            serviceConfiguration.NetworkCredentialsPassword =
+                ConfigODataEndpointViewModel.NetworkCredentialsPassword;
+            serviceConfiguration.NetworkCredentialsDomain =
+                ConfigODataEndpointViewModel.NetworkCredentialsDomain;
+            #endregion
+
+            #region Web-proxy
+            serviceConfiguration.UseWebProxy =
+                ConfigODataEndpointViewModel.UseWebProxy;
+            serviceConfiguration.UseWebProxyCredentials =
+                ConfigODataEndpointViewModel.UseWebProxyCredentials;
+            serviceConfiguration.WebProxyNetworkCredentialsUserName =
+                ConfigODataEndpointViewModel.WebProxyNetworkCredentialsUserName;
+            serviceConfiguration.WebProxyNetworkCredentialsPassword =
+                ConfigODataEndpointViewModel.WebProxyNetworkCredentialsPassword;
+            serviceConfiguration.WebProxyNetworkCredentialsDomain =
+                ConfigODataEndpointViewModel.WebProxyNetworkCredentialsDomain;
+            serviceConfiguration.WebProxyUri =
+                ConfigODataEndpointViewModel.WebProxyUri;
+            #endregion
 
             return serviceConfiguration;
         }

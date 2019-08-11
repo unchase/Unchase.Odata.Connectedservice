@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.168
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29025.244
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unchase.OData.ConnectedService", "Unchase.OData.ConnectedService\Unchase.OData.ConnectedService.csproj", "{F97AABB1-9344-402A-B4C1-299E95BA0590}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unchase.OData.ConnectedService", "Unchase.OData.ConnectedService\Unchase.OData.ConnectedService.csproj", "{1DF0B328-CD61-4A80-8DA3-E182DA13F3AD}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FF7CCFAF-BC23-4ACA-A401-F1224B49DE50}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FDBEC412-9A84-404D-A51E-0BF908C6F8D3}"
 	ProjectSection(SolutionItems) = preProject
 		..\appveyor.yml = ..\appveyor.yml
 		..\CHANGELOG.md = ..\CHANGELOG.md
@@ -13,8 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{525776C4-F5FF-4C4C-ADE8-E22F78863EFB}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{AF7BF915-39B1-44DB-860A-EF92B0FBD6AD}"
 	ProjectSection(SolutionItems) = preProject
+		..\img\buymeacoffe.png = ..\img\buymeacoffe.png
 		..\img\Unchase-OData-Connected-Service-Logo.png = ..\img\Unchase-OData-Connected-Service-Logo.png
 		..\img\Unchase-OData-Connected-Service-ReportBug.png = ..\img\Unchase-OData-Connected-Service-ReportBug.png
 		..\img\Unchase-OData-Connected-Service-VisualBasic.png = ..\img\Unchase-OData-Connected-Service-VisualBasic.png
@@ -27,18 +28,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F97AABB1-9344-402A-B4C1-299E95BA0590}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F97AABB1-9344-402A-B4C1-299E95BA0590}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F97AABB1-9344-402A-B4C1-299E95BA0590}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F97AABB1-9344-402A-B4C1-299E95BA0590}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DF0B328-CD61-4A80-8DA3-E182DA13F3AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DF0B328-CD61-4A80-8DA3-E182DA13F3AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DF0B328-CD61-4A80-8DA3-E182DA13F3AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DF0B328-CD61-4A80-8DA3-E182DA13F3AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{525776C4-F5FF-4C4C-ADE8-E22F78863EFB} = {FF7CCFAF-BC23-4ACA-A401-F1224B49DE50}
+		{AF7BF915-39B1-44DB-860A-EF92B0FBD6AD} = {FDBEC412-9A84-404D-A51E-0BF908C6F8D3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {CDC2F5E8-A9CD-44C5-835C-AAB8D39A3815}
+		SolutionGuid = {1DD926CA-C356-4D1B-90CC-B8BD179954D0}
 	EndGlobalSection
 EndGlobal
