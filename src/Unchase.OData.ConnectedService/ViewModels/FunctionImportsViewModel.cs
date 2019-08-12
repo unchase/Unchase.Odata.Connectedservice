@@ -16,6 +16,8 @@ namespace Unchase.OData.ConnectedService.ViewModels
         public UserSettings UserSettings { get; }
 
         public List<FunctionImportModel> FunctionImports { get; set; }
+
+        public int FunctionImportsCount { get; set; } = 0;
         #endregion
 
         #region Constructors
@@ -25,6 +27,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.Description = "Function Imports Settings for select the necessary methods that will be added after generation";
             this.Legend = "Function Imports Settings";
             this.FunctionImports = new List<FunctionImportModel>();
+            this.FunctionImportsCount = FunctionImports.Count;
             this.UserSettings = userSettings;
         }
         #endregion
@@ -37,6 +40,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
             await base.OnPageEnteringAsync(args);
 
             this.View = new FunctionImports {DataContext = this};
+            this.FunctionImportsCount = this.FunctionImports.Count;
             PageEntering?.Invoke(this, EventArgs.Empty);
         }
 

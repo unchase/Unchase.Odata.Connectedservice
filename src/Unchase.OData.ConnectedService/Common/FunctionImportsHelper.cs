@@ -20,6 +20,9 @@ namespace Unchase.OData.ConnectedService.Common
         internal static string FullNameWithNamespace(this IEdmTypeReference type, string proxyClassNamespace)
         {
             var definition = type?.Definition as IEdmSchemaElement;
+            if (definition == null && type?.IsCollection() == true)
+                definition = type?.AsCollection()?.ElementType()?.Definition as IEdmSchemaElement;
+
             return definition?.FullNameWithNamespace(proxyClassNamespace);
         }
 
@@ -118,9 +121,6 @@ namespace Unchase.OData.ConnectedService.Common
 
             foreach (var modelEntityContainer in model.EntityContainers())
             {
-                if (string.IsNullOrWhiteSpace(proxyClassNamespace))
-                    proxyClassNamespace = modelEntityContainer.Namespace;
-
                 foreach (var functionImport in modelEntityContainer.FunctionImports())
                     result.Add(new FunctionImportModel(model, functionImport, endpointUri, proxyClassNamespace));
             }

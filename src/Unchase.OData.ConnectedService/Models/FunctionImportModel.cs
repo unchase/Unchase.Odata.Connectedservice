@@ -24,7 +24,7 @@ namespace Unchase.OData.ConnectedService.Models
 
         internal bool HasParameters => FunctionParameters.Count > 0;
 
-        internal string EntitySetName { get; }
+        public string EntitySetName { get; }
 
         public string HttpMethod { get; }
 
@@ -42,6 +42,18 @@ namespace Unchase.OData.ConnectedService.Models
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsChecked"));
             }
         }
+
+        private bool _isCollectionReturnTypeChecked;
+        public bool IsCollectionReturnTypeChecked
+        {
+            get => _isCollectionReturnTypeChecked;
+            set
+            {
+                _isCollectionReturnTypeChecked = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCollectionReturnTypeChecked"));
+            }
+        }
+
         public string FunctionImportName { get; set; }
 
         public string ParametersString
@@ -55,7 +67,7 @@ namespace Unchase.OData.ConnectedService.Models
                 {
                     if (!first)
                         parametersString.Append(", ");
-                    parametersString.Append($"{functionParameter.Type.FullNameWithNamespace(Namespace)} {functionParameter.Name}");
+                    parametersString.Append($"{functionParameter.Type.ToCodeStringType(Namespace)} {functionParameter.Name}");
                     if (first)
                         first = false;
                 }
@@ -67,7 +79,6 @@ namespace Unchase.OData.ConnectedService.Models
         public string FunctionImportReturnTypeFullName { get; set; }
 
         public string Separator => "|";
-
         #endregion
 
         #region Constructors
@@ -76,14 +87,15 @@ namespace Unchase.OData.ConnectedService.Models
             FunctionImport = functionImport;
             FunctionImportName = functionImport.Name;
             EndpointUri = endpointUri;
-            HttpMethod = model.GetHttpMethod(functionImport) ?? "POST";
+            HttpMethod = model.GetHttpMethod(functionImport) ?? "POST"; //ToDo: if null, then - UNKNOWN
             FunctionParameters = functionImport.Parameters.ToList();
-            BindableParameter = FunctionParameters.FirstOrDefault(fp => fp.Type.IsEntity() || fp.Type.IsCollection() && fp.Type.AsCollection().ElementType().IsEntity());
+            BindableParameter = functionImport.IsBindable ? FunctionParameters.FirstOrDefault(fp => fp.Type.IsEntity() || fp.Type.IsCollection() && fp.Type.AsCollection().ElementType().IsEntity()) : null;
             EntitySetName = functionImport.IsBindable && BindableParameter != null
                 ? (BindableParameter.Type.IsCollection() ? BindableParameter.Type.AsCollection().ElementType().FullNameWithNamespace(proxyClassNamespace).Split('.').Last() : BindableParameter.Type.FullNameWithNamespace(proxyClassNamespace).Split('.').Last())
                 : string.Empty;
             FunctionReturnType = functionImport.ReturnType;
-            FunctionImportReturnTypeFullName = FunctionReturnType.FullNameWithNamespace(proxyClassNamespace) ?? "void";
+            FunctionImportReturnTypeFullName = functionImport.ReturnType?.ToCodeStringType(proxyClassNamespace) ?? "void";
+            IsCollectionReturnTypeChecked = functionImport.ReturnType?.IsCollection() ?? false;
             Namespace = proxyClassNamespace;
             IsChecked = true;
         }

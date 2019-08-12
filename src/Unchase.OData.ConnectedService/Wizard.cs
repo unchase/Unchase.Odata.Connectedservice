@@ -2,6 +2,7 @@
 // Licensed under the Apache License 2.0.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -114,7 +115,8 @@ namespace Unchase.OData.ConnectedService
                     }
                 };
 
-                FunctionImportsViewModel.FunctionImports = serviceConfig.FunctionImports;
+                FunctionImportsViewModel.FunctionImports = serviceConfig.FunctionImports ?? new List<FunctionImportModel>();
+                FunctionImportsViewModel.FunctionImportsCount = serviceConfig.FunctionImports?.Count ?? 0;
             }
 
             AdvancedSettingsViewModel.PageEntering += (sender, args) =>
@@ -137,12 +139,23 @@ namespace Unchase.OData.ConnectedService
             {
                 if (sender is FunctionImportsViewModel functionImportsViewModel)
                 {
-                    if (FunctionImportsViewModel.FunctionImports == null || !FunctionImportsViewModel.FunctionImports.Any() || FunctionImportsViewModel.FunctionImports.Any(fi => !ConfigODataEndpointViewModel.Endpoint.Contains(fi.EndpointUri)))
+                    if (FunctionImportsViewModel.FunctionImports == null ||
+                        !FunctionImportsViewModel.FunctionImports.Any() ||
+                        AdvancedSettingsViewModel.UseNamespacePrefix && FunctionImportsViewModel.FunctionImports.Any(fi => fi.Namespace != AdvancedSettingsViewModel.NamespacePrefix) ||
+                        FunctionImportsViewModel.FunctionImports.Any(fi =>
+                            !ConfigODataEndpointViewModel.Endpoint.Contains(fi.EndpointUri)))
+                    {
                         FunctionImportsViewModel.FunctionImports = FunctionImportsHelper.GetFunctionImports(
                             this.CreateServiceConfiguration().GetEdmModel(),
-                            AdvancedSettingsViewModel.UseNamespacePrefix ? AdvancedSettingsViewModel.NamespacePrefix : null,
+                            AdvancedSettingsViewModel.UseNamespacePrefix
+                                ? AdvancedSettingsViewModel.NamespacePrefix
+                                : null,
                             ConfigODataEndpointViewModel.Endpoint.Replace("$metadata", string.Empty));
+                        FunctionImportsViewModel.FunctionImportsCount = FunctionImportsViewModel.FunctionImports?.Count ?? 0;
+                    }
+
                     functionImportsViewModel.FunctionImports = FunctionImportsViewModel.FunctionImports;
+                    functionImportsViewModel.FunctionImportsCount = functionImportsViewModel.FunctionImports?.Count ?? 0;
                 }
             };
 

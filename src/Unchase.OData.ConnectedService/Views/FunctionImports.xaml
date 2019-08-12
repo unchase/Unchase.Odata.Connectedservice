@@ -11,49 +11,75 @@
     mc:Ignorable="d">
     <StackPanel>
         <TextBlock
+            Margin="0,0,0,5"
+            FontWeight="Bold"
+            Text="{Binding FunctionImportsCount, StringFormat='FunctionImports count: {0}'}" />
+        <TextBlock
             x:Name="Label"
             Margin="0,0,0,5"
             TextWrapping="WrapWithOverflow">
             You can select the necessary methods that will be added after generation:
         </TextBlock>
+        <TextBlock
+            Margin="0,0,0,5"
+            FontSize="10"
+            TextWrapping="WrapWithOverflow">
+            Add? | Http-Method | ReturnType is Collection | [ReturnType] [EntitySet][FunctionImport Name] ([parameters list])
+        </TextBlock>
         <ListBox
-            MinHeight="345"
+            MinHeight="300"
             ItemsSource="{Binding FunctionImports}"
+            VerticalContentAlignment="Center"
             ScrollViewer.HorizontalScrollBarVisibility="Visible"
             ScrollViewer.VerticalScrollBarVisibility="Visible">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <CheckBox
-                            Width="18"
+                            Width="16"
+                            VerticalContentAlignment="Center"
+                            VerticalAlignment="Center"
                             Margin="0,5,8,0"
                             IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock
+                            Width="2"
+                            Margin="0,3,8,0"
+                            Text="{Binding Separator}" />
                         <TextBlock
                             Width="30"
                             Margin="0,5,8,0"
                             FontWeight="Bold"
                             Text="{Binding HttpMethod}" />
                         <TextBlock
-                            Width="5"
+                            Width="2"
+                            Margin="0,3,8,0"
+                            Text="{Binding Separator}" />
+                        <CheckBox
+                            Width="16"
                             Margin="0,5,8,0"
+                            IsEnabled="False"
+                            IsChecked="{Binding IsCollectionReturnTypeChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock
+                            Width="2"
+                            Margin="0,3,8,0"
                             Text="{Binding Separator}" />
                         <TextBlock
                             Margin="0,5,8,0"
                             FontSize="10"
                             Foreground="CornflowerBlue"
                             Text="{Binding FunctionImportReturnTypeFullName}">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="VerticalAlignment" Value="Center" />
-                                </Style>
-                            </TextBlock.Style>
                         </TextBlock>
                         <TextBlock
-                            Margin="0,5,8,0"
+                            Margin="0,3,0,0"
+                            FontWeight="Bold"
+                            Foreground="Coral"
+                            Text="{Binding EntitySetName}" />
+                        <TextBlock
+                            Margin="0,3,8,0"
                             FontWeight="Bold"
                             Foreground="Coral"
                             Text="{Binding FunctionImport.Name}" />
-                        <TextBlock Margin="0,5,8,0" Text="{Binding ParametersString}" />
+                        <TextBlock Margin="0,3,8,0" Text="{Binding ParametersString}" />
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
