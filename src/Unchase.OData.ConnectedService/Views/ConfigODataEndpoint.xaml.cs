@@ -28,6 +28,21 @@ namespace Unchase.OData.ConnectedService.Views
             var url = string.Format(ReportABugUrlFormat, title, body);
             System.Diagnostics.Process.Start(url);
         }
+
+        private void OpenEndpointFileButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new Microsoft.Win32.OpenFileDialog
+            {
+                DefaultExt = ".xml",
+                Filter = "Endpoint metadata Files (.xml)|*.xml",
+                Title = "Open endpoint metadata file"
+            };
+            var result = openFileDialog.ShowDialog();
+            if (result == true)
+            {
+                Endpoint.Text = openFileDialog.FileName;
+            }
+        }
         #endregion
     }
 }

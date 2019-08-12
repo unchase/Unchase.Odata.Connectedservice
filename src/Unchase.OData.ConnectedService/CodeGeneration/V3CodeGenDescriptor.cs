@@ -170,7 +170,7 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
                 text = Regex.Replace(text, "\\$proxyClassName\\$", proxyClassName);
                 text = Regex.Replace(text, "\\$functionMethods\\$", !string.IsNullOrEmpty(functionMethods) ? functionMethods : string.Empty);
                 text = Regex.Replace(text, "\\$generationDate\\$", $"{DateTime.Now:yyyy-MM-dd hh:mm:ss}");
-                text = Regex.Replace(text, "(new Uri\\()\"\\$metadataDocumentUri\\$\"\\)\\)", "$1\"" + ServiceConfiguration.Endpoint.Replace("$metadata", string.Empty).Replace("\\", "\\\\") + "\"))");
+                text = Regex.Replace(text, "(new Uri\\()\"\\$metadataDocumentUri\\$\"\\)\\)", "$1\"" + (File.Exists(ServiceConfiguration.Endpoint) ? ServiceConfiguration.Endpoint : ServiceConfiguration.Endpoint.Replace("$metadata", string.Empty)).Replace("\\", "\\\\") + "\"))");
                 if (this.ServiceConfiguration.FunctionImportsGenerator != Constants.FunctionImportsGenerator.SimpleOData)
                     text = Regex.Replace(text, "using Simple.OData.Client;", string.Empty);
 

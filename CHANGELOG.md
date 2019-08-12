@@ -7,10 +7,15 @@
 
 These are the changes to each version that has been released on the official [Visual Studio extension gallery](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService).
 
+## v1.1.1 `2019-08-12`
+
+- [x] Fix bug with metadata file URI
+- [x] Add "Browse" button in the first wizard page for choosing metadata file
+
 ## v1.1.0 `2019-08-12`
 
 - [x] Add bug fixes in `FunctionImports` generation
-- [x] Add some improvements in the `FunctionImport Settings` wizard page
+- [x] Add some improvements in the `Function Imports Settings` wizard page
 
 ## v1.0.2 `2019-08-11`
 

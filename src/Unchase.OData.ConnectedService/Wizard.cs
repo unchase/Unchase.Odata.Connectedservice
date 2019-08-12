@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -150,7 +151,7 @@ namespace Unchase.OData.ConnectedService
                             AdvancedSettingsViewModel.UseNamespacePrefix
                                 ? AdvancedSettingsViewModel.NamespacePrefix
                                 : null,
-                            ConfigODataEndpointViewModel.Endpoint.Replace("$metadata", string.Empty));
+                            File.Exists(ConfigODataEndpointViewModel.Endpoint) ? ConfigODataEndpointViewModel.Endpoint : ConfigODataEndpointViewModel.Endpoint.Replace("$metadata", string.Empty));
                         FunctionImportsViewModel.FunctionImportsCount = FunctionImportsViewModel.FunctionImports?.Count ?? 0;
                     }
 
