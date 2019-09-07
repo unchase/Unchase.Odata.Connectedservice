@@ -23,9 +23,9 @@ namespace Unchase.OData.ConnectedService.ViewModels
         #region Constructors
         public FunctionImportsViewModel(UserSettings userSettings) : base()
         {
-            this.Title = "Function Imports Settings";
+            this.Title = "Function Imports Selection";
             this.Description = "Function Imports Settings for select the necessary methods that will be added after generation";
-            this.Legend = "Function Imports Settings";
+            this.Legend = "Function Imports Selection";
             this.FunctionImports = new List<FunctionImportModel>();
             this.FunctionImportsCount = FunctionImports.Count;
             this.UserSettings = userSettings;

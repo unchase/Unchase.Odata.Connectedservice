@@ -7,6 +7,10 @@
 
 These are the changes to each version that has been released on the official [Visual Studio extension gallery](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService).
 
+## v1.1.2 `2019-09-07`
+
+- [x] Fix casting types error in `ODataT4CodeGenerator`. Client-side code generation for `OData v4`: https://graph.microsoft.com/beta/$metadata now works fine.
+
 ## v1.1.1 `2019-08-12`
 
 - [x] Fix bug with metadata file URI

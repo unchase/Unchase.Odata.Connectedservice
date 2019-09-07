@@ -8,8 +8,6 @@
 // </auto-generated>
 // ------------------------------------------------------------------------------
 
-using System.Reflection;
-
 namespace Unchase.OData.ConnectedService.Templates
 {
     using System;
@@ -51,60 +49,67 @@ namespace Unchase.OData.ConnectedService.Templates
             THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             */
 
-            CodeGenerationContext context;
-            if (!string.IsNullOrWhiteSpace(this.Edmx))
+            try
             {
-                context = new CodeGenerationContext(this.Edmx, this.NamespacePrefix)
+                CodeGenerationContext context;
+                if (!string.IsNullOrWhiteSpace(this.Edmx))
                 {
-                    UseDataServiceCollection = this.UseDataServiceCollection,
-                    TargetLanguage = this.TargetLanguage,
-                    EnableNamingAlias = this.EnableNamingAlias,
-                    TempFilePath = this.TempFilePath,
-                    IgnoreUnexpectedElementsAndAttributes = this.IgnoreUnexpectedElementsAndAttributes
-                };
-            }
-            else
-            {
-                this.ApplyParametersFromCommandLine();
-                if (string.IsNullOrEmpty(metadataDocumentUri))
+                    context = new CodeGenerationContext(this.Edmx, this.NamespacePrefix)
+                    {
+                        UseDataServiceCollection = this.UseDataServiceCollection,
+                        TargetLanguage = this.TargetLanguage,
+                        EnableNamingAlias = this.EnableNamingAlias,
+                        TempFilePath = this.TempFilePath,
+                        IgnoreUnexpectedElementsAndAttributes = this.IgnoreUnexpectedElementsAndAttributes
+                    };
+                }
+                else
                 {
-                    this.ApplyParametersFromConfigurationClass();
+                    this.ApplyParametersFromCommandLine();
+                    if (string.IsNullOrEmpty(metadataDocumentUri))
+                    {
+                        this.ApplyParametersFromConfigurationClass();
+                    }
+
+                    context = new CodeGenerationContext(new Uri(this.MetadataDocumentUri, UriKind.Absolute), this.NamespacePrefix)
+                    {
+                        UseDataServiceCollection = this.UseDataServiceCollection,
+                        TargetLanguage = this.TargetLanguage,
+                        EnableNamingAlias = this.EnableNamingAlias,
+                        TempFilePath = this.TempFilePath,
+                        IgnoreUnexpectedElementsAndAttributes = this.IgnoreUnexpectedElementsAndAttributes
+                    };
                 }
 
-                context = new CodeGenerationContext(new Uri(this.MetadataDocumentUri, UriKind.Absolute), this.NamespacePrefix)
+                if (this.GetReferencedModelReaderFunc != null)
                 {
-                    UseDataServiceCollection = this.UseDataServiceCollection,
-                    TargetLanguage = this.TargetLanguage,
-                    EnableNamingAlias = this.EnableNamingAlias,
-                    TempFilePath = this.TempFilePath,
-                    IgnoreUnexpectedElementsAndAttributes = this.IgnoreUnexpectedElementsAndAttributes
-                };
+                    context.GetReferencedModelReaderFunc = this.GetReferencedModelReaderFunc;
+                }
+
+                ODataClientTemplate template;
+                switch (this.TargetLanguage)
+                {
+                    case LanguageOption.CSharp:
+                        template = new ODataClientCSharpTemplate(context);
+                        break;
+                    case LanguageOption.VB:
+                        template = new ODataClientVBTemplate(context);
+                        break;
+
+                    default:
+                        throw new NotSupportedException($"Code gen for the target language '{this.TargetLanguage.ToString()}' is not supported.");
+                }
+
+                this.Write(this.ToStringHelper.ToStringWithCulture(template.TransformText()));
+
+                foreach (string warning in context.Warnings)
+                {
+                    this.Warning(warning);
+                }
             }
-
-            if (this.GetReferencedModelReaderFunc != null)
+            catch (Exception ex)
             {
-                context.GetReferencedModelReaderFunc = this.GetReferencedModelReaderFunc;
-            }
-
-            ODataClientTemplate template;
-            switch(this.TargetLanguage)
-            {
-                case LanguageOption.CSharp:
-                    template = new ODataClientCSharpTemplate(context);
-                    break;
-                case LanguageOption.VB:
-                    template = new ODataClientVBTemplate(context);
-                    break;
-
-                default:
-                    throw new NotSupportedException($"Code gen for the target language '{this.TargetLanguage.ToString()}' is not supported.");
-            }
-
-            this.Write(this.ToStringHelper.ToStringWithCulture(template.TransformText()));
-
-            foreach (string warning in context.Warnings)
-            {
-                this.Warning(warning);
+                throw ex;
             }
 
             return this.GenerationEnvironment.ToString();
@@ -1322,38 +1327,79 @@ public abstract class ODataClientTemplate : TemplateBase
                         }
                     }
 
-                    IEdmStructuredType structuredType;
+                    IEdmPrimitiveType primitiveType = null;
+                    IEdmStructuredType structuredType = null;
                     if (edmTypeReference.IsCollection())
                     {
                         IEdmCollectionType collectionType = edmTypeReference.Definition as IEdmCollectionType;
-                        structuredType = (IEdmStructuredType)collectionType.ElementType.Definition;
+                        if (collectionType.ElementType.Definition.TypeKind == EdmTypeKind.Primitive)
+                        {
+                            primitiveType = collectionType.ElementType.Definition as IEdmPrimitiveType;
+                        }
+                        else
+                        {
+                            structuredType = collectionType.ElementType.Definition as IEdmStructuredType;
+                        }
                     }
                     else
                     {
-                        structuredType = (IEdmStructuredType)edmTypeReference.Definition;
+                        if (edmTypeReference.Definition.TypeKind == EdmTypeKind.Primitive)
+                        {
+                            primitiveType = edmTypeReference.Definition as IEdmPrimitiveType;
+                        }
+                        else
+                        {
+                            structuredType = edmTypeReference.Definition as IEdmStructuredType;
+                        }
                     }
 
-                    if (structuredBaseTypeMap.TryGetValue(structuredType, out var derivedTypes))
+                    if (primitiveType != null)
                     {
-                        foreach (IEdmStructuredType type in derivedTypes)
+                        IEdmTypeReference derivedTypeReference = new EdmPrimitiveTypeReference(primitiveType, true);
+                        List<IEdmTypeReference> currentParameters = function.Parameters.Select(p => p.Type).ToList();
+                        currentParameters[0] = derivedTypeReference;
+
+                        sourceTypeName = string.Format(edmTypeReference.IsCollection() ? this.DataServiceQueryStructureTemplate : this.DataServiceQuerySingleStructureTemplate, GetSourceOrReturnTypeName(derivedTypeReference));
+                        string currentFunc = $"{fixedFunctionName}({sourceTypeName},{parameterTypes})";
+                        if (!boundOperations.Contains(currentFunc))
                         {
-                            IEdmTypeReference derivedTypeReference = new EdmEntityTypeReference((IEdmEntityType)type, true);
-                            List<IEdmTypeReference> currentParameters = function.Parameters.Select(p => p.Type).ToList();
-                            currentParameters[0] = derivedTypeReference;
+                            boundOperations.Add(currentFunc);
 
-                            sourceTypeName = string.Format(edmTypeReference.IsCollection() ? this.DataServiceQueryStructureTemplate : this.DataServiceQuerySingleStructureTemplate, GetSourceOrReturnTypeName(derivedTypeReference));
-                            string currentFunc = $"{fixedFunctionName}({sourceTypeName},{parameterTypes})";
-                            if (!boundOperations.Contains(currentFunc))
+                            if (function.ReturnType.IsCollection())
                             {
-                                boundOperations.Add(currentFunc);
+                                this.WriteBoundFunctionReturnCollectionResultAsExtension(fixedFunctionName, function.Name, sourceTypeName, returnTypeName, parameterString, function.Namespace, parameterValues, function.IsComposable, useEntityReference);
+                            }
+                            else
+                            {
+                                this.WriteBoundFunctionReturnSingleResultAsExtension(fixedFunctionName, function.Name, sourceTypeName, returnTypeName, returnTypeNameWithSingleSuffix, parameterString, function.Namespace, parameterValues, function.IsComposable, function.ReturnType.IsEntity(), useEntityReference);
+                            }
+                        }
+                    }
 
-                                if (function.ReturnType.IsCollection())
+                    if (structuredType != null)
+                    {
+                        if (structuredBaseTypeMap.TryGetValue(structuredType, out var derivedTypes))
+                        {
+                            foreach (IEdmStructuredType type in derivedTypes)
+                            {
+                                IEdmTypeReference derivedTypeReference = new EdmEntityTypeReference((IEdmEntityType)type, true);
+                                List<IEdmTypeReference> currentParameters = function.Parameters.Select(p => p.Type).ToList();
+                                currentParameters[0] = derivedTypeReference;
+
+                                sourceTypeName = string.Format(edmTypeReference.IsCollection() ? this.DataServiceQueryStructureTemplate : this.DataServiceQuerySingleStructureTemplate, GetSourceOrReturnTypeName(derivedTypeReference));
+                                string currentFunc = $"{fixedFunctionName}({sourceTypeName},{parameterTypes})";
+                                if (!boundOperations.Contains(currentFunc))
                                 {
-                                    this.WriteBoundFunctionReturnCollectionResultAsExtension(fixedFunctionName, function.Name, sourceTypeName, returnTypeName, parameterString, function.Namespace, parameterValues, function.IsComposable, useEntityReference);
-                                }
-                                else
-                                {
-                                    this.WriteBoundFunctionReturnSingleResultAsExtension(fixedFunctionName, function.Name, sourceTypeName, returnTypeName, returnTypeNameWithSingleSuffix, parameterString, function.Namespace, parameterValues, function.IsComposable, function.ReturnType.IsEntity(), useEntityReference);
+                                    boundOperations.Add(currentFunc);
+
+                                    if (function.ReturnType.IsCollection())
+                                    {
+                                        this.WriteBoundFunctionReturnCollectionResultAsExtension(fixedFunctionName, function.Name, sourceTypeName, returnTypeName, parameterString, function.Namespace, parameterValues, function.IsComposable, useEntityReference);
+                                    }
+                                    else
+                                    {
+                                        this.WriteBoundFunctionReturnSingleResultAsExtension(fixedFunctionName, function.Name, sourceTypeName, returnTypeName, returnTypeNameWithSingleSuffix, parameterString, function.Namespace, parameterValues, function.IsComposable, function.ReturnType.IsEntity(), useEntityReference);
+                                    }
                                 }
                             }
                         }
@@ -1391,31 +1437,66 @@ public abstract class ODataClientTemplate : TemplateBase
                         this.WriteBoundActionAsExtension(fixedActionName, action.Name, sourceTypeName, returnTypeName, parameterString, action.Namespace, parameterValues);
                     }
 
-                    IEdmStructuredType structuredType;
+                    IEdmStructuredType structuredType = null;
+                    IEdmPrimitiveType primitiveType = null;
                     if (edmTypeReference.IsCollection())
                     {
                         IEdmCollectionType collectionType = edmTypeReference.Definition as IEdmCollectionType;
-                        structuredType = (IEdmStructuredType)collectionType.ElementType.Definition;
+                        if (collectionType.ElementType.Definition.TypeKind == EdmTypeKind.Primitive)
+                        {
+                            primitiveType = collectionType.ElementType.Definition as IEdmPrimitiveType;
+                        }
+                        else
+                        {
+                            structuredType = collectionType.ElementType.Definition as IEdmStructuredType;
+                        }
                     }
                     else
                     {
-                        structuredType = (IEdmStructuredType)edmTypeReference.Definition;
+                        if (edmTypeReference.Definition.TypeKind == EdmTypeKind.Primitive)
+                        {
+                            primitiveType = edmTypeReference.Definition as IEdmPrimitiveType;
+                        }
+                        else
+                        {
+                            structuredType = edmTypeReference.Definition as IEdmStructuredType;
+                        }
                     }
 
-                    if (structuredBaseTypeMap.TryGetValue(structuredType, out var derivedTypes))
+                    if (primitiveType != null)
                     {
-                        foreach (IEdmStructuredType type in derivedTypes)
-                        {
-                            IEdmTypeReference derivedTypeReference = new EdmEntityTypeReference((IEdmEntityType)type, true);
-                            List<IEdmTypeReference> currentParameters = action.Parameters.Select(p => p.Type).ToList();
-                            currentParameters[0] = derivedTypeReference;
+                        IEdmTypeReference derivedTypeReference = new EdmPrimitiveTypeReference(primitiveType, true);
+                        List<IEdmTypeReference> currentParameters = action.Parameters.Select(p => p.Type).ToList();
+                        currentParameters[0] = derivedTypeReference;
 
-                            sourceTypeName = string.Format(edmTypeReference.IsCollection() ? this.DataServiceQueryStructureTemplate : this.DataServiceQuerySingleStructureTemplate, GetSourceOrReturnTypeName(derivedTypeReference));
-                            string currentAc = $"{fixedActionName}({sourceTypeName},{parameterTypes})";
-                            if (!boundOperations.Contains(currentAc))
+                        sourceTypeName = string.Format(edmTypeReference.IsCollection() ? this.DataServiceQueryStructureTemplate : this.DataServiceQuerySingleStructureTemplate, GetSourceOrReturnTypeName(derivedTypeReference));
+                        string currentAc = $"{fixedActionName}({sourceTypeName},{parameterTypes})";
+                        if (!boundOperations.Contains(currentAc))
+                        {
+                            boundOperations.Add(currentAc);
+                            this.WriteBoundActionAsExtension(fixedActionName, action.Name, sourceTypeName, returnTypeName, parameterString, action.Namespace, parameterValues);
+                        }
+
+                        this.WriteBoundActionAsExtension(fixedActionName, action.Name, sourceTypeName, returnTypeName, parameterString, action.Namespace, parameterValues);
+                    }
+
+                    if (structuredType != null)
+                    {
+                        if (structuredBaseTypeMap.TryGetValue(structuredType, out var derivedTypes))
+                        {
+                            foreach (IEdmStructuredType type in derivedTypes)
                             {
-                                boundOperations.Add(currentAc);
-                                this.WriteBoundActionAsExtension(fixedActionName, action.Name, sourceTypeName, returnTypeName, parameterString, action.Namespace, parameterValues);
+                                IEdmTypeReference derivedTypeReference = new EdmEntityTypeReference((IEdmEntityType)type, true);
+                                List<IEdmTypeReference> currentParameters = action.Parameters.Select(p => p.Type).ToList();
+                                currentParameters[0] = derivedTypeReference;
+
+                                sourceTypeName = string.Format(edmTypeReference.IsCollection() ? this.DataServiceQueryStructureTemplate : this.DataServiceQuerySingleStructureTemplate, GetSourceOrReturnTypeName(derivedTypeReference));
+                                string currentAc = $"{fixedActionName}({sourceTypeName},{parameterTypes})";
+                                if (!boundOperations.Contains(currentAc))
+                                {
+                                    boundOperations.Add(currentAc);
+                                    this.WriteBoundActionAsExtension(fixedActionName, action.Name, sourceTypeName, returnTypeName, parameterString, action.Namespace, parameterValues);
+                                }
                             }
                         }
                     }
