@@ -3,20 +3,22 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Security;
 using System.Text;
-using System.Xml;
 using Microsoft.Data.Edm;
 using Microsoft.Data.Edm.Csdl;
 using Microsoft.VisualStudio.ConnectedServices;
 using Unchase.OData.ConnectedService.Models;
+using IEdmModel = Microsoft.Data.Edm.IEdmModel;
+using IEdmSchemaElement = Microsoft.Data.Edm.IEdmSchemaElement;
+using IEdmTypeReference = Microsoft.Data.Edm.IEdmTypeReference;
 
 namespace Unchase.OData.ConnectedService.Common
 {
     internal static class FunctionImportsExtensions
     {
         #region Extension methods
+
+        #region For Data.Edm
         internal static string FullNameWithNamespace(this IEdmTypeReference type, string proxyClassNamespace)
         {
             var definition = type?.Definition as IEdmSchemaElement;
@@ -63,35 +65,7 @@ namespace Unchase.OData.ConnectedService.Common
             return result;
         }
 
-        internal static XmlReader GetXmlReaderForEndpoint(this ServiceConfiguration serviceConfiguration)
-        {
-            var xmlUrlResolver = new XmlUrlResolver
-            {
-                Credentials = serviceConfiguration.UseNetworkCredentials ? new NetworkCredential(serviceConfiguration.NetworkCredentialsUserName, serviceConfiguration.NetworkCredentialsPassword, serviceConfiguration.NetworkCredentialsDomain) : System.Net.CredentialCache.DefaultNetworkCredentials
-            };
-            if (serviceConfiguration.UseWebProxy)
-            {
-                xmlUrlResolver.Proxy = new WebProxy(serviceConfiguration.WebProxyUri, true);
-                if (serviceConfiguration.UseWebProxyCredentials)
-                    xmlUrlResolver.Proxy = new WebProxy(serviceConfiguration.WebProxyUri, true, new string[0], new NetworkCredential
-                    {
-                        UserName = serviceConfiguration.WebProxyNetworkCredentialsUserName,
-                        Password = serviceConfiguration.WebProxyNetworkCredentialsPassword,
-                        Domain = serviceConfiguration.WebProxyNetworkCredentialsDomain
-                    });
-                else
-                    xmlUrlResolver.Proxy = new WebProxy(serviceConfiguration.WebProxyUri);
-            }
-
-            var settings = new XmlReaderSettings
-            {
-                XmlResolver = new XmlSecureResolver(xmlUrlResolver, new PermissionSet(System.Security.Permissions.PermissionState.Unrestricted))
-            };
-
-            return XmlReader.Create(serviceConfiguration.Endpoint, settings);
-        }
-
-        internal static IEdmModel GetEdmModel(this ServiceConfiguration serviceConfiguration, ConnectedServiceHandlerContext context = null)
+        internal static IEdmModel GetDataEdmModel(this ServiceConfiguration serviceConfiguration, ConnectedServiceHandlerContext context = null)
         {
             using (var reader = serviceConfiguration.GetXmlReaderForEndpoint())
             {
@@ -109,6 +83,8 @@ namespace Unchase.OData.ConnectedService.Common
 
             return null;
         }
+        #endregion
+
         #endregion
     }
 
@@ -130,7 +106,7 @@ namespace Unchase.OData.ConnectedService.Common
 
         internal static string GetFunctionImportsCode(ServiceConfigurationV3 serviceConfiguration)
         {
-            var generator = serviceConfiguration.FunctionImportsGenerator;
+            var generator = serviceConfiguration.OperationImportsGenerator;
 
             var functionMethods = new StringBuilder();
             functionMethods.AppendLine("\t\t#region FunctionImports");
@@ -140,13 +116,13 @@ namespace Unchase.OData.ConnectedService.Common
                 var functionRegion = string.Empty;
                 switch (generator)
                 {
-                    case Constants.FunctionImportsGenerator.Inner:
+                    case Constants.OperationImportsGenerator.Inner:
                         functionRegion = GetFunctionMethodRegionWithInnerMethods(functionImport);
                         break;
-                    case Constants.FunctionImportsGenerator.SimpleOData:
+                    case Constants.OperationImportsGenerator.SimpleOData:
                         functionRegion = GetFunctionMethodRegionWithSimpleOdataClient(functionImport);
                         break;
-                    case Constants.FunctionImportsGenerator.Vipr:
+                    case Constants.OperationImportsGenerator.Vipr:
                         //ToDo: need to add
                         functionRegion = string.Empty;
                         break;

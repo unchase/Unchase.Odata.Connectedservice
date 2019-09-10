@@ -75,7 +75,7 @@ namespace Unchase.OData.ConnectedService.Common
             { EdmxVersion4Namespace, EdmxVersion4}
         };
 
-        public enum FunctionImportsGenerator
+        public enum OperationImportsGenerator
         {
             Inner = 0,
             SimpleOData = 1,

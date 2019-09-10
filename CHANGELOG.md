@@ -7,6 +7,12 @@
 
 These are the changes to each version that has been released on the official [Visual Studio extension gallery](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService).
 
+## v1.2.0 `2019-09-10`
+
+- [x] Code refactoring
+- [x] Add `ExcludedOperationImportsNames` to `AdvancedSettings` and `ODataT4CodeGenerator` (comma separated `OperationImports` (`ActionImports` and `FunctionImports`) names in metadata to exclude from generated code)
+- [x] Add methods for selecting `OperationImports` for OData V4
+
 ## v1.1.2 `2019-09-07`
 
 - [x] Fix casting types error in `ODataT4CodeGenerator`. Client-side code generation for `OData v4`: https://graph.microsoft.com/beta/$metadata now works fine.

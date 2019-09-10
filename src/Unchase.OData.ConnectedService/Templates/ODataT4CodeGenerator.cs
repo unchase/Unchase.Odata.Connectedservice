@@ -60,7 +60,8 @@ namespace Unchase.OData.ConnectedService.Templates
                         TargetLanguage = this.TargetLanguage,
                         EnableNamingAlias = this.EnableNamingAlias,
                         TempFilePath = this.TempFilePath,
-                        IgnoreUnexpectedElementsAndAttributes = this.IgnoreUnexpectedElementsAndAttributes
+                        IgnoreUnexpectedElementsAndAttributes = this.IgnoreUnexpectedElementsAndAttributes,
+                        ExcludedOperationImportsNames = this.ExcludedOperationImportsNames
                     };
                 }
                 else
@@ -77,7 +78,8 @@ namespace Unchase.OData.ConnectedService.Templates
                         TargetLanguage = this.TargetLanguage,
                         EnableNamingAlias = this.EnableNamingAlias,
                         TempFilePath = this.TempFilePath,
-                        IgnoreUnexpectedElementsAndAttributes = this.IgnoreUnexpectedElementsAndAttributes
+                        IgnoreUnexpectedElementsAndAttributes = this.IgnoreUnexpectedElementsAndAttributes,
+                        ExcludedOperationImportsNames = this.ExcludedOperationImportsNames
                     };
                 }
 
@@ -153,8 +155,11 @@ public static class Configuration
 	// the client code if any. The value must be set to true or false.
 	public const bool IgnoreUnexpectedElementsAndAttributes = true;
 
+    // The string for the comma separated OperationImports (ActionImports and FunctionImports) names in metadata to exclude from generated code. 
+    public const string ExcludedOperationImportsNames = "";
+
     // 
-    public const string T4Version = "2.4.0";
+    public const string T4Version = "2.5.0";
 }
 
 public static class Customization
@@ -320,6 +325,18 @@ public bool IgnoreUnexpectedElementsAndAttributes
 }
 
 /// <summary>
+/// The string for the comma separated OperationImports (ActionImports and FunctionImports) names in metadata to exclude from generated code.
+/// </summary>
+public string ExcludedOperationImportsNames
+{
+    get => this.excludedOperationImportsNames;
+
+    set => this.excludedOperationImportsNames = string.IsNullOrWhiteSpace(value) ? null : value;
+}
+
+private string excludedOperationImportsNames;
+
+/// <summary>
 /// Generate code targeting a specific .Net Framework language.
 /// </summary>
 public enum LanguageOption
@@ -423,6 +440,7 @@ private void ApplyParametersFromConfigurationClass()
     this.EnableNamingAlias = Configuration.EnableNamingAlias;
     this.TempFilePath = Configuration.TempFilePath;
     this.IgnoreUnexpectedElementsAndAttributes = Configuration.IgnoreUnexpectedElementsAndAttributes;
+    this.ExcludedOperationImportsNames = Configuration.ExcludedOperationImportsNames;
 }
 
 /// <summary>
@@ -469,6 +487,12 @@ private void ApplyParametersFromCommandLine()
     if (!string.IsNullOrEmpty(ignoreUnexpectedElementsAndAttributes))
     {
         this.ValidateAndSetIgnoreUnexpectedElementsAndAttributesFromString(ignoreUnexpectedElementsAndAttributes);
+    }
+
+    string excludedOperationImportsNames = this.Host.ResolveParameterValue("notempty", "notempty", "ExcludedOperationImportsNames");
+    if (!string.IsNullOrEmpty(namespacePrefix))
+    {
+        this.ExcludedOperationImportsNames = excludedOperationImportsNames;
     }
 }
 
@@ -692,7 +716,7 @@ public class CodeGenerationContext
             {
                 Debug.Assert(this.EdmModel != null, "this.EdmModel != null");
                 this.modelHasInheritance = this.EdmModel.SchemaElementsAcrossModels()
-                            .OfType<IEdmStructuredType>().Any(t => !t.FullTypeName().StartsWith("Org.OData.Authorization.V1") && t.BaseType != null);
+                            .OfType<IEdmStructuredType>().Any(t => !t.FullTypeName().StartsWith("Org.OData.Authorization.V1") && !t.FullTypeName().StartsWith("Org.OData.Core.V1") && t.BaseType != null);
             }
 
             return this.modelHasInheritance.Value;
@@ -803,6 +827,18 @@ public class CodeGenerationContext
         get;
         set;
     }
+
+    /// <summary>
+    /// The string for the comma separated OperationImports (ActionImports and FunctionImports) names in metadata to exclude from generated code.
+    /// </summary>
+    public string ExcludedOperationImportsNames
+    {
+        get => this.excludedOperationImportsNames;
+
+        set => this.excludedOperationImportsNames = string.IsNullOrWhiteSpace(value) ? null : value;
+    }
+
+    private string excludedOperationImportsNames;
 
     /// <summary>
     /// Maps the element type of an entity set to the entity set.
@@ -1601,8 +1637,11 @@ public abstract class ODataClientTemplate : TemplateBase
         this.WriteGeneratedEdmModel(Utils.SerializeToString(this.context.Edmx).Replace("\"", "\"\""));
         
         bool hasOperationImport = container.OperationImports().OfType<IEdmOperationImport>().Any();
+        var excludedOperationImportsNames = this.context.ExcludedOperationImportsNames?.Split(',').Where(i => !string.IsNullOrWhiteSpace(i)).Select(i => i.Trim()).ToList() ?? new List<string>();
         foreach (IEdmFunctionImport functionImport in container.OperationImports().OfType<IEdmFunctionImport>())
         {
+            if (excludedOperationImportsNames.Contains(functionImport.Name))
+                continue;
             this.GetParameterStrings(false, false, functionImport.Function.Parameters.ToArray(), out var parameterString, out var parameterTypes, out var parameterExpressionString, out var parameterValues, out var useEntityReference);
             string returnTypeName = GetSourceOrReturnTypeName(functionImport.Function.ReturnType);
             string returnTypeNameWithSingleSuffix = GetSourceOrReturnTypeName(functionImport.Function.ReturnType, true);
@@ -1627,6 +1666,8 @@ public abstract class ODataClientTemplate : TemplateBase
         
         foreach (IEdmActionImport actionImport in container.OperationImports().OfType<IEdmActionImport>())
         {
+            if (excludedOperationImportsNames.Contains(actionImport.Name))
+                continue;
             this.GetParameterStrings(false, true, actionImport.Action.Parameters.ToArray(), out var parameterString, out var parameterTypes, out var parameterExpressionString, out var parameterValues, out var useEntityReference);
             string returnTypeName = null;
             string fixedContainerName = this.GetFixedName(actionImport.Container.Name);

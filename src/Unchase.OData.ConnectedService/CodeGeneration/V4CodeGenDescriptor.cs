@@ -2,9 +2,11 @@
 // Licensed under the Apache License 2.0.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Data.Services.Design;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.ConnectedServices;
@@ -84,6 +86,8 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
             var tempFile = Path.GetTempFileName();
             var t4Folder = Path.Combine(this.CurrentAssemblyPath, "Templates");
 
+            this.ServiceConfiguration.ExcludedOperationImportsNames += GetExcludedOperationImportsNames();
+
             // generate .tt
             using (var writer = File.CreateText(tempFile))
             {
@@ -100,6 +104,7 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
 
                 text = Regex.Replace(text, "(public const bool EnableNamingAlias = )true;", "$1" + this.ServiceConfiguration.EnableNamingAlias.ToString().ToLower(CultureInfo.InvariantCulture) + ";");
                 text = Regex.Replace(text, "(public const bool IgnoreUnexpectedElementsAndAttributes = )true;", "$1" + this.ServiceConfiguration.IgnoreUnexpectedElementsAndAttributes.ToString().ToLower(CultureInfo.InvariantCulture) + ";");
+                text = Regex.Replace(text, "(public const string ExcludedOperationImportsNames = )\"\";", "$1\"" + this.ServiceConfiguration.ExcludedOperationImportsNames + "\";");
 
                 await writer.WriteAsync(text);
                 await writer.FlushAsync();
@@ -127,6 +132,8 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
         {
             await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Generating Client Proxy for OData V4...");
 
+            this.ServiceConfiguration.ExcludedOperationImportsNames += GetExcludedOperationImportsNames();
+
             var t4CodeGenerator = new ODataT4CodeGenerator
             {
                 MetadataDocumentUri = MetadataUri,
@@ -134,7 +141,8 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
                 TargetLanguage = this.ServiceConfiguration.LanguageOption == LanguageOption.GenerateCSharpCode ? ODataT4CodeGenerator.LanguageOption.CSharp : ODataT4CodeGenerator.LanguageOption.VB,
                 IgnoreUnexpectedElementsAndAttributes = this.ServiceConfiguration.IgnoreUnexpectedElementsAndAttributes,
                 EnableNamingAlias = this.ServiceConfiguration.EnableNamingAlias,
-                NamespacePrefix = this.ServiceConfiguration.NamespacePrefix
+                NamespacePrefix = this.ServiceConfiguration.NamespacePrefix,
+                ExcludedOperationImportsNames = this.ServiceConfiguration?.ExcludedOperationImportsNames
             };
 
             var tempFile = Path.GetTempFileName();
@@ -155,6 +163,24 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
             await this.Context.HandlerHelper.AddFileAsync(tempFile, outputFile, new AddFileOptions { OpenOnComplete = this.Instance.ServiceConfig.OpenGeneratedFilesOnComplete });
 
             await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Client Proxy for OData V4 was generated.");
+        }
+
+        private string GetExcludedOperationImportsNames()
+        {
+            var result = string.Empty;
+            var excludedOperationImportsNames = new List<string>();
+            if (this.ServiceConfiguration.OperationImports?.Any() == true)
+            {
+                excludedOperationImportsNames.AddRange(this.ServiceConfiguration?.OperationImports?
+                    .Where(oi => !oi.IsChecked && !string.IsNullOrWhiteSpace(oi.OperationImportName))
+                    .Select(oi => oi.OperationImportName)
+                    .ToList());
+            }
+
+            foreach (var excludedOperationImportName in excludedOperationImportsNames)
+                result += $",{excludedOperationImportName}";
+
+            return result;
         }
         #endregion
     }

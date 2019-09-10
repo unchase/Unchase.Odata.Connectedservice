@@ -15,8 +15,8 @@ namespace Unchase.OData.ConnectedService.ViewModels
     internal class AdvancedSettingsViewModel : ConnectedServiceWizardPage
     {
         #region Properties and fields
-        public Constants.FunctionImportsGenerator[] FunctionImportsGenerators =>
-            new[] { Constants.FunctionImportsGenerator.Inner, Constants.FunctionImportsGenerator.SimpleOData};
+        public Constants.OperationImportsGenerator[] OperationImportsGenerators =>
+            new[] { Constants.OperationImportsGenerator.Inner, Constants.OperationImportsGenerator.SimpleOData};
 
         public bool UseDataServiceCollection { get; set; }
 
@@ -49,9 +49,11 @@ namespace Unchase.OData.ConnectedService.ViewModels
 
         public Visibility IncludeExtensionsT4FileVisibility { get; set; }
 
-        public Constants.FunctionImportsGenerator FunctionImportsGenerator { get; set; }
+        public Constants.OperationImportsGenerator OperationImportsGenerator { get; set; }
 
-        public bool GenerateFunctionImports { get; set; }
+        public bool SelectOperationImports { get; set; }
+
+        public string ExcludedOperationImportsNames { get; set; }
 
         public UserSettings UserSettings { get; }
 
@@ -66,10 +68,10 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.Legend = "Advanced Settings";
             this.UserSettings = userSettings;
             this.IncludeExtensionsT4File = false;
-            this.GenerateFunctionImports = false;
+            this.SelectOperationImports = false;
             this.GeneratedFileNameEnabled = true;
             this.IncludeExtensionsT4FileVisibility = Visibility.Collapsed;
-            this.FunctionImportsGenerator = Constants.FunctionImportsGenerator.Inner;
+            this.OperationImportsGenerator = Constants.OperationImportsGenerator.Inner;
             this.InternalWizard = wizard;
             this.ResetDataContext();
         }
@@ -104,9 +106,10 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.GeneratedFileName = Common.Constants.DefaultReferenceFileName;
             this.IncludeT4File = false;
             this.IncludeExtensionsT4File = false;
-            this.GenerateFunctionImports = false;
+            this.SelectOperationImports = false;
+            this.ExcludedOperationImportsNames = string.Empty;
             this.IncludeExtensionsT4FileVisibility = Visibility.Collapsed;
-            this.FunctionImportsGenerator = Constants.FunctionImportsGenerator.Inner;
+            this.OperationImportsGenerator = Constants.OperationImportsGenerator.Inner;
             if (this.UserSettings.LanguageOption != LanguageOption.GenerateCSharpCode)
                 this.IncludeExtensionsT4FileVisibility = Visibility.Collapsed;
         }

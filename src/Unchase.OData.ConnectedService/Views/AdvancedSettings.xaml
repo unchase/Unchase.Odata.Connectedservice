@@ -73,10 +73,22 @@
                     VerticalAlignment="Top"
                     Content="Enable entity and property tracking."
                     IsChecked="{Binding UseDataServiceCollection}" />
+                <CheckBox
+                    x:Name="SelectOperationImports"
+                    Width="450"
+                    Height="20"
+                    Margin="0,10,10,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Checked="SelectOperationImports_OnChecked"
+                    Content="Select OData methods from FunctionImports (V3) or OperationImports (V4)."
+                    FontWeight="Medium"
+                    IsChecked="{Binding SelectOperationImports}"
+                    Unchecked="SelectOperationImports_OnUnchecked" />
                 <StackPanel x:Name="ExtensionMethodsForCSharpStackPanel">
                     <TextBlock
                         x:Name="ExtensionsTemplateLabel"
-                        Margin="0,10,10,5"
+                        Margin="0,0,10,5"
                         HorizontalAlignment="Left"
                         Text="Extensions:"
                         Visibility="{Binding IncludeExtensionsT4FileVisibility}" />
@@ -91,21 +103,7 @@
                         FontWeight="Medium"
                         IsChecked="{Binding IncludeExtensionsT4File}"
                         Visibility="{Binding IncludeExtensionsT4FileVisibility}" />
-                    <CheckBox
-                        x:Name="GenerateFunctionImports"
-                        Width="450"
-                        Height="25"
-                        Margin="0,5,0,0"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Checked="GenerateFunctionImports_OnChecked"
-                        Content="Generate OData methods from FunctionImports."
-                        FontWeight="Medium"
-                        IsChecked="{Binding GenerateFunctionImports}"
-                        IsEnabled="{Binding ElementName=IncludeExtensionsT4File, Path=IsChecked}"
-                        Unchecked="GenerateFunctionImports_OnUnchecked"
-                        Visibility="{Binding IncludeExtensionsT4FileVisibility}" />
-                    <StackPanel x:Name="FnctionImportsStackPanel" Visibility="Collapsed">
+                    <StackPanel x:Name="FunctionImportsStackPanel" Visibility="Collapsed">
                         <TextBlock
                             x:Name="ExtensionsFunctionImportsGeneratorLabel"
                             Margin="0,10,10,5"
@@ -122,30 +120,11 @@
                             VerticalAlignment="Top"
                             FontWeight="Medium"
                             IsEnabled="{Binding ElementName=IncludeExtensionsT4File, Path=IsChecked}"
-                            ItemsSource="{Binding FunctionImportsGenerators}"
+                            ItemsSource="{Binding OperationImportsGenerators}"
                             SelectedIndex="0"
-                            SelectedValue="{Binding FunctionImportsGenerator}"
+                            SelectedValue="{Binding OperationImportsGenerator}"
                             Visibility="{Binding IncludeExtensionsT4FileVisibility}" />
                     </StackPanel>
-
-
-
-                    <!--<ListBox
-                        MinHeight="200"
-                        ItemsSource="{Binding FunctionImports}"
-                        ScrollViewer.VerticalScrollBarVisibility="Visible">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <CheckBox Margin="0,0,8,0" IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                    <TextBlock Text="{Binding Name}" />
-                                    <TextBlock Text="{Binding Type}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>-->
-
-
                 </StackPanel>
             </StackPanel>
             <StackPanel
@@ -179,6 +158,17 @@
                     FontWeight="Medium"
                     IsChecked="{Binding IncludeT4File}"
                     IsEnabled="{Binding IncludeT4FileEnabled}" />
+                <TextBlock Margin="20,0,40,0" TextWrapping="Wrap">
+                    OperationImports (ActionImports and FunctionImports) names in metadata to exclude from generated code (comma separated):
+                </TextBlock>
+                <TextBox
+                    x:Name="ExcludedOperationImportsNames"
+                    Width="480"
+                    Margin="20,10,0,5"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Text="{Binding ExcludedOperationImportsNames}"
+                    TextWrapping="Wrap" />
             </StackPanel>
         </StackPanel>
     </StackPanel>

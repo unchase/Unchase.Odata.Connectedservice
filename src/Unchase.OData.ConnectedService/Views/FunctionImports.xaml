@@ -3,17 +3,31 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:localc="clr-namespace:Unchase.OData.ConnectedService.Converters"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:Unchase.OData.ConnectedService.ViewModels"
     d:DataContext="{d:DesignInstance Type=viewModels:FunctionImportsViewModel}"
     d:DesignHeight="400"
     d:DesignWidth="500"
     mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <localc:OperationImportToColorConverter x:Key="OperationImportToColorConverter" />
+    </UserControl.Resources>
+
     <StackPanel>
         <TextBlock
+            x:Name="FunctionImportsCountLabel"
             Margin="0,0,0,5"
             FontWeight="Bold"
-            Text="{Binding FunctionImportsCount, StringFormat='FunctionImports count: {0}'}" />
+            Text="{Binding FunctionImportsCount, StringFormat='FunctionImports count: {0}'}"
+            Visibility="Visible" />
+        <TextBlock
+            x:Name="OperationImportsCountLabel"
+            Margin="0,0,0,5"
+            FontWeight="Bold"
+            Text="{Binding OperationImportsCount, StringFormat='OperationImports count: {0}'}"
+            Visibility="Collapsed" />
         <TextBlock
             x:Name="Label"
             Margin="0,0,0,5"
@@ -27,19 +41,21 @@
             Add? | Http-Method | ReturnType is Collection | [ReturnType] [EntitySet][FunctionImport Name] ([parameters list])
         </TextBlock>
         <ListBox
+            x:Name="FunctionImportsListBox"
             MinHeight="300"
-            ItemsSource="{Binding FunctionImports}"
             VerticalContentAlignment="Center"
+            ItemsSource="{Binding FunctionImports}"
             ScrollViewer.HorizontalScrollBarVisibility="Visible"
-            ScrollViewer.VerticalScrollBarVisibility="Visible">
+            ScrollViewer.VerticalScrollBarVisibility="Visible"
+            Visibility="Visible">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
                         <CheckBox
                             Width="16"
-                            VerticalContentAlignment="Center"
-                            VerticalAlignment="Center"
                             Margin="0,5,8,0"
+                            VerticalAlignment="Center"
+                            VerticalContentAlignment="Center"
                             IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         <TextBlock
                             Width="2"
@@ -57,8 +73,8 @@
                         <CheckBox
                             Width="16"
                             Margin="0,5,8,0"
-                            IsEnabled="False"
-                            IsChecked="{Binding IsCollectionReturnTypeChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            IsChecked="{Binding IsCollectionReturnTypeChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            IsEnabled="False" />
                         <TextBlock
                             Width="2"
                             Margin="0,3,8,0"
@@ -67,8 +83,7 @@
                             Margin="0,5,8,0"
                             FontSize="10"
                             Foreground="CornflowerBlue"
-                            Text="{Binding FunctionImportReturnTypeFullName}">
-                        </TextBlock>
+                            Text="{Binding FunctionImportReturnTypeFullName}" />
                         <TextBlock
                             Margin="0,3,0,0"
                             FontWeight="Bold"
@@ -79,6 +94,65 @@
                             FontWeight="Bold"
                             Foreground="Coral"
                             Text="{Binding FunctionImport.Name}" />
+                        <TextBlock Margin="0,3,8,0" Text="{Binding ParametersString}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <ListBox
+            x:Name="OperationImportsListBox"
+            MinHeight="300"
+            VerticalContentAlignment="Center"
+            ItemsSource="{Binding OperationImports}"
+            ScrollViewer.HorizontalScrollBarVisibility="Visible"
+            ScrollViewer.VerticalScrollBarVisibility="Visible"
+            Visibility="Collapsed">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                        <CheckBox
+                            Width="16"
+                            Margin="0,5,8,0"
+                            VerticalAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock
+                            Width="2"
+                            Margin="0,3,8,0"
+                            Text="{Binding Separator}" />
+                        <TextBlock
+                            Width="35"
+                            Margin="0,5,8,0"
+                            FontWeight="Bold"
+                            Text="{Binding HttpMethod}" />
+                        <TextBlock
+                            Width="2"
+                            Margin="0,3,8,0"
+                            Text="{Binding Separator}" />
+                        <CheckBox
+                            Width="16"
+                            Margin="0,5,8,0"
+                            IsChecked="{Binding IsCollectionReturnTypeChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            IsEnabled="False" />
+                        <TextBlock
+                            Width="2"
+                            Margin="0,3,8,0"
+                            Text="{Binding Separator}" />
+                        <TextBlock
+                            Margin="0,5,8,0"
+                            FontSize="10"
+                            Foreground="CornflowerBlue"
+                            Text="{Binding OperationImportReturnTypeFullName}" />
+                        <TextBlock
+                            Margin="0,3,0,0"
+                            FontWeight="Bold"
+                            Foreground="{Binding OperationImport, Converter={StaticResource OperationImportToColorConverter}}"
+                            Text="{Binding EntitySetName}" />
+                        <TextBlock
+                            Margin="0,3,8,0"
+                            FontWeight="Bold"
+                            Foreground="{Binding OperationImport, Converter={StaticResource OperationImportToColorConverter}}"
+                            Text="{Binding OperationImport.Name}" />
                         <TextBlock Margin="0,3,8,0" Text="{Binding ParametersString}" />
                     </StackPanel>
                 </DataTemplate>

@@ -17,18 +17,27 @@ namespace Unchase.OData.ConnectedService.ViewModels
 
         public List<FunctionImportModel> FunctionImports { get; set; }
 
+        public List<OperationImportModel> OperationImports { get; set; }
+
         public int FunctionImportsCount { get; set; } = 0;
+
+        public int OperationImportsCount { get; set; } = 0;
+
+        public Wizard InternalWizard;
         #endregion
 
         #region Constructors
-        public FunctionImportsViewModel(UserSettings userSettings) : base()
+        public FunctionImportsViewModel(UserSettings userSettings, Wizard wizard) : base()
         {
-            this.Title = "Function Imports Selection";
-            this.Description = "Function Imports Settings for select the necessary methods that will be added after generation";
-            this.Legend = "Function Imports Selection";
+            this.Title = "Operation Imports Selection";
+            this.Description = "Operation Imports Settings for select the necessary methods that will be added after generation";
+            this.Legend = "Operation Imports Selection";
             this.FunctionImports = new List<FunctionImportModel>();
             this.FunctionImportsCount = FunctionImports.Count;
+            this.OperationImports = new List<OperationImportModel>();
+            this.OperationImportsCount = OperationImports.Count;
             this.UserSettings = userSettings;
+            this.InternalWizard = wizard;
         }
         #endregion
 
@@ -39,8 +48,9 @@ namespace Unchase.OData.ConnectedService.ViewModels
         {
             await base.OnPageEnteringAsync(args);
 
-            this.View = new FunctionImports {DataContext = this};
+            this.View = new FunctionImports(this.InternalWizard) {DataContext = this};
             this.FunctionImportsCount = this.FunctionImports.Count;
+            this.OperationImportsCount = this.OperationImports.Count;
             PageEntering?.Invoke(this, EventArgs.Empty);
         }
 

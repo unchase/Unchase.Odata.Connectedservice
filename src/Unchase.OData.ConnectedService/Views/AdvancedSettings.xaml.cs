@@ -42,18 +42,20 @@ namespace Unchase.OData.ConnectedService.Views
 
             this.ExtensionMethodsForCSharpStackPanel.Visibility = this.UserSettings.LanguageOption != LanguageOption.GenerateCSharpCode
                 ? Visibility.Collapsed : Visibility.Visible;
+
+            SelectOperationImports.Visibility = _wizard.ConfigODataEndpointViewModel.LanguageOption == LanguageOption.GenerateVBCode ? Visibility.Collapsed : Visibility.Visible;
         }
 
-        private void GenerateFunctionImports_OnUnchecked(object sender, RoutedEventArgs e)
+        private void SelectOperationImports_OnUnchecked(object sender, RoutedEventArgs e)
         {
-            _wizard.RemoveFunctionImportsSettingsPage();
-            FnctionImportsStackPanel.Visibility = Visibility.Collapsed;
+            _wizard.RemoveOperationImportsSettingsPage();
+            FunctionImportsStackPanel.Visibility = Visibility.Collapsed;
         }
 
-        private void GenerateFunctionImports_OnChecked(object sender, RoutedEventArgs e)
+        private void SelectOperationImports_OnChecked(object sender, RoutedEventArgs e)
         {
-            _wizard.AddFunctionImportsSettingsPage();
-            FnctionImportsStackPanel.Visibility = Visibility.Visible;
+            _wizard.AddOperationImportsSettingsPage();
+            FunctionImportsStackPanel.Visibility = Visibility.Visible;
         }
         #endregion
     }

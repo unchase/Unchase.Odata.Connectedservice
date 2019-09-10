@@ -31,8 +31,8 @@ Install from `Tools -> Extensions and Updates` menu inside [Visual Studio](https
 
 - Generate `C#` and `VB` clients/proxies (client code) from OData specifications for OData protocol versions 1.0-4.0
 - Generate `C#` proxy-class extension methods for OData protocol versions 1.0-3.0
-- Generate functions to call service methods from OData protocol versions 1.0-3.0 `FunctionImports`
-  - You can select the necessary methods that will be added after generation for OData protocol versions 1.0-3.0
+- Generate functions to call service methods from OData protocol versions 1.0-3.0 `FunctionImports` or from OData protocol version 4.0 `OperationImports`
+  - You can select the necessary methods that will be added after generation for OData protocol versions 1.0-4.0
 - Add required dependencies for the `C#` client (before generating):
 	- Libraries for `OData v3` Client:
 		1. Microsoft.Data.Services.Client ([NuGet](https://www.nuget.org/packages/Microsoft.Data.Services.Client))
@@ -53,7 +53,9 @@ Install from `Tools -> Extensions and Updates` menu inside [Visual Studio](https
 
 ![Unchase OData Connected Service VisualBasic](img/Unchase-OData-Connected-Service-VisualBasic.png)
 
-### Selection `FunctionImports` that will be generated for OData protocol versions 1.0-3.0
+## Features are supported since v1.2.0
+
+### Selection `FunctionImports` that will be generated for OData protocol versions 1.0-4.0
 
 ![Unchase OData Connected Service FunctionImports](img/Unchase-OData-Connected-Service-FunctionImports.png)
 

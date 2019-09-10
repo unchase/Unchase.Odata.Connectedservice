@@ -47,7 +47,7 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
 
             await CheckAndInstallNuGetPackageAsync(Common.Constants.NuGetOnlineRepository, this.SystemComponentModelAnnotationsNuGetPackageName);
 
-            if (this.ServiceConfiguration.IncludeExtensionsT4File && this.ServiceConfiguration.GenerateFunctionImports && this.ServiceConfiguration.FunctionImportsGenerator == Constants.FunctionImportsGenerator.SimpleOData)
+            if (this.ServiceConfiguration.IncludeExtensionsT4File && this.ServiceConfiguration.GenerateOperationImports && this.ServiceConfiguration.OperationImportsGenerator == Constants.OperationImportsGenerator.SimpleOData)
                 await CheckAndInstallNuGetPackageAsync(Common.Constants.NuGetOnlineRepository, this.SimpleODataClientNuGetPackageName);
 
             if (packageSource == Common.Constants.NuGetOnlineRepository)
@@ -147,7 +147,7 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
             var t4Folder = Path.Combine(CurrentAssemblyPath, "Templates");
 
             var functionMethods = string.Empty;
-            if (this.ServiceConfiguration.IncludeExtensionsT4File && this.ServiceConfiguration.GenerateFunctionImports)
+            if (this.ServiceConfiguration.IncludeExtensionsT4File && this.ServiceConfiguration.GenerateOperationImports)
             {
                 try
                 {
@@ -171,7 +171,7 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
                 text = Regex.Replace(text, "\\$functionMethods\\$", !string.IsNullOrEmpty(functionMethods) ? functionMethods : string.Empty);
                 text = Regex.Replace(text, "\\$generationDate\\$", $"{DateTime.Now:yyyy-MM-dd hh:mm:ss}");
                 text = Regex.Replace(text, "(new Uri\\()\"\\$metadataDocumentUri\\$\"\\)\\)", "$1\"" + (File.Exists(ServiceConfiguration.Endpoint) ? ServiceConfiguration.Endpoint : ServiceConfiguration.Endpoint.Replace("$metadata", string.Empty)).Replace("\\", "\\\\") + "\"))");
-                if (this.ServiceConfiguration.FunctionImportsGenerator != Constants.FunctionImportsGenerator.SimpleOData)
+                if (this.ServiceConfiguration.OperationImportsGenerator != Constants.OperationImportsGenerator.SimpleOData)
                     text = Regex.Replace(text, "using Simple.OData.Client;", string.Empty);
 
                 await writer.WriteAsync(text);

@@ -29,8 +29,11 @@ public static class Configuration
 	// the client code if any. The value must be set to true or false.
 	public const bool IgnoreUnexpectedElementsAndAttributes = true;
 
+	// The string for the comma separated OperationImports (ActionImports and FunctionImports) names in metadata to exclude from generated code.
+    public const string ExcludedOperationImportsNames = "";
+
 	//
-    public const string T4Version = "2.4.0";
+    public const string T4Version = "2.5.0";
 }
 
 public static class Customization

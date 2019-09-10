@@ -31,6 +31,10 @@ namespace Unchase.OData.ConnectedService.Models
 
         public List<FunctionImportModel> FunctionImports { get; set; }
 
+        public List<OperationImportModel> OperationImports { get; set; }
+
+        public string ExcludedOperationImportsNames { get; set; }
+
         #region Network Credentials
         public bool UseNetworkCredentials { get; set; }
         public string NetworkCredentialsUserName { get; set; }
@@ -53,11 +57,11 @@ namespace Unchase.OData.ConnectedService.Models
     #region Child classes
     internal class ServiceConfigurationV3 : ServiceConfiguration
     {
-        public Constants.FunctionImportsGenerator FunctionImportsGenerator { get; set; }
+        public Constants.OperationImportsGenerator OperationImportsGenerator { get; set; }
 
         public bool IncludeExtensionsT4File { get; set; }
 
-        public bool GenerateFunctionImports { get; set; }
+        public bool GenerateOperationImports { get; set; }
     }
 
     internal class ServiceConfigurationV4 : ServiceConfigurationV3

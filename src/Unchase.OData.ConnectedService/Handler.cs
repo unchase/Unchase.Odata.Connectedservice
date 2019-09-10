@@ -24,6 +24,7 @@ namespace Unchase.OData.ConnectedService
             var codeGenDescriptor = await GenerateCodeAsync(codeGenInstance.MetadataTempFilePath, codeGenInstance.ServiceConfig.EdmxVersion, context);
 
             codeGenInstance.ServiceConfig.FunctionImports = null;
+            codeGenInstance.ServiceConfig.OperationImports = null;
 
             context.SetExtendedDesignerData<ServiceConfiguration>(codeGenInstance.ServiceConfig);
 
@@ -41,6 +42,7 @@ namespace Unchase.OData.ConnectedService
             var codeGenDescriptor = await GenerateCodeAsync(codeGenInstance.ServiceConfig.Endpoint, codeGenInstance.ServiceConfig.EdmxVersion, context);
 
             codeGenInstance.ServiceConfig.FunctionImports = null;
+            codeGenInstance.ServiceConfig.OperationImports = null;
 
             context.SetExtendedDesignerData<ServiceConfiguration>(codeGenInstance.ServiceConfig);
 
