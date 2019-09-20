@@ -3,7 +3,6 @@
 
 using System;
 using System.Data.Services.Design;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -15,9 +14,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Xml;
 using Microsoft.VisualStudio.ConnectedServices;
-using Unchase.OData.ConnectedService.Common;
 using Unchase.OData.ConnectedService.Models;
 using Unchase.OData.ConnectedService.Views;
+using Constants = Unchase.OData.ConnectedService.Common.Constants;
 
 namespace Unchase.OData.ConnectedService.ViewModels
 {
@@ -75,6 +74,8 @@ namespace Unchase.OData.ConnectedService.ViewModels
 
         public UserSettings UserSettings { get; }
 
+        public Wizard InternalWizard { get; }
+
         #region Network Credentials
         public bool UseNetworkCredentials { get; set; }
         public string NetworkCredentialsUserName { get; set; }
@@ -103,12 +104,17 @@ namespace Unchase.OData.ConnectedService.ViewModels
         #endregion
 
         #region Constructors
-        public ConfigODataEndpointViewModel(UserSettings userSettings) : base()
+        public ConfigODataEndpointViewModel(UserSettings userSettings, Wizard wizard) : base()
         {
             this.Title = "Configure metadata endpoint";
             this.Description = "Enter or choose an OData metadata endpoint to begin";
             this.Legend = "Metadata Endpoint";
-            this.View = new ConfigODataEndpoint { DataContext = this };
+            this.InternalWizard = wizard;
+            this.View = new ConfigODataEndpoint
+            {
+                UserSettings = userSettings,
+                DataContext = this
+            };
             this.UserSettings = userSettings;
             this.ServiceName = userSettings.ServiceName ?? Constants.DefaultServiceName;
             this.Endpoint = userSettings.Endpoint;
@@ -116,7 +122,6 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.UseNetworkCredentials = false;
             this.UseWebProxy = false;
             this.UseWebProxyCredentials = false;
-            this.UserSettings.LanguageOption = LanguageOption.GenerateCSharpCode;
         }
         #endregion
 
@@ -142,6 +147,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
             }
         }
 
+        #region Private methods
         private string GetMetadata(out Version edmxVersion)
         {
             if (string.IsNullOrEmpty(this.UserSettings.Endpoint))
@@ -189,10 +195,10 @@ namespace Unchase.OData.ConnectedService.ViewModels
                 if (e.InnerException is System.Security.Authentication.AuthenticationException)
                 {
                     var save = ServicePointManager.ServerCertificateValidationCallback;
-                    ServicePointManager.ServerCertificateValidationCallback = LifeValidationCallback;
+                    ServicePointManager.ServerCertificateValidationCallback += LifeValidationCallback;
                     return ReadMetadata(out edmxVersion, readerSettings, workFile);
                 }
-                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Cannot access {0}", this.UserSettings.Endpoint), e);
+                throw new InvalidOperationException($"Cannot access {this.UserSettings.Endpoint}\nException message: \"{e.Message}\".", e);
             }
         }
 
@@ -241,7 +247,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
             var x509 = certificate as X509Certificate2;
             sb.AppendLine();
             sb.AppendLine($"Content Type: {X509Certificate2.GetCertContentType(x509?.RawData ?? new byte[]{})}");
-            sb.AppendLine($" Name: {certificate.Subject}");
+            sb.AppendLine($"Name: {certificate.Subject}");
             sb.AppendLine($"Certificate Verified?: {x509?.Verify()}");
             sb.AppendLine($"Simple Name: {x509?.GetNameInfo(X509NameType.SimpleName, true)}");
             sb.AppendLine($"Signature Algorithm: {x509?.SignatureAlgorithm.FriendlyName}");
@@ -256,6 +262,8 @@ namespace Unchase.OData.ConnectedService.ViewModels
 
             return true;
         }
+        #endregion
+
         #endregion
     }
 }

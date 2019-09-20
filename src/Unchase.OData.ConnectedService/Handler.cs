@@ -2,7 +2,6 @@
 // Licensed under the Apache License 2.0.  See License.txt in the project root for license information.
 
 using System;
-using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.ConnectedServices;
@@ -21,7 +20,7 @@ namespace Unchase.OData.ConnectedService
 
             var codeGenInstance = (Instance)context.ServiceInstance;
 
-            var codeGenDescriptor = await GenerateCodeAsync(codeGenInstance.MetadataTempFilePath, codeGenInstance.ServiceConfig.EdmxVersion, context);
+            var codeGenDescriptor = await GenerateCodeAsync(codeGenInstance.ServiceConfig.EdmxVersion, context);
 
             codeGenInstance.ServiceConfig.FunctionImports = null;
             codeGenInstance.ServiceConfig.OperationImports = null;
@@ -39,7 +38,7 @@ namespace Unchase.OData.ConnectedService
 
             var codeGenInstance = (Instance)context.ServiceInstance;
 
-            var codeGenDescriptor = await GenerateCodeAsync(codeGenInstance.ServiceConfig.Endpoint, codeGenInstance.ServiceConfig.EdmxVersion, context);
+            var codeGenDescriptor = await GenerateCodeAsync(codeGenInstance.ServiceConfig.EdmxVersion, context);
 
             codeGenInstance.ServiceConfig.FunctionImports = null;
             codeGenInstance.ServiceConfig.OperationImports = null;
@@ -51,7 +50,7 @@ namespace Unchase.OData.ConnectedService
             return new UpdateServiceInstanceResult { GettingStartedDocument = new GettingStartedDocument(new Uri(codeGenDescriptor.ClientDocUri)) };
         }
 
-        private static async Task<BaseCodeGenDescriptor> GenerateCodeAsync(string metadataUri, Version edmxVersion, ConnectedServiceHandlerContext context)
+        private static async Task<BaseCodeGenDescriptor> GenerateCodeAsync(Version edmxVersion, ConnectedServiceHandlerContext context)
         {
             var instance = (Instance)context.ServiceInstance;
             BaseCodeGenDescriptor codeGenDescriptor;
@@ -68,7 +67,7 @@ namespace Unchase.OData.ConnectedService
             }
             else
             {
-                throw new Exception(string.Format(CultureInfo.InvariantCulture, "Not supported Edmx Version{0}", (edmxVersion != null ? $" {edmxVersion}." : ". Try with Endpoint ends \"/$metadata\".")));
+                throw new Exception($"Not supported Edmx Version{(edmxVersion != null ? $" {edmxVersion}." : ". Try with Endpoint ends \"/$metadata\".")}");
             }
 
             codeGenDescriptor.UseNetworkCredentials = instance.ServiceConfig.UseNetworkCredentials;

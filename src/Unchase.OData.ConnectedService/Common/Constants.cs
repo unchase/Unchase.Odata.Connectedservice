@@ -81,6 +81,5 @@ namespace Unchase.OData.ConnectedService.Common
             SimpleOData = 1,
             Vipr = 2
         }
-
     }
 }

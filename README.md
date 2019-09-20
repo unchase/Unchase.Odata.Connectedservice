@@ -59,6 +59,12 @@ Install from `Tools -> Extensions and Updates` menu inside [Visual Studio](https
 
 ![Unchase OData Connected Service FunctionImports](img/Unchase-OData-Connected-Service-FunctionImports.png)
 
+## Features are supported since v1.3.0
+
+### Loading client code generation parameters from json files (including `Connected Service .json` from OData Connected Service by Microsoft)
+
+![Unchase OData Connected Service Load Parameters](img/Unchase-OData-Connected-Service-LoadJson.png)
+
 ## HowTos
 
 - [ ] Add HowTos in a future

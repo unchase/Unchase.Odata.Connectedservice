@@ -97,7 +97,7 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
             Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             var serviceReferenceFolderName = this.Context.HandlerHelper.GetServiceArtifactsRootFolder();
 
-            return Path.Combine(ProjectHelper.GetProjectFullPath(this.Project), serviceReferenceFolderName, this.Context.ServiceInstance.Name);
+            return Path.Combine(this.Project.GetProjectFullPath(), serviceReferenceFolderName, this.Context.ServiceInstance.Name);
         }
         #endregion
     }

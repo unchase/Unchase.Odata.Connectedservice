@@ -31,7 +31,7 @@ namespace Unchase.OData.ConnectedService.Common
             return (Project)projectObject;
         }
 
-        public static Project GetProjectFromHierarchy(IVsHierarchy projectHierarchy)
+        public static Project GetProjectFromHierarchy(this IVsHierarchy projectHierarchy)
         {
             Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             var result = projectHierarchy.GetProperty(
@@ -42,7 +42,7 @@ namespace Unchase.OData.ConnectedService.Common
             return (Project)projectObject;
         }
 
-        public static string GetProjectFullPath(Project project)
+        public static string GetProjectFullPath(this Project project)
         {
             Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             return project.Properties.Item("FullPath").Value.ToString();
@@ -65,7 +65,7 @@ namespace Unchase.OData.ConnectedService.Common
             return servicePath;
         }
 
-        public static string GetSelectedPath(DTE2 dte)
+        public static string GetSelectedPath(this DTE2 dte)
         {
             Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             var items = (Array)dte.ToolWindows.SolutionExplorer?.SelectedItems;

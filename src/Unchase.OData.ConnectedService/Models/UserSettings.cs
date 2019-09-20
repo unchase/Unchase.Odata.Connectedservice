@@ -20,7 +20,7 @@ namespace Unchase.OData.ConnectedService.Models
 
         private const int MaxMruEntries = 10;
 
-        private ConnectedServiceLogger logger;
+        private ConnectedServiceLogger _logger;
         #endregion
 
         [DataMember]
@@ -37,6 +37,39 @@ namespace Unchase.OData.ConnectedService.Models
 
         [DataMember]
         public LanguageOption LanguageOption { get; set; }
+
+        [DataMember]
+        public bool UseDataServiceCollection { get; set; }
+
+        [DataMember]
+        public string GeneratedFileNamePrefix { get; set; }
+
+        [DataMember]
+        public bool UseNameSpacePrefix { get; set; }
+
+        [DataMember]
+        public string NamespacePrefix { get; set; }
+
+        [DataMember]
+        public bool EnableNamingAlias { get; set; }
+
+        [DataMember]
+        public bool IgnoreUnexpectedElementsAndAttributes { get; set; }
+
+        [DataMember]
+        public bool IncludeT4File { get; set; }
+
+        [DataMember]
+        public bool IncludeExtensionsT4File { get; set; }
+
+        [DataMember]
+        public Constants.OperationImportsGenerator OperationImportsGenerator { get; set; }
+
+        [DataMember]
+        public bool SelectOperationImports { get; set; }
+
+        [DataMember]
+        public string ExcludedOperationImportsNames { get; set; }
         #endregion
 
         #region Constructors
@@ -49,14 +82,14 @@ namespace Unchase.OData.ConnectedService.Models
         #region Methods
         public void Save()
         {
-            UserSettingsPersistenceHelper.Save(this, Constants.ProviderId, UserSettings.Name, null, this.logger);
+            UserSettingsPersistenceHelper.Save(this, Constants.ProviderId, UserSettings.Name, null, this._logger);
         }
 
         public static UserSettings Load(ConnectedServiceLogger logger)
         {
             var userSettings = UserSettingsPersistenceHelper.Load<UserSettings>(
                 Constants.ProviderId, UserSettings.Name, null, logger) ?? new UserSettings();
-            userSettings.logger = logger;
+            userSettings._logger = logger;
 
             return userSettings;
         }

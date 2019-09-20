@@ -40,10 +40,17 @@ namespace Unchase.OData.ConnectedService.Views
             this.AdvancedSettingsForv4.Visibility = _wizard.EdmxVersion == Common.Constants.EdmxVersion4
                 ? Visibility.Visible : Visibility.Hidden;
 
-            this.ExtensionMethodsForCSharpStackPanel.Visibility = this.UserSettings.LanguageOption != LanguageOption.GenerateCSharpCode
-                ? Visibility.Collapsed : Visibility.Visible;
-
-            SelectOperationImports.Visibility = _wizard.ConfigODataEndpointViewModel.LanguageOption == LanguageOption.GenerateVBCode ? Visibility.Collapsed : Visibility.Visible;
+            if (this.UserSettings.LanguageOption != LanguageOption.GenerateCSharpCode)
+            {
+                this.ExtensionMethodsForCSharpStackPanel.Visibility = Visibility.Collapsed;
+                this.SelectOperationImports.Visibility = Visibility.Collapsed;
+                _wizard.RemoveOperationImportsSettingsPage();
+            }
+            else
+            {
+                this.ExtensionMethodsForCSharpStackPanel.Visibility = Visibility.Visible;
+                this.SelectOperationImports.Visibility = Visibility.Visible;
+            }
         }
 
         private void SelectOperationImports_OnUnchecked(object sender, RoutedEventArgs e)
@@ -54,8 +61,11 @@ namespace Unchase.OData.ConnectedService.Views
 
         private void SelectOperationImports_OnChecked(object sender, RoutedEventArgs e)
         {
-            _wizard.AddOperationImportsSettingsPage();
-            FunctionImportsStackPanel.Visibility = Visibility.Visible;
+            if (this.UserSettings.LanguageOption != LanguageOption.GenerateVBCode)
+            {
+                _wizard.AddOperationImportsSettingsPage();
+                FunctionImportsStackPanel.Visibility = Visibility.Visible;
+            }
         }
         #endregion
     }

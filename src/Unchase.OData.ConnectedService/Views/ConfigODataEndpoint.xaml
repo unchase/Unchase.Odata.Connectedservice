@@ -20,45 +20,69 @@
         Margin="0,0,0,0"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Top">
-        <DockPanel HorizontalAlignment="Right">
-            <TextBlock Margin="5,8,5,5" Text="Report a bug :" />
-            <Button
-                x:Name="ReportABugButton"
-                Width="23"
-                Height="23"
-                MinWidth="23"
-                MinHeight="23"
-                MaxWidth="23"
-                MaxHeight="23"
-                Margin="5,5,10,5"
-                HorizontalAlignment="Right"
-                Click="ReportABugButton_Click">
-                <Button.Background>
-                    <ImageBrush ImageSource="../Resources/NewBug.png" Stretch="UniformToFill" />
-                </Button.Background>
-            </Button>
+        <DockPanel>
+            <DockPanel HorizontalAlignment="Right">
+                <TextBlock Margin="5,8,5,5" Text="Report a bug :" />
+                <Button
+                    x:Name="ReportABugButton"
+                    Width="23"
+                    Height="23"
+                    MinWidth="23"
+                    MinHeight="23"
+                    MaxWidth="23"
+                    MaxHeight="23"
+                    Margin="5,5,10,5"
+                    HorizontalAlignment="Right"
+                    Click="ReportABugButton_Click">
+                    <Button.Background>
+                        <ImageBrush ImageSource="../Resources/NewBug.png" Stretch="UniformToFill" />
+                    </Button.Background>
+                </Button>
+            </DockPanel>
         </DockPanel>
         <TextBlock
-            Margin="0,5,10,5"
+            Margin="0,0,10,5"
             FontWeight="Bold"
             Text="Generating Language :"
             TextWrapping="WrapWithOverflow" />
         <ComboBox
+            x:Name="LanguageOption"
             Margin="20,5,10,5"
             ItemsSource="{Binding LanguageOptions}"
-            SelectedItem="{Binding LanguageOption, Mode=TwoWay}" />
-
+            SelectedItem="{Binding UserSettings.LanguageOption, Mode=TwoWay}"
+            SelectionChanged="LanguageOption_OnSelectionChanged" />
         <TextBlock
             Margin="0,5,10,5"
             HorizontalAlignment="Stretch"
             FontWeight="Bold"
             Text="Service name :"
             TextWrapping="WrapWithOverflow" />
-        <TextBox
-            x:Name="ServiceName"
-            Margin="20,5,10,5"
-            HorizontalAlignment="Stretch"
-            Text="{Binding Path=ServiceName, Mode=TwoWay}" />
+        <Grid Margin="20,5,10,5" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBox
+                x:Name="ServiceName"
+                Grid.Column="0"
+                HorizontalAlignment="Stretch"
+                Text="{Binding Path=UserSettings.ServiceName, Mode=TwoWay}" />
+            <Button
+                x:Name="OpenConnectedServiceJsonFileButton"
+                Grid.Column="1"
+                Width="210"
+                Height="20"
+                MinWidth="210"
+                MinHeight="20"
+                MaxWidth="210"
+                MaxHeight="20"
+                Margin="5,0,0,0"
+                HorizontalAlignment="Right"
+                HorizontalContentAlignment="Center"
+                Click="OpenConnectedServiceJsonFileButton_Click">
+                <TextBlock Text="Load from 'ConnectedService.json'" />
+            </Button>
+        </Grid>
 
         <CheckBox
             x:Name="OpenGeneratedFilesOnComplete"
@@ -86,7 +110,7 @@
                 HorizontalAlignment="Stretch"
                 IsEditable="True"
                 ItemsSource="{Binding Path=UserSettings.MruEndpoints}"
-                Text="{Binding Path=Endpoint, Mode=TwoWay, TargetNullValue='Enter your metadata endpoint...'}" />
+                Text="{Binding Path=UserSettings.Endpoint, Mode=TwoWay, TargetNullValue='Enter your metadata endpoint...'}" />
             <Button
                 x:Name="OpenEndpointFileButton"
                 Grid.Column="1"
@@ -272,68 +296,5 @@
                 </StackPanel>
             </StackPanel>
         </StackPanel>
-
-
-
-
-
-
-
-
-
-        <!--<TextBlock x:Name="CredentialsLabel" Text="Network credentials :"
-                   HorizontalAlignment="Left" Margin="0, 10, 10, 5">
-        </TextBlock>
-        <CheckBox x:Name="UseNetworkCredentials" IsChecked="{Binding UseNetworkCredentials}"
-                   HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10, 5, 5, 5">
-            <TextBlock TextWrapping="Wrap" Margin="0, 0, 40, 0">
-                Use network credentials for connecting to the endpoint :
-            </TextBlock>
-        </CheckBox>
-        <DockPanel IsEnabled="{Binding ElementName=UseNetworkCredentials, Path=IsChecked}">
-            <TextBlock x:Name="NetworkCredentialsUserNameLabel" Text="UserName :" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"></TextBlock>
-            <TextBox x:Name="NetworkCredentialsUserName" Text="{Binding NetworkCredentialsUserName}" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"/>
-        </DockPanel>
-        <DockPanel IsEnabled="{Binding ElementName=UseNetworkCredentials, Path=IsChecked}">
-            <TextBlock x:Name="NetworkCredentialsPasswordLabel" Text="Password :" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"></TextBlock>
-            <TextBox x:Name="NetworkCredentialsPassword" Text="{Binding NetworkCredentialsPassword}" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"/>
-        </DockPanel>
-        <DockPanel IsEnabled="{Binding ElementName=UseNetworkCredentials, Path=IsChecked}">
-            <TextBlock x:Name="NetworkCredentialsDomainLabel" Text="Domain :" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"></TextBlock>
-            <TextBox x:Name="NetworkCredentialsDomain" Text="{Binding NetworkCredentialsDomain}" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"/>
-        </DockPanel>
-        <TextBlock x:Name="WebProxyLabel" Text="Web-proxy :"
-                   HorizontalAlignment="Left" Margin="0, 5, 10, 5">
-        </TextBlock>
-        <CheckBox x:Name="UseWebProxy" IsChecked="{Binding UseWebProxy}"
-                  HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10, 5, 5, 5">
-            <TextBlock TextWrapping="Wrap" Margin="0, 0, 40, 0">
-                Use web-proxy for connecting to the endpoint :
-            </TextBlock>
-        </CheckBox>
-        <StackPanel Margin="5, 0, 0, 0" IsEnabled="{Binding ElementName=UseWebProxy, Path=IsChecked}">
-            <TextBlock x:Name="WebProxyURILabel" Text="Web-proxy URI :"
-                       HorizontalAlignment="Left" Margin="10, 5, 5, 0"/>
-            <TextBox x:Name="WebProxyUri" Text="{Binding Path=WebProxyUri}"
-                     HorizontalAlignment="Left" Margin="10, 10, 5, 5" Width="480"/>
-            <CheckBox x:Name="UseWebProxyCredentials" IsChecked="{Binding UseWebProxyCredentials}"
-                      HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10, 10, 5, 5">
-                <TextBlock TextWrapping="Wrap" Margin="0, 0, 40, 0">
-                    Use web-proxy credentials for connecting to the endpoint :
-                </TextBlock>
-            </CheckBox>
-            <DockPanel IsEnabled="{Binding ElementName=UseWebProxyCredentials, Path=IsChecked}">
-                <TextBlock x:Name="WebProxyNetworkCredentialsUserNameLabel" Text="UserName :" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"></TextBlock>
-                <TextBox x:Name="WebProxyNetworkCredentialsUserName" Text="{Binding WebProxyNetworkCredentialsUserName}" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"/>
-            </DockPanel>
-            <DockPanel IsEnabled="{Binding ElementName=UseWebProxyCredentials, Path=IsChecked}">
-                <TextBlock x:Name="WebProxyNetworkCredentialsPasswordLabel" Text="Password :" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"></TextBlock>
-                <TextBox x:Name="WebProxyNetworkCredentialsPassword" Text="{Binding WebProxyNetworkCredentialsPassword}" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"/>
-            </DockPanel>
-            <DockPanel IsEnabled="{Binding ElementName=UseWebProxyCredentials, Path=IsChecked}">
-                <TextBlock x:Name="WebProxyNetworkCredentialsDomainLabel" Text="Domain :" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"></TextBlock>
-                <TextBox x:Name="WebProxyNetworkCredentialsDomain" Text="{Binding WebProxyNetworkCredentialsDomain}" HorizontalAlignment="Left" Margin="10, 5, 10, 5" Width="150"/>
-            </DockPanel>
-        </StackPanel>-->
     </StackPanel>
 </UserControl>

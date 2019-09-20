@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2018 Unchase (https://github.com/unchase).  All rights reserved.
 // Licensed under the Apache License 2.0.  See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -17,6 +18,15 @@ using Unchase.OData.ConnectedService.Models;
 
 namespace Unchase.OData.ConnectedService.Common
 {
+    #region For update from Microsoft OData Connected Service
+    internal class ConnectedServiceJsonFileData
+    {
+        public string ProviderId { get; set; }
+
+        public UserSettings ExtendedData { get; set; }
+    }
+    #endregion
+
     internal static class ExtensionsHelper
     {
         #region For Views

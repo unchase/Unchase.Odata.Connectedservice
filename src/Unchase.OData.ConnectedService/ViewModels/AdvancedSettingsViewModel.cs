@@ -18,10 +18,35 @@ namespace Unchase.OData.ConnectedService.ViewModels
         public Constants.OperationImportsGenerator[] OperationImportsGenerators =>
             new[] { Constants.OperationImportsGenerator.Inner, Constants.OperationImportsGenerator.SimpleOData};
 
-        public bool UseDataServiceCollection { get; set; }
+        #region UseDataServiceCollection
+        private bool _useDataServiceCollection;
+        public bool UseDataServiceCollection
+        {
+            get => _useDataServiceCollection;
+            set
+            {
+                _useDataServiceCollection = value;
+                UserSettings.UseDataServiceCollection = value;
+                OnPropertyChanged(nameof(UseDataServiceCollection));
+            }
+        }
+        #endregion
 
-        public bool UseNamespacePrefix { get; set; }
+        #region UseNamespacePrefix
+        private bool _useNamespacePrefix;
+        public bool UseNamespacePrefix
+        {
+            get => _useNamespacePrefix;
+            set
+            {
+                _useNamespacePrefix = value;
+                UserSettings.UseNameSpacePrefix = value;
+                OnPropertyChanged(nameof(UseNamespacePrefix));
+            }
+        }
+        #endregion
 
+        #region NamespacePrefix
         private string _namespacePrefix;
         public string NamespacePrefix
         {
@@ -29,31 +54,133 @@ namespace Unchase.OData.ConnectedService.ViewModels
             set
             {
                 _namespacePrefix = value;
-                OnPropertyChanged(NamespacePrefix);
+                UserSettings.NamespacePrefix = value;
+                OnPropertyChanged(nameof(NamespacePrefix));
             }
         }
+        #endregion
 
-        public bool EnableNamingAlias { get; set; }
+        #region EnableNamingAlias
+        private bool _enableNamingAlias;
+        public bool EnableNamingAlias
+        {
+            get => _enableNamingAlias;
+            set
+            {
+                _enableNamingAlias = value;
+                UserSettings.EnableNamingAlias = value;
+                OnPropertyChanged(nameof(EnableNamingAlias));
+            }
+        }
+        #endregion
 
-        public bool IgnoreUnexpectedElementsAndAttributes { get; set; }
+        #region IgnoreUnexpectedElementsAndAttributes
+        private bool _ignoreUnexpectedElementsAndAttributes;
+        public bool IgnoreUnexpectedElementsAndAttributes
+        {
+            get => _ignoreUnexpectedElementsAndAttributes;
+            set
+            {
+                _ignoreUnexpectedElementsAndAttributes = value;
+                UserSettings.IgnoreUnexpectedElementsAndAttributes = value;
+                OnPropertyChanged(nameof(IgnoreUnexpectedElementsAndAttributes));
+            }
+        }
+        #endregion
 
+        #region GeneratedFileNameEnabled
         public bool GeneratedFileNameEnabled { get; set; }
+        #endregion
 
-        public string GeneratedFileName { get; set; }
+        #region GeneratedFileNamePrefix
+        private string _generatedFileNamePrefix;
+        public string GeneratedFileNamePrefix
+        {
+            get => _generatedFileNamePrefix;
+            set
+            {
+                _generatedFileNamePrefix = value;
+                UserSettings.GeneratedFileNamePrefix = value;
+                OnPropertyChanged(nameof(GeneratedFileNamePrefix));
+            }
+        }
+        #endregion
 
+        #region IncludeT4FileEnabled
         public bool IncludeT4FileEnabled { get; set; }
+        #endregion
 
-        public bool IncludeT4File { get; set; }
+        #region IncludeT4File
+        private bool _includeT4File;
+        public bool IncludeT4File
+        {
+            get => _includeT4File;
+            set
+            {
+                _includeT4File = value;
+                UserSettings.IncludeT4File = value;
+                OnPropertyChanged(nameof(IncludeT4File));
+            }
+        }
+        #endregion
 
-        public bool IncludeExtensionsT4File { get; set; }
+        #region IncludeExtensionsT4File
+        private bool _includeExtensionsT4File;
+        public bool IncludeExtensionsT4File
+        {
+            get => _includeExtensionsT4File;
+            set
+            {
+                _includeExtensionsT4File = value;
+                UserSettings.IncludeExtensionsT4File = value;
+                OnPropertyChanged(nameof(IncludeExtensionsT4File));
+            }
+        }
+        #endregion
+
+        #region OperationImportsGenerator
+        private Constants.OperationImportsGenerator _operationImportsGenerator;
+        public Constants.OperationImportsGenerator OperationImportsGenerator
+        {
+            get => _operationImportsGenerator;
+            set
+            {
+                _operationImportsGenerator = value;
+                UserSettings.OperationImportsGenerator = value;
+                OnPropertyChanged(nameof(OperationImportsGenerator));
+            }
+        }
+        #endregion
+
+        #region SelectOperationImports
+        private bool _selectOperationImports;
+        public bool SelectOperationImports
+        {
+            get => _selectOperationImports;
+            set
+            {
+                _selectOperationImports = value;
+                UserSettings.SelectOperationImports = value;
+                OnPropertyChanged(nameof(SelectOperationImports));
+            }
+        }
+        #endregion
+
+        #region ExcludedOperationImportsNames
+        private string _excludedOperationImportsNames;
+        public string ExcludedOperationImportsNames
+        {
+            get => _excludedOperationImportsNames;
+            set
+            {
+                _excludedOperationImportsNames = value;
+                UserSettings.ExcludedOperationImportsNames = value;
+                OnPropertyChanged(nameof(ExcludedOperationImportsNames));
+            }
+        }
+        #endregion
 
         public Visibility IncludeExtensionsT4FileVisibility { get; set; }
-
-        public Constants.OperationImportsGenerator OperationImportsGenerator { get; set; }
-
-        public bool SelectOperationImports { get; set; }
-
-        public string ExcludedOperationImportsNames { get; set; }
 
         public UserSettings UserSettings { get; }
 
@@ -67,13 +194,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.Description = "Advanced settings for generating client proxy and extension methods for call service functions";
             this.Legend = "Advanced Settings";
             this.UserSettings = userSettings;
-            this.IncludeExtensionsT4File = false;
-            this.SelectOperationImports = false;
-            this.GeneratedFileNameEnabled = true;
-            this.IncludeExtensionsT4FileVisibility = Visibility.Collapsed;
-            this.OperationImportsGenerator = Constants.OperationImportsGenerator.Inner;
             this.InternalWizard = wizard;
-            this.ResetDataContext();
         }
         #endregion
 
@@ -85,33 +206,25 @@ namespace Unchase.OData.ConnectedService.ViewModels
             await base.OnPageEnteringAsync(args);
 
             this.View = new AdvancedSettings(this.InternalWizard);
-            this.ResetDataContext();
-            this.View.DataContext = this;
-            PageEntering?.Invoke(this, EventArgs.Empty);
-        }
-
-        public override Task<PageNavigationResult> OnPageLeavingAsync(WizardLeavingArgs args)
-        {
-            return base.OnPageLeavingAsync(args);
-        }
-
-        private void ResetDataContext()
-        {
-            this.UseNamespacePrefix = false;
-            this.NamespacePrefix = Common.Constants.DefaultNamespacePrefix;
-            this.UseDataServiceCollection = true;
-            this.IgnoreUnexpectedElementsAndAttributes = false;
-            this.EnableNamingAlias = false;
+            this.UseDataServiceCollection = UserSettings.UseDataServiceCollection;
+            this.UseNamespacePrefix = UserSettings.UseNameSpacePrefix;
+            this.NamespacePrefix = UserSettings.NamespacePrefix ?? Constants.DefaultNamespacePrefix;
+            this.EnableNamingAlias = UserSettings.EnableNamingAlias;
+            this.IgnoreUnexpectedElementsAndAttributes = UserSettings.IgnoreUnexpectedElementsAndAttributes;
             this.GeneratedFileNameEnabled = true;
-            this.GeneratedFileName = Common.Constants.DefaultReferenceFileName;
-            this.IncludeT4File = false;
-            this.IncludeExtensionsT4File = false;
-            this.SelectOperationImports = false;
-            this.ExcludedOperationImportsNames = string.Empty;
-            this.IncludeExtensionsT4FileVisibility = Visibility.Collapsed;
-            this.OperationImportsGenerator = Constants.OperationImportsGenerator.Inner;
-            if (this.UserSettings.LanguageOption != LanguageOption.GenerateCSharpCode)
-                this.IncludeExtensionsT4FileVisibility = Visibility.Collapsed;
+            this.GeneratedFileNamePrefix = UserSettings.GeneratedFileNamePrefix ?? Constants.DefaultReferenceFileName;
+            this.IncludeT4FileEnabled = true;
+            this.IncludeT4File = UserSettings.IncludeT4File;
+            this.IncludeExtensionsT4File = UserSettings.IncludeExtensionsT4File;
+            this.OperationImportsGenerator = UserSettings.OperationImportsGenerator;
+            this.SelectOperationImports = UserSettings.SelectOperationImports;
+            this.ExcludedOperationImportsNames = UserSettings.ExcludedOperationImportsNames ?? string.Empty;
+            this.View.DataContext = this;
+
+            PageEntering?.Invoke(this, EventArgs.Empty);
+
+            if (this.UserSettings.LanguageOption != LanguageOption.GenerateCSharpCode || !this.UserSettings.SelectOperationImports)
+                this.InternalWizard.RemoveOperationImportsSettingsPage();
         }
         #endregion
     }

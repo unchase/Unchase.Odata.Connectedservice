@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.Services.Design;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -41,10 +42,9 @@ namespace Unchase.OData.ConnectedService
             this.Context = context;
             this.UserSettings = UserSettings.Load(context.Logger);
 
-            ConfigODataEndpointViewModel = new ConfigODataEndpointViewModel(this.UserSettings);
+            ConfigODataEndpointViewModel = new ConfigODataEndpointViewModel(this.UserSettings, this);
             AdvancedSettingsViewModel = new AdvancedSettingsViewModel(this.UserSettings, this);
             FunctionImportsViewModel = new FunctionImportsViewModel(this.UserSettings, this);
-
 
             if (this.Context.IsUpdating)
             {
@@ -67,7 +67,7 @@ namespace Unchase.OData.ConnectedService
 
                 // The Viewmodel should always be filled otherwise if the wizard is completed without visiting this page  the generated code becomes wrong
                 AdvancedSettingsViewModel.GeneratedFileNameEnabled = false; // advancedSettings.ReferenceFileName.IsEnabled = false;
-                AdvancedSettingsViewModel.GeneratedFileName = serviceConfig.GeneratedFileNamePrefix;
+                AdvancedSettingsViewModel.GeneratedFileNamePrefix = serviceConfig.GeneratedFileNamePrefix;
                 AdvancedSettingsViewModel.UseNamespacePrefix = serviceConfig.UseNameSpacePrefix;
                 AdvancedSettingsViewModel.NamespacePrefix = serviceConfig.NamespacePrefix;
                 AdvancedSettingsViewModel.UseDataServiceCollection = serviceConfig.UseDataServiceCollection;
@@ -92,7 +92,7 @@ namespace Unchase.OData.ConnectedService
                         if (advancedSettingsViewModel.View is AdvancedSettings advancedSettings)
                         {
                             advancedSettings.ReferenceFileName.IsEnabled = false;
-                            advancedSettingsViewModel.GeneratedFileName = serviceConfig.GeneratedFileNamePrefix;
+                            advancedSettingsViewModel.GeneratedFileNamePrefix = serviceConfig.GeneratedFileNamePrefix;
                             advancedSettingsViewModel.UseNamespacePrefix = serviceConfig.UseNameSpacePrefix;
                             advancedSettingsViewModel.NamespacePrefix = serviceConfig.NamespacePrefix;
                             advancedSettingsViewModel.UseDataServiceCollection = serviceConfig.UseDataServiceCollection;
@@ -110,7 +110,7 @@ namespace Unchase.OData.ConnectedService
                                 advancedSettings.IncludeT4File.IsEnabled = true;
                             }
 
-                            if (!advancedSettingsViewModel.SelectOperationImports)
+                            if (!advancedSettingsViewModel.SelectOperationImports || UserSettings.LanguageOption != LanguageOption.GenerateCSharpCode)
                                 RemoveOperationImportsSettingsPage();
                             else
                                 AddOperationImportsSettingsPage();
@@ -133,7 +133,7 @@ namespace Unchase.OData.ConnectedService
                     advancedSettingsViewModel.OperationImportsGenerator = AdvancedSettingsViewModel.OperationImportsGenerator;
                     advancedSettingsViewModel.SelectOperationImports = AdvancedSettingsViewModel.SelectOperationImports;
                     advancedSettingsViewModel.IncludeT4FileEnabled = true;
-                    if (!advancedSettingsViewModel.SelectOperationImports)
+                    if (!advancedSettingsViewModel.SelectOperationImports || UserSettings.LanguageOption != LanguageOption.GenerateCSharpCode)
                         RemoveOperationImportsSettingsPage();
                     else
                         AddOperationImportsSettingsPage();
@@ -146,9 +146,9 @@ namespace Unchase.OData.ConnectedService
                 {
                     if (ConfigODataEndpointViewModel.EdmxVersion == Common.Constants.EdmxVersion4 && (FunctionImportsViewModel.OperationImports == null ||
                         !FunctionImportsViewModel.OperationImports.Any() ||
-                        AdvancedSettingsViewModel.UseNamespacePrefix && FunctionImportsViewModel.OperationImports.Any(fi => fi.Namespace != AdvancedSettingsViewModel.NamespacePrefix) ||
+                        (AdvancedSettingsViewModel.UseNamespacePrefix && FunctionImportsViewModel.OperationImports.Any(fi => fi.Namespace != AdvancedSettingsViewModel.NamespacePrefix)) ||
                         FunctionImportsViewModel.OperationImports.Any(fi =>
-                            !ConfigODataEndpointViewModel.Endpoint.Contains(fi.EndpointUri))))
+                            !this.UserSettings.Endpoint.Contains(fi.EndpointUri))))
                     {
                         FunctionImportsViewModel.OperationImports = OperationImportsHelper.GetOperationsImports(
                             (this.CreateServiceConfiguration() as ServiceConfigurationV4).GetODataEdmModel(),
@@ -161,9 +161,9 @@ namespace Unchase.OData.ConnectedService
 
                     if (ConfigODataEndpointViewModel.EdmxVersion != Common.Constants.EdmxVersion4 && (FunctionImportsViewModel.FunctionImports == null ||
                         !FunctionImportsViewModel.FunctionImports.Any() ||
-                        AdvancedSettingsViewModel.UseNamespacePrefix && FunctionImportsViewModel.FunctionImports.Any(fi => fi.Namespace != AdvancedSettingsViewModel.NamespacePrefix) ||
+                        (AdvancedSettingsViewModel.UseNamespacePrefix && FunctionImportsViewModel.FunctionImports.Any(fi => fi.Namespace != AdvancedSettingsViewModel.NamespacePrefix)) ||
                         FunctionImportsViewModel.FunctionImports.Any(fi =>
-                            !ConfigODataEndpointViewModel.Endpoint.Contains(fi.EndpointUri))))
+                            !this.UserSettings.Endpoint.Contains(fi.EndpointUri))))
                     {
                         FunctionImportsViewModel.FunctionImports = FunctionImportsHelper.GetFunctionImports(
                             this.CreateServiceConfiguration().GetDataEdmModel(),
@@ -222,18 +222,18 @@ namespace Unchase.OData.ConnectedService
                 serviceConfiguration = new ServiceConfigurationV4
                 {
                     IgnoreUnexpectedElementsAndAttributes =
-                        AdvancedSettingsViewModel.IgnoreUnexpectedElementsAndAttributes,
-                    EnableNamingAlias = AdvancedSettingsViewModel.EnableNamingAlias,
-                    IncludeT4File = AdvancedSettingsViewModel.IncludeT4File
+                        AdvancedSettingsViewModel.UserSettings.IgnoreUnexpectedElementsAndAttributes,
+                    EnableNamingAlias = AdvancedSettingsViewModel.UserSettings.EnableNamingAlias,
+                    IncludeT4File = AdvancedSettingsViewModel.UserSettings.IncludeT4File
                 };
             }
             else
             {
                 serviceConfiguration = new ServiceConfigurationV3
                 {
-                    IncludeExtensionsT4File = AdvancedSettingsViewModel.IncludeExtensionsT4File,
-                    OperationImportsGenerator = AdvancedSettingsViewModel.OperationImportsGenerator,
-                    GenerateOperationImports = AdvancedSettingsViewModel.SelectOperationImports,
+                    IncludeExtensionsT4File = AdvancedSettingsViewModel.UserSettings.IncludeExtensionsT4File,
+                    OperationImportsGenerator = AdvancedSettingsViewModel.UserSettings.OperationImportsGenerator,
+                    GenerateOperationImports = AdvancedSettingsViewModel.UserSettings.SelectOperationImports,
                     FunctionImports = FunctionImportsViewModel.FunctionImports
                 };
             }
@@ -242,16 +242,16 @@ namespace Unchase.OData.ConnectedService
             serviceConfiguration.ServiceName = ConfigODataEndpointViewModel.UserSettings.ServiceName;
             serviceConfiguration.Endpoint = ConfigODataEndpointViewModel.UserSettings.Endpoint;
             serviceConfiguration.EdmxVersion = ConfigODataEndpointViewModel.EdmxVersion;
-            serviceConfiguration.UseDataServiceCollection = AdvancedSettingsViewModel.UseDataServiceCollection;
-            serviceConfiguration.GeneratedFileNamePrefix = AdvancedSettingsViewModel.GeneratedFileName;
-            serviceConfiguration.UseNameSpacePrefix = AdvancedSettingsViewModel.UseNamespacePrefix;
+            serviceConfiguration.UseDataServiceCollection = AdvancedSettingsViewModel.UserSettings.UseDataServiceCollection;
+            serviceConfiguration.GeneratedFileNamePrefix = AdvancedSettingsViewModel.UserSettings.GeneratedFileNamePrefix;
+            serviceConfiguration.UseNameSpacePrefix = AdvancedSettingsViewModel.UserSettings.UseNameSpacePrefix;
             serviceConfiguration.OpenGeneratedFilesOnComplete = ConfigODataEndpointViewModel.UserSettings.OpenGeneratedFilesOnComplete;
-            if (AdvancedSettingsViewModel.UseNamespacePrefix && !string.IsNullOrEmpty(AdvancedSettingsViewModel.NamespacePrefix))
+            if (AdvancedSettingsViewModel.UserSettings.UseNameSpacePrefix && !string.IsNullOrEmpty(AdvancedSettingsViewModel.UserSettings.NamespacePrefix))
             {
-                serviceConfiguration.NamespacePrefix = AdvancedSettingsViewModel.NamespacePrefix;
+                serviceConfiguration.NamespacePrefix = AdvancedSettingsViewModel.UserSettings.NamespacePrefix;
             }
 
-            serviceConfiguration.ExcludedOperationImportsNames = AdvancedSettingsViewModel.ExcludedOperationImportsNames;
+            serviceConfiguration.ExcludedOperationImportsNames = AdvancedSettingsViewModel.UserSettings.ExcludedOperationImportsNames;
             serviceConfiguration.OperationImports = FunctionImportsViewModel.OperationImports;
 
             #region Network Credentials
@@ -304,7 +304,7 @@ namespace Unchase.OData.ConnectedService
                         this.ConfigODataEndpointViewModel.Dispose();
                         this.ConfigODataEndpointViewModel = null;
                     }
-                    
+
                     if (this.FunctionImportsViewModel != null)
                     {
                         this.FunctionImportsViewModel.Dispose();
