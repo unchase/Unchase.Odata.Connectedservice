@@ -88,6 +88,34 @@ namespace Unchase.OData.ConnectedService.ViewModels
         }
         #endregion
 
+        #region GenerateDynamicPropertiesCollection
+        private bool _generateDynamicPropertiesCollection;
+        public bool GenerateDynamicPropertiesCollection
+        {
+            get => _generateDynamicPropertiesCollection;
+            set
+            {
+                _generateDynamicPropertiesCollection = value;
+                UserSettings.GenerateDynamicPropertiesCollection = value;
+                OnPropertyChanged(nameof(GenerateDynamicPropertiesCollection));
+            }
+        }
+        #endregion
+
+        #region DynamicPropertiesCollectionName
+        private string _dynamicPropertiesCollectionName;
+        public string DynamicPropertiesCollectionName
+        {
+            get => _dynamicPropertiesCollectionName;
+            set
+            {
+                _dynamicPropertiesCollectionName = value;
+                UserSettings.DynamicPropertiesCollectionName = value;
+                OnPropertyChanged(nameof(DynamicPropertiesCollectionName));
+            }
+        }
+        #endregion
+
         #region GeneratedFileNameEnabled
         public bool GeneratedFileNameEnabled { get; set; }
         #endregion
@@ -211,6 +239,8 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.NamespacePrefix = UserSettings.NamespacePrefix ?? Constants.DefaultNamespacePrefix;
             this.EnableNamingAlias = UserSettings.EnableNamingAlias;
             this.IgnoreUnexpectedElementsAndAttributes = UserSettings.IgnoreUnexpectedElementsAndAttributes;
+            this.GenerateDynamicPropertiesCollection = UserSettings.GenerateDynamicPropertiesCollection;
+            this.DynamicPropertiesCollectionName = UserSettings.DynamicPropertiesCollectionName;
             this.GeneratedFileNameEnabled = true;
             this.GeneratedFileNamePrefix = UserSettings.GeneratedFileNamePrefix ?? Constants.DefaultReferenceFileName;
             this.IncludeT4FileEnabled = true;

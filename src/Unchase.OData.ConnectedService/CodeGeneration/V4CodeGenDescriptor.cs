@@ -104,6 +104,9 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
 
                 text = Regex.Replace(text, "(public const bool EnableNamingAlias = )true;", "$1" + this.ServiceConfiguration.EnableNamingAlias.ToString().ToLower(CultureInfo.InvariantCulture) + ";");
                 text = Regex.Replace(text, "(public const bool IgnoreUnexpectedElementsAndAttributes = )true;", "$1" + this.ServiceConfiguration.IgnoreUnexpectedElementsAndAttributes.ToString().ToLower(CultureInfo.InvariantCulture) + ";");
+                text = Regex.Replace(text, "(public const bool GenerateDynamicPropertiesCollection = )true;", "$1" + this.ServiceConfiguration.GenerateDynamicPropertiesCollection.ToString().ToLower(CultureInfo.InvariantCulture) + ";");
+                text = Regex.Replace(text, "(public const string DynamicPropertiesCollectionName = )\"DynamicProperties\";", "$1\"" + $"{(!string.IsNullOrWhiteSpace(ServiceConfiguration.DynamicPropertiesCollectionName) ? ServiceConfiguration.DynamicPropertiesCollectionName : Common.Constants.DefaultDynamicPropertiesCollectionName)}" + "\";");
+
                 text = Regex.Replace(text, "(public const string ExcludedOperationImportsNames = )\"\";", "$1\"" + this.ServiceConfiguration.ExcludedOperationImportsNames + "\";");
 
                 await writer.WriteAsync(text);
@@ -142,7 +145,9 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
                 IgnoreUnexpectedElementsAndAttributes = this.ServiceConfiguration.IgnoreUnexpectedElementsAndAttributes,
                 EnableNamingAlias = this.ServiceConfiguration.EnableNamingAlias,
                 NamespacePrefix = this.ServiceConfiguration.NamespacePrefix,
-                ExcludedOperationImportsNames = this.ServiceConfiguration?.ExcludedOperationImportsNames
+                ExcludedOperationImportsNames = this.ServiceConfiguration?.ExcludedOperationImportsNames,
+                GenerateDynamicPropertiesCollection = this.ServiceConfiguration.GenerateDynamicPropertiesCollection,
+                DynamicPropertiesCollectionName = this.ServiceConfiguration?.DynamicPropertiesCollectionName
             };
 
             var tempFile = Path.GetTempFileName();

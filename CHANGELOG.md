@@ -7,10 +7,14 @@
 
 These are the changes to each version that has been released on the official [Visual Studio extension gallery](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService).
 
+## v1.3.1 `2019-09-21`
+
+- [x] Add support for emitting dynamic properties on open types for `OData V4`
+
 ## v 1.3.0 `2019-09-21`
 
 - [x] Close the [issue #5](https://github.com/unchase/Unchase.Odata.Connectedservice/issues/5):
-  - [x] Add support for loading client code generation parameters from json files (including `Connected Service .json` from OData Connected Service by Microsoft)
+  - [x] Add support for loading client code generation parameters from json files (including `Connected Service .json` from `OData Connected Service` by Microsoft)
 - [x] Fix bug with multiple untrusted sertificate validation (if multiple OData services are hosted on one endpoint)
 - [x] Add more code generation parameters to stored `UserSettings`
 - [x] Add `Excluded Operation imports names` to OData V4 generation template for excluding `OperationImports` you need

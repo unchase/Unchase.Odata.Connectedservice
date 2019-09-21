@@ -57,6 +57,12 @@ namespace Unchase.OData.ConnectedService.Models
         public bool IgnoreUnexpectedElementsAndAttributes { get; set; }
 
         [DataMember]
+        public bool GenerateDynamicPropertiesCollection { get; set; } = true;
+
+        [DataMember]
+        public string DynamicPropertiesCollectionName { get; set; } = Constants.DefaultDynamicPropertiesCollectionName;
+
+        [DataMember]
         public bool IncludeT4File { get; set; }
 
         [DataMember]

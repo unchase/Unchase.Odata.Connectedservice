@@ -21,6 +21,7 @@ namespace Unchase.OData.ConnectedService.Common
         public const string DefaultReferenceFileName = "Reference";
         public const string DefaultNamespacePrefix = "Reference";
         public const string DefaultServiceName = "OData Service";
+        public const string DefaultDynamicPropertiesCollectionName = "DynamicProperties";
 
         public static Version EdmxVersion1 = new Version(1, 0, 0, 0);
         public static Version EdmxVersion2 = new Version(2, 0, 0, 0);

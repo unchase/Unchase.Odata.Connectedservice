@@ -40,6 +40,7 @@ namespace Unchase.OData.ConnectedService.Templates
             /*
             OData Client T4 Template ver. #VersionNumber#
             Copyright (c) Microsoft Corporation
+            Updated by Unchase (https://github.com/unchase)
             All rights reserved. 
             MIT License
             Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
@@ -61,6 +62,8 @@ namespace Unchase.OData.ConnectedService.Templates
                         EnableNamingAlias = this.EnableNamingAlias,
                         TempFilePath = this.TempFilePath,
                         IgnoreUnexpectedElementsAndAttributes = this.IgnoreUnexpectedElementsAndAttributes,
+                        GenerateDynamicPropertiesCollection = this.GenerateDynamicPropertiesCollection,
+                        DynamicPropertiesCollectionName = this.DynamicPropertiesCollectionName,
                         ExcludedOperationImportsNames = this.ExcludedOperationImportsNames
                     };
                 }
@@ -79,6 +82,8 @@ namespace Unchase.OData.ConnectedService.Templates
                         EnableNamingAlias = this.EnableNamingAlias,
                         TempFilePath = this.TempFilePath,
                         IgnoreUnexpectedElementsAndAttributes = this.IgnoreUnexpectedElementsAndAttributes,
+                        GenerateDynamicPropertiesCollection = this.GenerateDynamicPropertiesCollection,
+                        DynamicPropertiesCollectionName = this.DynamicPropertiesCollectionName,
                         ExcludedOperationImportsNames = this.ExcludedOperationImportsNames
                     };
                 }
@@ -155,11 +160,21 @@ public static class Configuration
 	// the client code if any. The value must be set to true or false.
 	public const bool IgnoreUnexpectedElementsAndAttributes = true;
 
+    // This flag indicates whether to generate an additional Dictionary<string, object> property
+    // to store dynamic properties in open types.  The value must be set to true or false.
+    public const bool GenerateDynamicPropertiesCollection = true;
+
+    // This defines the name of Dictionary<string, object> properties
+    // that store dynamic properties in open types. This property is only applicable if
+    // GenerateDynamicPropertiesCollection is set to true. This value must be
+    // a valid identifier name.
+    public const string DynamicPropertiesCollectionName = "DynamicProperties";
+
     // The string for the comma separated OperationImports (ActionImports and FunctionImports) names in metadata to exclude from generated code. 
     public const string ExcludedOperationImportsNames = "";
 
     // 
-    public const string T4Version = "2.5.0";
+    public const string T4Version = "2.6.0";
 }
 
 public static class Customization
@@ -325,6 +340,24 @@ public bool IgnoreUnexpectedElementsAndAttributes
 }
 
 /// <summary>
+/// true to generate open type property dirctionary, false otherwise.
+/// </summary>
+public bool GenerateDynamicPropertiesCollection
+{
+    get;
+    set;
+}
+
+/// <summary>
+/// Name of the OpenType dictionary property
+/// </summary>
+public string DynamicPropertiesCollectionName
+{
+    get;
+    set;
+}
+
+/// <summary>
 /// The string for the comma separated OperationImports (ActionImports and FunctionImports) names in metadata to exclude from generated code.
 /// </summary>
 public string ExcludedOperationImportsNames
@@ -429,6 +462,26 @@ public void ValidateAndSetIgnoreUnexpectedElementsAndAttributesFromString(string
 }
 
 /// <summary>
+/// Set the GenerateDynamicPropertiesCollection property with the given value.
+/// </summary>
+/// <param name="stringValue">The value to set.</param>
+public void ValidateAndSetGenerateDynamicPropertiesCollectionFromString(string stringValue)
+{
+    bool boolValue;
+    if (!bool.TryParse(stringValue, out boolValue))
+    {
+        // ********************************************************************************************************
+        // To fix this error, if the current text transformation is run by the TextTemplatingFileGenerator
+        // custom tool inside Visual Studio, update the .odata.config file in the project with a valid parameter
+        // value then hit Ctrl-S to save the .tt file to refresh the code generation.
+        // ********************************************************************************************************
+        throw new ArgumentException(string.Format("The value \"{0}\" cannot be assigned to the GenerateDynamicPropertiesCollection parameter because it is not a valid boolean value.", stringValue));
+    }
+
+    this.GenerateDynamicPropertiesCollection = boolValue;
+}
+
+/// <summary>
 /// Reads the parameter values from the Configuration class and applies them.
 /// </summary>
 private void ApplyParametersFromConfigurationClass()
@@ -440,6 +493,8 @@ private void ApplyParametersFromConfigurationClass()
     this.EnableNamingAlias = Configuration.EnableNamingAlias;
     this.TempFilePath = Configuration.TempFilePath;
     this.IgnoreUnexpectedElementsAndAttributes = Configuration.IgnoreUnexpectedElementsAndAttributes;
+    this.GenerateDynamicPropertiesCollection = Configuration.GenerateDynamicPropertiesCollection;
+    this.DynamicPropertiesCollectionName = Configuration.DynamicPropertiesCollectionName;
     this.ExcludedOperationImportsNames = Configuration.ExcludedOperationImportsNames;
 }
 
@@ -489,8 +544,20 @@ private void ApplyParametersFromCommandLine()
         this.ValidateAndSetIgnoreUnexpectedElementsAndAttributesFromString(ignoreUnexpectedElementsAndAttributes);
     }
 
+    string generateDynamicPropertiesCollection = this.Host.ResolveParameterValue("notempty", "notempty", "GenerateDynamicPropertiesCollection");
+    if (!string.IsNullOrEmpty(generateDynamicPropertiesCollection))
+    {
+        this.ValidateAndSetGenerateDynamicPropertiesCollectionFromString(generateDynamicPropertiesCollection);
+    }
+
+    string dynamicPropertiesCollectionName = this.Host.ResolveParameterValue("notempty", "notempty", "DynamicPropertiesCollectionName");
+    if (!string.IsNullOrEmpty(dynamicPropertiesCollectionName))
+    {
+        this.DynamicPropertiesCollectionName = dynamicPropertiesCollectionName;
+    }
+
     string excludedOperationImportsNames = this.Host.ResolveParameterValue("notempty", "notempty", "ExcludedOperationImportsNames");
-    if (!string.IsNullOrEmpty(namespacePrefix))
+    if (!string.IsNullOrEmpty(excludedOperationImportsNames))
     {
         this.ExcludedOperationImportsNames = excludedOperationImportsNames;
     }
@@ -829,6 +896,24 @@ public class CodeGenerationContext
     }
 
     /// <summary>
+    /// true to generate open type property dirctionary, false otherwise.
+    /// </summary>
+    public bool GenerateDynamicPropertiesCollection
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Name of the OpenType dictionary property
+    /// </summary>
+    public string DynamicPropertiesCollectionName
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
     /// The string for the comma separated OperationImports (ActionImports and FunctionImports) names in metadata to exclude from generated code.
     /// </summary>
     public string ExcludedOperationImportsNames
@@ -1086,6 +1171,7 @@ public abstract class ODataClientTemplate : TemplateBase
     internal abstract string NewModifier { get; }
     internal abstract string GeoTypeInitializePattern { get; }
     internal abstract string Int32TypeName { get; }
+    internal abstract string ObjectTypeName { get; }
     internal abstract string StringTypeName { get; }
     internal abstract string BinaryTypeName { get; }
     internal abstract string DecimalTypeName { get; }
@@ -1120,6 +1206,7 @@ public abstract class ODataClientTemplate : TemplateBase
     internal abstract string TimeOfDayTypeName { get; }
     internal abstract string XmlConvertClassName { get; }
     internal abstract string EnumTypeName { get; }
+    internal abstract string DictionaryTypeName { get; }
     internal abstract HashSet<string> LanguageKeywords { get; }
     internal abstract string FixPattern { get; }
     internal abstract string EnumUnderlyingTypeMarker { get; }
@@ -1128,6 +1215,7 @@ public abstract class ODataClientTemplate : TemplateBase
     internal abstract string UriOperationParameterConstructor { get; }
     internal abstract string UriEntityOperationParameterConstructor { get; }
     internal abstract string BodyOperationParameterConstructor { get; }
+    internal abstract string DictionaryConstructor { get; }
     internal abstract string BaseEntityType { get; }
     internal abstract string OverloadsModifier { get; }
     internal abstract string ODataVersion { get; }
@@ -1842,7 +1930,7 @@ public abstract class ODataClientTemplate : TemplateBase
         this.WriteStructuredTypeDeclaration(entityType, this.BaseEntityType);
         this.SetPropertyIdentifierMappingsIfNameConflicts(entityType.Name, entityType);
         this.WriteTypeStaticCreateMethod(entityType.Name, entityType);
-        this.WritePropertiesForStructuredType(entityType.DeclaredProperties);
+        this.WritePropertiesForStructuredType(entityType.DeclaredProperties, entityType.IsOpen);
 
         if (entityType.BaseType == null && this.context.UseDataServiceCollection)
         {
@@ -1868,7 +1956,7 @@ public abstract class ODataClientTemplate : TemplateBase
         this.WriteStructuredTypeDeclaration(complexType, string.Empty);
         this.SetPropertyIdentifierMappingsIfNameConflicts(complexType.Name, complexType);
         this.WriteTypeStaticCreateMethod(complexType.Name, complexType);
-        this.WritePropertiesForStructuredType(complexType.DeclaredProperties);
+        this.WritePropertiesForStructuredType(complexType.DeclaredProperties, complexType.IsOpen);
 
         if (complexType.BaseType == null && this.context.UseDataServiceCollection)
         {
@@ -2294,7 +2382,7 @@ public abstract class ODataClientTemplate : TemplateBase
         }
     }
 
-    internal void WritePropertiesForStructuredType(IEnumerable<IEdmProperty> properties)
+    internal void WritePropertiesForStructuredType(IEnumerable<IEdmProperty> properties, bool isOpen)
     {
          bool useDataServiceCollection = this.context.UseDataServiceCollection;
 
@@ -2313,6 +2401,19 @@ public abstract class ODataClientTemplate : TemplateBase
                     PropertyInitializationValue = Utils.GetPropertyInitializationValue(property, useDataServiceCollection, this, this.context)
                 };
         }).ToList();
+
+        if (isOpen && this.context.GenerateDynamicPropertiesCollection)
+        {
+            propertyInfos.Add(new
+            {
+                PropertyType = string.Format(this.DictionaryTypeName, this.StringTypeName, this.ObjectTypeName),
+                PropertyVanillaName = string.Empty, // No such property in metadata
+                PropertyName = this.context.DynamicPropertiesCollectionName,
+                FixedPropertyName = GetFixedName(this.context.DynamicPropertiesCollectionName),
+                PrivatePropertyName = "_" + Utils.CamelCase(this.context.DynamicPropertiesCollectionName),
+                PropertyInitializationValue = string.Format(this.DictionaryConstructor, this.StringTypeName, this.ObjectTypeName)
+            });
+        }
 
         // Private name should not confict with field name
         UniqueIdentifierService uniqueIdentifierService = new UniqueIdentifierService(propertyInfos.Select(_ => _.FixedPropertyName),
@@ -3217,6 +3318,7 @@ public sealed class ODataClientCSharpTemplate : ODataClientTemplate
     internal override string NewModifier => "new ";
     internal override string GeoTypeInitializePattern => "global::Microsoft.Spatial.SpatialImplementation.CurrentImplementation.CreateWellKnownTextSqlFormatter(false).Read<{0}>(new global::System.IO.StringReader(\"{1}\"))";
     internal override string Int32TypeName => "int";
+    internal override string ObjectTypeName => "object";
     internal override string StringTypeName => "string";
     internal override string BinaryTypeName => "byte[]";
     internal override string DecimalTypeName => "decimal";
@@ -3251,6 +3353,7 @@ public sealed class ODataClientCSharpTemplate : ODataClientTemplate
     internal override string TimeOfDayTypeName => "global::Microsoft.OData.Edm.TimeOfDay";
     internal override string XmlConvertClassName => "global::System.Xml.XmlConvert";
     internal override string EnumTypeName => "global::System.Enum";
+    internal override string DictionaryTypeName => "global::System.Collections.Generic.Dictionary<{0}, {1}>";
     internal override string FixPattern => "@{0}";
     internal override string EnumUnderlyingTypeMarker => " : ";
     internal override string ConstantExpressionConstructorWithType => "global::System.Linq.Expressions.Expression.Constant({0}, typeof({1}))";
@@ -3258,6 +3361,7 @@ public sealed class ODataClientCSharpTemplate : ODataClientTemplate
     internal override string UriOperationParameterConstructor => "new global::Microsoft.OData.Client.UriOperationParameter(\"{0}\", {1})";
     internal override string UriEntityOperationParameterConstructor => "new global::Microsoft.OData.Client.UriEntityOperationParameter(\"{0}\", {1}, {2})";
     internal override string BodyOperationParameterConstructor => "new global::Microsoft.OData.Client.BodyOperationParameter(\"{0}\", {1})";
+    internal override string DictionaryConstructor => $"new {DictionaryTypeName}()";
     internal override string BaseEntityType => " : global::Microsoft.OData.Client.BaseEntityType";
     internal override string OverloadsModifier => "new ";
     internal override string ODataVersion => "global::Microsoft.OData.ODataVersion.V4";
@@ -5256,6 +5360,7 @@ public sealed class ODataClientVBTemplate : ODataClientTemplate
     internal override string NewModifier { get { return "New "; } }
     internal override string GeoTypeInitializePattern { get { return "Global.Microsoft.Spatial.SpatialImplementation.CurrentImplementation.CreateWellKnownTextSqlFormatter(False).Read(Of {0})(New Global.System.IO.StringReader(\"{1}\"))"; } }
     internal override string Int32TypeName { get { return "Integer"; } }
+    internal override string ObjectTypeName { get { return "Object"; } }
     internal override string StringTypeName { get { return "String"; } }
     internal override string BinaryTypeName { get { return "Byte()"; } }
     internal override string DecimalTypeName { get { return "Decimal"; } }
@@ -5290,6 +5395,7 @@ public sealed class ODataClientVBTemplate : ODataClientTemplate
     internal override string TimeOfDayTypeName { get { return "Global.Microsoft.OData.Edm.TimeOfDay"; } }
     internal override string XmlConvertClassName { get { return "Global.System.Xml.XmlConvert"; } }
     internal override string EnumTypeName { get { return "Global.System.Enum"; } }
+    internal override string DictionaryTypeName { get { return "Global.System.Collections.Generic.Dictionary(Of {0}, {1})"; } }
     internal override string FixPattern { get { return "[{0}]"; } }
     internal override string EnumUnderlyingTypeMarker { get { return " As "; } }
     internal override string ConstantExpressionConstructorWithType { get { return "Global.System.Linq.Expressions.Expression.Constant({0}, GetType({1}))"; } }
@@ -5297,6 +5403,7 @@ public sealed class ODataClientVBTemplate : ODataClientTemplate
     internal override string UriOperationParameterConstructor { get { return "New Global.Microsoft.OData.Client.UriOperationParameter(\"{0}\", {1})"; } }
     internal override string UriEntityOperationParameterConstructor { get { return "New Global.Microsoft.OData.Client.UriEntityOperationParameter(\"{0}\", {1}, {2})"; } }
     internal override string BodyOperationParameterConstructor { get { return "New Global.Microsoft.OData.Client.BodyOperationParameter(\"{0}\", {1})"; } }
+    internal override string DictionaryConstructor { get { return $"New {DictionaryTypeName}"; } }
     internal override string BaseEntityType { get { return "\r\n        Inherits Global.Microsoft.OData.Client.BaseEntityType"; } }
     internal override string OverloadsModifier { get { return "Overloads "; } }
     internal override string ODataVersion { get { return "Global.Microsoft.OData.ODataVersion.V4"; } }

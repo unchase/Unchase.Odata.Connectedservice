@@ -79,6 +79,8 @@ namespace Unchase.OData.ConnectedService
                 {
                     AdvancedSettingsViewModel.IgnoreUnexpectedElementsAndAttributes =
                         serviceConfig.IgnoreUnexpectedElementsAndAttributes;
+                    AdvancedSettingsViewModel.GenerateDynamicPropertiesCollection = serviceConfig.GenerateDynamicPropertiesCollection;
+                    AdvancedSettingsViewModel.DynamicPropertiesCollectionName = serviceConfig.DynamicPropertiesCollectionName;
                     AdvancedSettingsViewModel.EnableNamingAlias = serviceConfig.EnableNamingAlias;
                     AdvancedSettingsViewModel.IncludeT4File = serviceConfig.IncludeT4File;
                     AdvancedSettingsViewModel.IncludeT4FileEnabled = true;
@@ -104,6 +106,8 @@ namespace Unchase.OData.ConnectedService
                             {
                                 advancedSettingsViewModel.IgnoreUnexpectedElementsAndAttributes =
                                     serviceConfig.IgnoreUnexpectedElementsAndAttributes;
+                                advancedSettingsViewModel.GenerateDynamicPropertiesCollection = serviceConfig.GenerateDynamicPropertiesCollection;
+                                advancedSettingsViewModel.DynamicPropertiesCollectionName = serviceConfig.DynamicPropertiesCollectionName;
                                 advancedSettingsViewModel.EnableNamingAlias = serviceConfig.EnableNamingAlias;
                                 advancedSettingsViewModel.IncludeT4File = serviceConfig.IncludeT4File;
                                 advancedSettingsViewModel.IncludeT4FileEnabled = true;
@@ -223,6 +227,8 @@ namespace Unchase.OData.ConnectedService
                 {
                     IgnoreUnexpectedElementsAndAttributes =
                         AdvancedSettingsViewModel.UserSettings.IgnoreUnexpectedElementsAndAttributes,
+                    GenerateDynamicPropertiesCollection = AdvancedSettingsViewModel.UserSettings.GenerateDynamicPropertiesCollection,
+                    DynamicPropertiesCollectionName = AdvancedSettingsViewModel.UserSettings.DynamicPropertiesCollectionName,
                     EnableNamingAlias = AdvancedSettingsViewModel.UserSettings.EnableNamingAlias,
                     IncludeT4File = AdvancedSettingsViewModel.UserSettings.IncludeT4File
                 };
@@ -247,9 +253,7 @@ namespace Unchase.OData.ConnectedService
             serviceConfiguration.UseNameSpacePrefix = AdvancedSettingsViewModel.UserSettings.UseNameSpacePrefix;
             serviceConfiguration.OpenGeneratedFilesOnComplete = ConfigODataEndpointViewModel.UserSettings.OpenGeneratedFilesOnComplete;
             if (AdvancedSettingsViewModel.UserSettings.UseNameSpacePrefix && !string.IsNullOrEmpty(AdvancedSettingsViewModel.UserSettings.NamespacePrefix))
-            {
                 serviceConfiguration.NamespacePrefix = AdvancedSettingsViewModel.UserSettings.NamespacePrefix;
-            }
 
             serviceConfiguration.ExcludedOperationImportsNames = AdvancedSettingsViewModel.UserSettings.ExcludedOperationImportsNames;
             serviceConfiguration.OperationImports = FunctionImportsViewModel.OperationImports;

@@ -29,11 +29,21 @@ public static class Configuration
 	// the client code if any. The value must be set to true or false.
 	public const bool IgnoreUnexpectedElementsAndAttributes = true;
 
+	// This flag indicates whether to generate an additional Dictionary<string, object> property
+	// to store dynamic properties in open types.  The value must be set to true or false.
+	public const bool GenerateDynamicPropertiesCollection = true;
+
+	// This defines the name of Dictionary<string, object> properties
+	// that store dynamic properties in open types. This property is only applicable if
+	// GenerateDynamicPropertiesCollection is set to true. This value must be
+	// a valid identifier name.
+	public const string DynamicPropertiesCollectionName = "DynamicProperties";
+
 	// The string for the comma separated OperationImports (ActionImports and FunctionImports) names in metadata to exclude from generated code.
     public const string ExcludedOperationImportsNames = "";
 
 	//
-    public const string T4Version = "2.5.0";
+    public const string T4Version = "2.6.0";
 }
 
 public static class Customization

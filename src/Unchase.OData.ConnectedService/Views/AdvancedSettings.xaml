@@ -147,6 +147,24 @@
                     IsChecked="{Binding UserSettings.IgnoreUnexpectedElementsAndAttributes, Mode=TwoWay}">
                     <TextBlock Margin="0,0,40,0" TextWrapping="Wrap">Ignore unknown elements (Whether to ignore unexpected elements and attributes in the metadata document and generate the client code if any).</TextBlock>
                 </CheckBox>
+
+                <CheckBox
+                    x:Name="GenerateDynamicPropertiesCollection"
+                    Margin="0,5"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    IsChecked="{Binding UserSettings.GenerateDynamicPropertiesCollection, Mode=TwoWay}">
+                    <TextBlock Margin="0,0,40,0" TextWrapping="Wrap">Generate Dynamic Properties Collection with name :</TextBlock>
+                </CheckBox>
+                <TextBox
+                    x:Name="DynamicPropertiesCollectionName"
+                    Width="480"
+                    Margin="20,0,0,5"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Text="{Binding UserSettings.DynamicPropertiesCollectionName, Mode=TwoWay}"
+                    TextWrapping="Wrap" />
+
                 <CheckBox
                     x:Name="IncludeT4File"
                     Width="500"

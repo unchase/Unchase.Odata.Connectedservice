@@ -70,6 +70,10 @@ namespace Unchase.OData.ConnectedService.Models
 
         public bool IgnoreUnexpectedElementsAndAttributes { get; set; }
 
+        public bool GenerateDynamicPropertiesCollection { get; set; }
+
+        public string DynamicPropertiesCollectionName { get; set; }
+
         public bool IncludeT4File { get; set; }
     }
     #endregion

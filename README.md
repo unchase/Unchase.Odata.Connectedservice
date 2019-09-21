@@ -30,6 +30,9 @@ Install from `Tools -> Extensions and Updates` menu inside [Visual Studio](https
 ## Features
 
 - Generate `C#` and `VB` clients/proxies (client code) from OData specifications for OData protocol versions 1.0-4.0
+- Support for emitting dynamic properties on open types for OData protocol version 4.0
+- Support selection `OperationImports` (`Actions` and `FunctionImports`) that will be generated for OData protocol versions 1.0-4.0
+- Support loading client code generation parameters from json files (including `Connected Service .json` from OData Connected Service by Microsoft)
 - Generate `C#` proxy-class extension methods for OData protocol versions 1.0-3.0
 - Generate functions to call service methods from OData protocol versions 1.0-3.0 `FunctionImports` or from OData protocol version 4.0 `OperationImports`
   - You can select the necessary methods that will be added after generation for OData protocol versions 1.0-4.0
