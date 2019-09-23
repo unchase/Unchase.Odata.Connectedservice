@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:Unchase.OData.ConnectedService.ViewModels"
     d:DataContext="{d:DesignInstance Type=viewModels:ConfigODataEndpointViewModel}"
-    d:DesignHeight="300"
+    d:DesignHeight="320"
     d:DesignWidth="500"
     mc:Ignorable="d">
     <UserControl.Resources>
@@ -91,6 +91,14 @@
             Content="Open generated files on complete in IDE."
             FontWeight="Bold"
             IsChecked="{Binding Path=UserSettings.OpenGeneratedFilesOnComplete, Mode=TwoWay}" />
+
+        <CheckBox
+            x:Name="AcceptAllUntrustedCertificates"
+            Margin="20,5,10,5"
+            HorizontalAlignment="Stretch"
+            Content="Accept all untrusted certificates."
+            FontWeight="Bold"
+            IsChecked="{Binding Path=UserSettings.AcceptAllUntrustedCertificates, Mode=TwoWay}" />
 
         <TextBlock
             Margin="0,5,10,5"

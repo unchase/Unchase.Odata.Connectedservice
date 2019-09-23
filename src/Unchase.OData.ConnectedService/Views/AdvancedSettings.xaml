@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:Unchase.OData.ConnectedService.ViewModels"
     d:DataContext="{d:DesignInstance Type=viewModels:AdvancedSettingsViewModel}"
-    d:DesignHeight="400"
+    d:DesignHeight="460"
     d:DesignWidth="500"
     mc:Ignorable="d">
     <StackPanel>

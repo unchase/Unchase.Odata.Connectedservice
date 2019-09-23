@@ -53,6 +53,7 @@ namespace Unchase.OData.ConnectedService
                 ConfigODataEndpointViewModel.Endpoint = serviceConfig.Endpoint;
                 ConfigODataEndpointViewModel.EdmxVersion = serviceConfig.EdmxVersion;
                 ConfigODataEndpointViewModel.ServiceName = serviceConfig.ServiceName;
+                ConfigODataEndpointViewModel.AcceptAllUntrustedCertificates = serviceConfig.AcceptAllUntrustedCertificates;
                 ConfigODataEndpointViewModel.UseWebProxy = serviceConfig.UseWebProxy;
                 ConfigODataEndpointViewModel.NetworkCredentialsDomain = serviceConfig.NetworkCredentialsDomain;
                 ConfigODataEndpointViewModel.NetworkCredentialsUserName = serviceConfig.NetworkCredentialsUserName;
@@ -246,6 +247,7 @@ namespace Unchase.OData.ConnectedService
 
             serviceConfiguration.LanguageOption = ConfigODataEndpointViewModel.UserSettings.LanguageOption;
             serviceConfiguration.ServiceName = ConfigODataEndpointViewModel.UserSettings.ServiceName;
+            serviceConfiguration.AcceptAllUntrustedCertificates = ConfigODataEndpointViewModel.UserSettings.AcceptAllUntrustedCertificates;
             serviceConfiguration.Endpoint = ConfigODataEndpointViewModel.UserSettings.Endpoint;
             serviceConfiguration.EdmxVersion = ConfigODataEndpointViewModel.EdmxVersion;
             serviceConfiguration.UseDataServiceCollection = AdvancedSettingsViewModel.UserSettings.UseDataServiceCollection;

@@ -29,7 +29,7 @@ namespace Unchase.OData.ConnectedService
                 BitmapSizeOptions.FromWidthAndHeight(32, 32)
             );
             CreatedBy = Constants.Author;
-            Version = new Version(1, 3, 0, 0);
+            Version = new Version(1, 3, 2, 0);
             Version = typeof(Provider).Assembly.GetName().Version;
             MoreInfoUri = new Uri(Constants.Website);
         }

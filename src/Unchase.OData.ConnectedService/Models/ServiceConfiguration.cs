@@ -13,6 +13,8 @@ namespace Unchase.OData.ConnectedService.Models
         #region Properties and fields
         public string ServiceName { get; set; }
 
+        public bool AcceptAllUntrustedCertificates { get; set; }
+
         public string Endpoint { get; set; }
 
         public Version EdmxVersion { get; set; }

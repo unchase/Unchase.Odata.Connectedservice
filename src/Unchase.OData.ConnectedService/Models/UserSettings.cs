@@ -33,6 +33,9 @@ namespace Unchase.OData.ConnectedService.Models
         public string ServiceName { get; set; }
 
         [DataMember]
+        public bool AcceptAllUntrustedCertificates { get; set; }
+
+        [DataMember]
         public bool OpenGeneratedFilesOnComplete { get; set; } = false;
 
         [DataMember]

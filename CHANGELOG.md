@@ -7,6 +7,10 @@
 
 These are the changes to each version that has been released on the official [Visual Studio extension gallery](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService).
 
+## v1.3.2 `2019-09-23`
+
+- [x] Add option for accepting all untrusted certificates on the first wizard page
+
 ## v1.3.1 `2019-09-21`
 
 - [x] Add support for emitting dynamic properties on open types for `OData V4`

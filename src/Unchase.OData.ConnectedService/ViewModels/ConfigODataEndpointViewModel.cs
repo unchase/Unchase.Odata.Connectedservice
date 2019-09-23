@@ -47,7 +47,19 @@ namespace Unchase.OData.ConnectedService.ViewModels
             }
         }
 
-		private Version _edmxVersion;
+        private bool _acceptAllUntrustedCertificates;
+        public bool AcceptAllUntrustedCertificates
+        {
+            get => _acceptAllUntrustedCertificates;
+            set
+            {
+                _acceptAllUntrustedCertificates = value;
+                UserSettings.AcceptAllUntrustedCertificates = value;
+                OnPropertyChanged(nameof(AcceptAllUntrustedCertificates));
+            }
+        }
+
+        private Version _edmxVersion;
         public Version EdmxVersion
         {
             get => _edmxVersion;
@@ -116,6 +128,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
                 DataContext = this
             };
             this.UserSettings = userSettings;
+            this.AcceptAllUntrustedCertificates = userSettings.AcceptAllUntrustedCertificates;
             this.ServiceName = userSettings.ServiceName ?? Constants.DefaultServiceName;
             this.Endpoint = userSettings.Endpoint;
             this.LanguageOption = userSettings.LanguageOption;
@@ -188,6 +201,9 @@ namespace Unchase.OData.ConnectedService.ViewModels
 
             try
             {
+                if (this.UserSettings.AcceptAllUntrustedCertificates)
+                    ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
+
                 return ReadMetadata(out edmxVersion, readerSettings, workFile);
             }
             catch (WebException e)

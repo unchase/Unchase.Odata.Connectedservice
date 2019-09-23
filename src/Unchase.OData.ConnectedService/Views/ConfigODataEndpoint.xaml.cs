@@ -86,6 +86,7 @@ namespace Unchase.OData.ConnectedService.Views
                 this.UserSettings.UseNameSpacePrefix = microsoftConnectedServiceData.ExtendedData?.UseNameSpacePrefix ?? this.UserSettings.UseNameSpacePrefix;
                 this.UserSettings.UseDataServiceCollection = microsoftConnectedServiceData.ExtendedData?.UseDataServiceCollection ?? this.UserSettings.UseDataServiceCollection;
                 this.UserSettings.ServiceName = microsoftConnectedServiceData.ExtendedData?.ServiceName ?? this.UserSettings.ServiceName;
+                this.UserSettings.AcceptAllUntrustedCertificates = microsoftConnectedServiceData.ExtendedData?.AcceptAllUntrustedCertificates ?? this.UserSettings.AcceptAllUntrustedCertificates;
                 this.UserSettings.NamespacePrefix = microsoftConnectedServiceData.ExtendedData?.NamespacePrefix ?? this.UserSettings.NamespacePrefix;
                 this.UserSettings.OpenGeneratedFilesOnComplete = microsoftConnectedServiceData.ExtendedData?.OpenGeneratedFilesOnComplete ?? this.UserSettings.OpenGeneratedFilesOnComplete;
                 this.UserSettings.GeneratedFileNamePrefix = microsoftConnectedServiceData.ExtendedData?.GeneratedFileNamePrefix ?? this.UserSettings.GeneratedFileNamePrefix;
@@ -95,6 +96,7 @@ namespace Unchase.OData.ConnectedService.Views
 
                 this.Endpoint.Text = microsoftConnectedServiceData.ExtendedData?.Endpoint ?? this.Endpoint.Text;
                 this.ServiceName.Text = microsoftConnectedServiceData.ExtendedData?.ServiceName ?? this.ServiceName.Text;
+                this.AcceptAllUntrustedCertificates.IsChecked = microsoftConnectedServiceData.ExtendedData?.AcceptAllUntrustedCertificates ?? this.AcceptAllUntrustedCertificates.IsChecked;
                 this.LanguageOption.SelectedItem = microsoftConnectedServiceData.ExtendedData?.LanguageOption ?? System.Data.Services.Design.LanguageOption.GenerateCSharpCode;
             }
         }
