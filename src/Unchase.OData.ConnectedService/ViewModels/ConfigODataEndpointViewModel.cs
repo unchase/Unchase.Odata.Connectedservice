@@ -194,7 +194,8 @@ namespace Unchase.OData.ConnectedService.ViewModels
 
             var readerSettings = new XmlReaderSettings()
             {
-                XmlResolver = new XmlSecureResolver(xmlUrlResolver, new PermissionSet(System.Security.Permissions.PermissionState.Unrestricted))
+                XmlResolver = new XmlSecureResolver(xmlUrlResolver, new PermissionSet(System.Security.Permissions.PermissionState.Unrestricted)),
+                DtdProcessing = DtdProcessing.Parse
             };
 
             var workFile = Path.GetTempFileName();

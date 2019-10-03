@@ -176,7 +176,8 @@ namespace Unchase.OData.ConnectedService.Common
 
             var settings = new XmlReaderSettings
             {
-                XmlResolver = new XmlSecureResolver(xmlUrlResolver, new PermissionSet(System.Security.Permissions.PermissionState.Unrestricted))
+                XmlResolver = new XmlSecureResolver(xmlUrlResolver, new PermissionSet(System.Security.Permissions.PermissionState.Unrestricted)),
+                DtdProcessing = DtdProcessing.Parse
             };
 
             return XmlReader.Create(serviceConfiguration.Endpoint, settings);

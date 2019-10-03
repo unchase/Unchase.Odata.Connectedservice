@@ -7,6 +7,10 @@
 
 These are the changes to each version that has been released on the official [Visual Studio extension gallery](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService).
 
+## v1.3.3 `2019-10-03`
+
+- [x] Add fix: set `DtdProcessing` option in `XmlReaderSettings`
+
 ## v1.3.2 `2019-09-23`
 
 - [x] Add option for accepting all untrusted certificates on the first wizard page
