@@ -23,13 +23,13 @@ namespace Unchase.OData.ConnectedService
             Name = Constants.ExtensionName;
             Description = Constants.ExtensionDescription;
             Icon = Imaging.CreateBitmapSourceFromHBitmap(
-                Resources.icon_32x32.GetHbitmap(),
+                Resources.preview_200x200.GetHbitmap(),
                 IntPtr.Zero,
                 Int32Rect.Empty,
-                BitmapSizeOptions.FromWidthAndHeight(32, 32)
+                BitmapSizeOptions.FromWidthAndHeight(64, 64)
             );
             CreatedBy = Constants.Author;
-            Version = new Version(1, 3, 3, 0);
+            Version = new Version(1, 3, 4, 0);
             Version = typeof(Provider).Assembly.GetName().Version;
             MoreInfoUri = new Uri(Constants.Website);
         }
