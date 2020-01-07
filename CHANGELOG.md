@@ -7,6 +7,10 @@
 
 These are the changes to each version that has been released on the official [Visual Studio extension gallery](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService).
 
+## v1.3.6 `2020-01-07`
+
+- [x] Fix the [issue #22](https://github.com/unchase/Unchase.Odata.Connectedservice/issues/22)
+
 ## v1.3.4 `2019-10-20`
 
 - [x] Update icon resolution

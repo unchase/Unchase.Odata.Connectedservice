@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.ConnectedServices;
 using Unchase.OData.ConnectedService.CodeGeneration;
-using Unchase.OData.ConnectedService.Models;
 
 namespace Unchase.OData.ConnectedService
 {
@@ -20,12 +19,22 @@ namespace Unchase.OData.ConnectedService
 
             var codeGenInstance = (Instance)context.ServiceInstance;
 
+            try
+            {
+                await GenerateCodeAsync(codeGenInstance.ServiceConfig.EdmxVersion, context);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
             var codeGenDescriptor = await GenerateCodeAsync(codeGenInstance.ServiceConfig.EdmxVersion, context);
 
             codeGenInstance.ServiceConfig.FunctionImports = null;
             codeGenInstance.ServiceConfig.OperationImports = null;
 
-            context.SetExtendedDesignerData<ServiceConfiguration>(codeGenInstance.ServiceConfig);
+            context.SetExtendedDesignerData(codeGenInstance.ServiceConfig);
 
             await context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Adding service instance complete!");
 
@@ -43,7 +52,7 @@ namespace Unchase.OData.ConnectedService
             codeGenInstance.ServiceConfig.FunctionImports = null;
             codeGenInstance.ServiceConfig.OperationImports = null;
 
-            context.SetExtendedDesignerData<ServiceConfiguration>(codeGenInstance.ServiceConfig);
+            context.SetExtendedDesignerData(codeGenInstance.ServiceConfig);
 
             await context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Updating service instance complete.");
 
