@@ -19,16 +19,6 @@ namespace Unchase.OData.ConnectedService
 
             var codeGenInstance = (Instance)context.ServiceInstance;
 
-            try
-            {
-                await GenerateCodeAsync(codeGenInstance.ServiceConfig.EdmxVersion, context);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-
             var codeGenDescriptor = await GenerateCodeAsync(codeGenInstance.ServiceConfig.EdmxVersion, context);
 
             codeGenInstance.ServiceConfig.FunctionImports = null;

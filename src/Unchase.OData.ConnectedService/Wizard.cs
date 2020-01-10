@@ -133,7 +133,7 @@ namespace Unchase.OData.ConnectedService
             {
                 if (sender is AdvancedSettingsViewModel advancedSettingsViewModel)
                 {
-                    advancedSettingsViewModel.IncludeExtensionsT4File = ConfigODataEndpointViewModel.EdmxVersion != Common.Constants.EdmxVersion4;
+                    advancedSettingsViewModel.IncludeExtensionsT4File = AdvancedSettingsViewModel.IncludeExtensionsT4File;
                     advancedSettingsViewModel.IncludeExtensionsT4FileVisibility = ConfigODataEndpointViewModel.EdmxVersion != Common.Constants.EdmxVersion4 ? Visibility.Visible : Visibility.Collapsed;
                     advancedSettingsViewModel.OperationImportsGenerator = AdvancedSettingsViewModel.OperationImportsGenerator;
                     advancedSettingsViewModel.SelectOperationImports = AdvancedSettingsViewModel.SelectOperationImports;
