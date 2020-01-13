@@ -7,36 +7,40 @@
 
 These are the changes to each version that has been released on the official [Visual Studio extension gallery](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService).
 
-## v1.3.8 `2020-01-11`
+## v1.3.9 `(2020-01-13)`
+
+- [x] Fix the [issue #27](https://github.com/unchase/Unchase.Odata.Connectedservice/issues/27)
+
+## v1.3.8 `(2020-01-11)`
 
 - [x] Fix [issue #23](https://github.com/unchase/Unchase.Odata.Connectedservice/issues/23)
 - [x] Fix small bug: delete generation code duplicate
 
-## v1.3.7 `2020-01-08`
+## v1.3.7 `(2020-01-08)`
 
 - [x] Fix bug for [issue #22](https://github.com/unchase/Unchase.Odata.Connectedservice/issues/22)
 
-## v1.3.6 `2020-01-07`
+## v1.3.6 `(2020-01-07)`
 
 - [x] Fix the [issue #22](https://github.com/unchase/Unchase.Odata.Connectedservice/issues/22)
 
-## v1.3.4 `2019-10-20`
+## v1.3.4 `(2019-10-20)`
 
 - [x] Update icon resolution
 
-## v1.3.3 `2019-10-03`
+## v1.3.3 `(2019-10-03)`
 
 - [x] Add fix: set `DtdProcessing` option in `XmlReaderSettings`
 
-## v1.3.2 `2019-09-23`
+## v1.3.2 `(2019-09-23)`
 
 - [x] Add option for accepting all untrusted certificates on the first wizard page
 
-## v1.3.1 `2019-09-21`
+## v1.3.1 `(2019-09-21)`
 
 - [x] Add support for emitting dynamic properties on open types for `OData V4`
 
-## v 1.3.0 `2019-09-21`
+## v 1.3.0 `(2019-09-21)`
 
 - [x] Close the [issue #5](https://github.com/unchase/Unchase.Odata.Connectedservice/issues/5):
   - [x] Add support for loading client code generation parameters from json files (including `Connected Service .json` from `OData Connected Service` by Microsoft)
@@ -44,31 +48,31 @@ These are the changes to each version that has been released on the official [Vi
 - [x] Add more code generation parameters to stored `UserSettings`
 - [x] Add `Excluded Operation imports names` to OData V4 generation template for excluding `OperationImports` you need
 
-## v1.2.0 `2019-09-10`
+## v1.2.0 `(2019-09-10)`
 
 - [x] Code refactoring
 - [x] Add `ExcludedOperationImportsNames` to `AdvancedSettings` and `ODataT4CodeGenerator` (comma separated `OperationImports` (`ActionImports` and `FunctionImports`) names in metadata to exclude from generated code)
 - [x] Add methods for selecting `OperationImports` for OData V4
 
-## v1.1.2 `2019-09-07`
+## v1.1.2 `(2019-09-07)`
 
 - [x] Fix casting types error in `ODataT4CodeGenerator`. Client-side code generation for `OData v4`: https://graph.microsoft.com/beta/$metadata now works fine.
 
-## v1.1.1 `2019-08-12`
+## v1.1.1 `(2019-08-12)`
 
 - [x] Fix bug with metadata file URI
 - [x] Add "Browse" button in the first wizard page for choosing metadata file
 
-## v1.1.0 `2019-08-12`
+## v1.1.0 `(2019-08-12)`
 
 - [x] Add bug fixes in `FunctionImports` generation
 - [x] Add some improvements in the `Function Imports Settings` wizard page
 
-## v1.0.2 `2019-08-11`
+## v1.0.2 `(2019-08-11)`
 
 - [x] Add bug fix: downgrade some NuGet-packages for supporting Visual Studio 2017
 
-## v1.0.0 `2019-08-11`
+## v1.0.0 `(2019-08-11)`
 
 - [x] Full code refactoring
 - [x] Add wizard page for `OData V3` that allows to select function imports that will be generated

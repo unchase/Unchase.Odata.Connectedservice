@@ -50,6 +50,7 @@ namespace Unchase.OData.ConnectedService
             {
                 // Since ServiceConfigurationV4 is a derived type of ServiceConfiguration. So we can deserialize a ServiceConfiguration into a ServiceConfigurationV4.
                 var serviceConfig = this.Context.GetExtendedDesignerData<ServiceConfigurationV4>();
+                ConfigODataEndpointViewModel.LanguageOption = serviceConfig.LanguageOption;
                 ConfigODataEndpointViewModel.Endpoint = serviceConfig.Endpoint;
                 ConfigODataEndpointViewModel.EdmxVersion = serviceConfig.EdmxVersion;
                 ConfigODataEndpointViewModel.ServiceName = serviceConfig.ServiceName;
