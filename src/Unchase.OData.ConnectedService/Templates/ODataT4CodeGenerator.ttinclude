@@ -263,9 +263,22 @@ public string DynamicPropertiesCollectionName
 /// </summary>
 public string ExcludedOperationImportsNames
 {
-    get => this.excludedOperationImportsNames;
+    get
+    {
+        return this.excludedOperationImportsNames;
+    }
 
-    set => this.excludedOperationImportsNames = string.IsNullOrWhiteSpace(value) ? null : value;
+    set
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            this.excludedOperationImportsNames = null;
+        }
+        else
+        {
+            this.excludedOperationImportsNames = value;
+        }
+    }
 }
 
 private string excludedOperationImportsNames;
@@ -831,9 +844,22 @@ public class CodeGenerationContext
     /// </summary>
     public string ExcludedOperationImportsNames
     {
-        get => this.excludedOperationImportsNames;
+        get
+        {
+            return this.excludedOperationImportsNames;
+        }
 
-        set => this.excludedOperationImportsNames = string.IsNullOrWhiteSpace(value) ? null : value;
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                this.excludedOperationImportsNames = null;
+            }
+            else
+            {
+                this.excludedOperationImportsNames = value;
+            }
+        }
     }
 
     private string excludedOperationImportsNames;
@@ -898,7 +924,7 @@ public class CodeGenerationContext
     /// <param name="schemaElementFixedName">The fixed name of this schemaElement.</param>
     /// <param name="template">The current code generate template.</param>
     /// <returns>The namespace qualified name for the given <paramref name="schemaElement"/> with the namespace prefix applied if this.NamespacePrefix is specified.</returns>
-    public string GetPrefixedFullName(IEdmSchemaElement schemaElement, string schemaElementFixedName, ODataClientTemplate template, bool needGlobalPrefix = true)
+    public string GetPrefixedFullName(IEdmSchemaElement schemaElement, string schemaElementFixedName, ODataClientTemplate template, bool needGlobalPrefix)
     {
         if (schemaElement == null)
         {
@@ -1163,8 +1189,8 @@ public abstract class ODataClientTemplate : TemplateBase
     internal abstract void WriteMethodStartForResolveNameFromType(string containerName, string fullNamespace);
     internal abstract void WriteResolveType(string fullNamespace, string languageDependentNamespace);
     internal abstract void WriteMethodEndForResolveNameFromType(bool modelHasInheritance);
-    internal abstract void WriteContextEntitySetProperty(string entitySetName, string entitySetFixedName, string originalEntitySetName, string entitySetElementTypeName, bool inContext = true);
-    internal abstract void WriteContextSingletonProperty(string singletonName, string singletonFixedName, string originalSingletonName, string singletonElementTypeName, bool inContext = true);
+    internal abstract void WriteContextEntitySetProperty(string entitySetName, string entitySetFixedName, string originalEntitySetName, string entitySetElementTypeName, bool inContext);
+    internal abstract void WriteContextSingletonProperty(string singletonName, string singletonFixedName, string originalSingletonName, string singletonElementTypeName, bool inContext);
     internal abstract void WriteContextAddToEntitySetMethod(string entitySetName, string originalEntitySetName, string typeName, string parameterName);
     internal abstract void WriteGeneratedEdmModel(string escapedEdmxString);
     internal abstract void WriteClassEndForEntityContainer();
@@ -1260,8 +1286,9 @@ public abstract class ODataClientTemplate : TemplateBase
             if (operation.IsBound)
             {
                 IEdmType edmType = operation.Parameters.First().Type.Definition;
-                if (edmType is IEdmStructuredType edmStructuredType)
+                if (edmType is IEdmStructuredType)
                 {
+                    var edmStructuredType = edmType as IEdmStructuredType;
                     List<IEdmOperation> operationList;
                     if (!boundOperationsMap.TryGetValue(edmStructuredType, out operationList))
                     {
@@ -1284,18 +1311,18 @@ public abstract class ODataClientTemplate : TemplateBase
             }
             else
             {
-                if (type is IEdmComplexType complexType)
+                if (type is IEdmComplexType)
                 {
-                    this.WriteComplexType(complexType, boundOperationsMap);
+                    this.WriteComplexType(type as IEdmComplexType, boundOperationsMap);
                 }
                 else
                 {
-                    if (type is IEdmEntityType entityType)
-						this.WriteEntityType(entityType, boundOperationsMap);
+                    if (type is IEdmEntityType)
+						this.WriteEntityType(type as IEdmEntityType, boundOperationsMap);
                 }
 
                 IEdmStructuredType structuredType = type as IEdmStructuredType;
-                if (structuredType?.BaseType != null)
+                if (structuredType != null && structuredType.BaseType != null)
                 {
                     List<IEdmStructuredType> derivedTypes;
                     if (!structuredBaseTypeMap.TryGetValue(structuredType.BaseType, out derivedTypes))
@@ -1316,8 +1343,8 @@ public abstract class ODataClientTemplate : TemplateBase
             {
                 string entityTypeName = type.Name;
                 entityTypeName = context.EnableNamingAlias ? Customization.CustomizeNaming(entityTypeName) : entityTypeName;
-                string entityTypeFullName = context.GetPrefixedFullName(type, GetFixedName(entityTypeName), this);
-                string returnTypeName = context.GetPrefixedFullName(type, GetFixedName(entityTypeName + this.SingleSuffix), this);
+                string entityTypeFullName = context.GetPrefixedFullName(type, GetFixedName(entityTypeName), this, true);
+                string returnTypeName = context.GetPrefixedFullName(type, GetFixedName(entityTypeName + this.SingleSuffix), this, true);
 
                 var keyProperties = type.Key();
                 if(keyProperties != null && keyProperties.Any())
@@ -1327,7 +1354,7 @@ public abstract class ODataClientTemplate : TemplateBase
                     List<string> keyNames = new List<string>();
                     foreach (IEdmProperty key in keyProperties)
                     {
-                        string typeName = Utils.GetClrTypeName(key.Type, this.context.UseDataServiceCollection, this, this.context);
+                        string typeName = Utils.GetClrTypeName(key.Type, this.context.UseDataServiceCollection, this, this.context, true, true, false, false);
                         string keyName = Utils.CamelCase(key.Name);
                         keyNames.Add(keyName);
                         keyParameters.Add(string.Format(this.ParameterDeclarationTemplate, typeName, this.GetFixedName(keyName)));
@@ -1344,7 +1371,7 @@ public abstract class ODataClientTemplate : TemplateBase
                 {
                     string baseTypeName = current.Name;
                     baseTypeName = context.EnableNamingAlias ? Customization.CustomizeNaming(baseTypeName) : baseTypeName;
-                    baseTypeName = context.GetPrefixedFullName(current, GetFixedName(baseTypeName), this);
+                    baseTypeName = context.GetPrefixedFullName(current, GetFixedName(baseTypeName), this, true);
                     this.WriteCastToMethods(baseTypeName, entityTypeName, entityTypeFullName, returnTypeName);
                     current = (IEdmEntityType)current.BaseType;
                 }
@@ -1360,9 +1387,9 @@ public abstract class ODataClientTemplate : TemplateBase
                     string parameterString, parameterExpressionString, parameterTypes, parameterValues;
                     bool useEntityReference;
                     this.GetParameterStrings(function.IsBound, false, function.Parameters.ToArray(), out parameterString, out parameterTypes, out parameterExpressionString, out parameterValues, out useEntityReference);
-                    string sourceTypeName = GetSourceOrReturnTypeName(edmTypeReference);
+                    string sourceTypeName = GetSourceOrReturnTypeName(edmTypeReference, false);
                     sourceTypeName = string.Format(edmTypeReference.IsCollection() ? this.DataServiceQueryStructureTemplate : this.DataServiceQuerySingleStructureTemplate, sourceTypeName);
-                    string returnTypeName = GetSourceOrReturnTypeName(function.ReturnType);
+                    string returnTypeName = GetSourceOrReturnTypeName(function.ReturnType, false);
                     string returnTypeNameWithSingleSuffix = GetSourceOrReturnTypeName(function.ReturnType, true);
                     string fixedFunctionName = GetFixedName(functionName);
                     string func = string.Format("{0}({1},{2})", fixedFunctionName, sourceTypeName, parameterTypes );
@@ -1413,7 +1440,7 @@ public abstract class ODataClientTemplate : TemplateBase
                         List<IEdmTypeReference> currentParameters = function.Parameters.Select(p => p.Type).ToList();
                         currentParameters[0] = derivedTypeReference;
 
-                        sourceTypeName = string.Format(edmTypeReference.IsCollection() ? this.DataServiceQueryStructureTemplate : this.DataServiceQuerySingleStructureTemplate, GetSourceOrReturnTypeName(derivedTypeReference));
+                        sourceTypeName = string.Format(edmTypeReference.IsCollection() ? this.DataServiceQueryStructureTemplate : this.DataServiceQuerySingleStructureTemplate, GetSourceOrReturnTypeName(derivedTypeReference, false));
                         string currentFunc = $"{fixedFunctionName}({sourceTypeName},{parameterTypes})";
                         if (!boundOperations.Contains(currentFunc))
                         {
@@ -1432,7 +1459,8 @@ public abstract class ODataClientTemplate : TemplateBase
 
                     if (structuredType != null)
                     {
-                        if (structuredBaseTypeMap.TryGetValue(structuredType, out var derivedTypes))
+                        List<IEdmStructuredType> derivedTypes;
+                        if (structuredBaseTypeMap.TryGetValue(structuredType, out derivedTypes))
                         {
                             foreach (IEdmStructuredType type in derivedTypes)
                             {
@@ -1440,7 +1468,7 @@ public abstract class ODataClientTemplate : TemplateBase
                                 List<IEdmTypeReference> currentParameters = function.Parameters.Select(p => p.Type).ToList();
                                 currentParameters[0] = derivedTypeReference;
 
-                                sourceTypeName = string.Format(edmTypeReference.IsCollection() ? this.DataServiceQueryStructureTemplate : this.DataServiceQuerySingleStructureTemplate, GetSourceOrReturnTypeName(derivedTypeReference));
+                                sourceTypeName = string.Format(edmTypeReference.IsCollection() ? this.DataServiceQueryStructureTemplate : this.DataServiceQuerySingleStructureTemplate, GetSourceOrReturnTypeName(derivedTypeReference, false));
                                 string currentFunc = $"{fixedFunctionName}({sourceTypeName},{parameterTypes})";
                                 if (!boundOperations.Contains(currentFunc))
                                 {
@@ -1470,12 +1498,12 @@ public abstract class ODataClientTemplate : TemplateBase
                     string parameterString, parameterExpressionString, parameterTypes, parameterValues;
                     bool useEntityReference;
                     this.GetParameterStrings(action.IsBound, true, action.Parameters.ToArray(), out parameterString, out parameterTypes, out parameterExpressionString, out parameterValues, out useEntityReference);
-                    string sourceTypeName = GetSourceOrReturnTypeName(edmTypeReference);
+                    string sourceTypeName = GetSourceOrReturnTypeName(edmTypeReference, false);
                     sourceTypeName = string.Format(edmTypeReference.IsCollection() ? this.DataServiceQueryStructureTemplate : this.DataServiceQuerySingleStructureTemplate, sourceTypeName);
                     string returnTypeName;
                     if (action.ReturnType != null)
                     {
-                        returnTypeName = GetSourceOrReturnTypeName(action.ReturnType);
+                        returnTypeName = GetSourceOrReturnTypeName(action.ReturnType, false);
                         if (action.ReturnType.IsCollection())
                         {
                             returnTypeName = string.Format(this.DataServiceActionQueryOfTStructureTemplate, returnTypeName);
@@ -1530,7 +1558,7 @@ public abstract class ODataClientTemplate : TemplateBase
                         List<IEdmTypeReference> currentParameters = action.Parameters.Select(p => p.Type).ToList();
                         currentParameters[0] = derivedTypeReference;
 
-                        sourceTypeName = string.Format(edmTypeReference.IsCollection() ? this.DataServiceQueryStructureTemplate : this.DataServiceQuerySingleStructureTemplate, GetSourceOrReturnTypeName(derivedTypeReference));
+                        sourceTypeName = string.Format(edmTypeReference.IsCollection() ? this.DataServiceQueryStructureTemplate : this.DataServiceQuerySingleStructureTemplate, GetSourceOrReturnTypeName(derivedTypeReference, false));
                         string currentAc = $"{fixedActionName}({sourceTypeName},{parameterTypes})";
                         if (!boundOperations.Contains(currentAc))
                         {
@@ -1543,7 +1571,8 @@ public abstract class ODataClientTemplate : TemplateBase
 
                     if (structuredType != null)
                     {
-                        if (structuredBaseTypeMap.TryGetValue(structuredType, out var derivedTypes))
+                        List<IEdmStructuredType> derivedTypes;
+                        if (structuredBaseTypeMap.TryGetValue(structuredType, out derivedTypes))
                         {
                             foreach (IEdmStructuredType type in derivedTypes)
                             {
@@ -1551,7 +1580,7 @@ public abstract class ODataClientTemplate : TemplateBase
                                 List<IEdmTypeReference> currentParameters = action.Parameters.Select(p => p.Type).ToList();
                                 currentParameters[0] = derivedTypeReference;
 
-                                sourceTypeName = string.Format(edmTypeReference.IsCollection() ? this.DataServiceQueryStructureTemplate : this.DataServiceQuerySingleStructureTemplate, GetSourceOrReturnTypeName(derivedTypeReference));
+                                sourceTypeName = string.Format(edmTypeReference.IsCollection() ? this.DataServiceQueryStructureTemplate : this.DataServiceQuerySingleStructureTemplate, GetSourceOrReturnTypeName(derivedTypeReference, false));
                                 string currentAc = $"{fixedActionName}({sourceTypeName},{parameterTypes})";
                                 if (!boundOperations.Contains(currentAc))
                                 {
@@ -1613,7 +1642,7 @@ public abstract class ODataClientTemplate : TemplateBase
                 camelCaseEntitySetName = Customization.CustomizeNaming(camelCaseEntitySetName);
             }
 
-            this.WriteContextEntitySetProperty(camelCaseEntitySetName, GetFixedName(camelCaseEntitySetName), entitySet.Name, GetFixedName(entitySetElementTypeName));
+            this.WriteContextEntitySetProperty(camelCaseEntitySetName, GetFixedName(camelCaseEntitySetName), entitySet.Name, GetFixedName(entitySetElementTypeName), true);
             List<IEdmNavigationSource> edmNavigationSourceList = null;
             if (!this.context.ElementTypeToNavigationSourceMap.TryGetValue(entitySet.EntityType(), out edmNavigationSourceList))
             {
@@ -1652,7 +1681,7 @@ public abstract class ODataClientTemplate : TemplateBase
                 camelCaseSingletonName = Customization.CustomizeNaming(camelCaseSingletonName);
             }
 
-            this.WriteContextSingletonProperty(camelCaseSingletonName, GetFixedName(camelCaseSingletonName), singleton.Name, singletonElementTypeName + "Single");
+            this.WriteContextSingletonProperty(camelCaseSingletonName, GetFixedName(camelCaseSingletonName), singleton.Name, singletonElementTypeName + "Single", true);
 
             List<IEdmNavigationSource> edmNavigationSourceList = null;
             if (this.context.ElementTypeToNavigationSourceMap.TryGetValue(singleton.EntityType(), out edmNavigationSourceList))
@@ -1664,7 +1693,7 @@ public abstract class ODataClientTemplate : TemplateBase
         this.WriteGeneratedEdmModel(Utils.SerializeToString(this.context.Edmx).Replace("\"", "\"\""));
 
         bool hasOperationImport = container.OperationImports().OfType<IEdmOperationImport>().Any();
-		var excludedOperationImportsNames = this.context.ExcludedOperationImportsNames?.Split(',').Where(i => !string.IsNullOrWhiteSpace(i)).Select(i => i.Trim()).ToList() ?? new List<string>();
+		var excludedOperationImportsNames = this.context.ExcludedOperationImportsNames.Split(',').Where(i => !string.IsNullOrWhiteSpace(i)).Select(i => i.Trim()).ToList() ?? new List<string>();
         foreach (IEdmFunctionImport functionImport in container.OperationImports().OfType<IEdmFunctionImport>())
         {
 			if (excludedOperationImportsNames.Contains(functionImport.Name))
@@ -1673,7 +1702,7 @@ public abstract class ODataClientTemplate : TemplateBase
             string parameterString, parameterTypes, parameterExpressionString, parameterValues;
             bool useEntityReference;
             this.GetParameterStrings(false, false, functionImport.Function.Parameters.ToArray(), out parameterString, out parameterTypes, out parameterExpressionString, out parameterValues, out useEntityReference);
-            string returnTypeName = GetSourceOrReturnTypeName(functionImport.Function.ReturnType);
+            string returnTypeName = GetSourceOrReturnTypeName(functionImport.Function.ReturnType, false);
             string returnTypeNameWithSingleSuffix = GetSourceOrReturnTypeName(functionImport.Function.ReturnType, true);
             string fixedContainerName = this.GetFixedName(functionImport.Container.Name);
             bool isCollectionResult = functionImport.Function.ReturnType.IsCollection();
@@ -1707,7 +1736,7 @@ public abstract class ODataClientTemplate : TemplateBase
 
             if (actionImport.Action.ReturnType != null)
             {
-                returnTypeName = GetSourceOrReturnTypeName(actionImport.Action.ReturnType);
+                returnTypeName = GetSourceOrReturnTypeName(actionImport.Action.ReturnType, false);
                 if (actionImport.Action.ReturnType.IsCollection())
                 {
                     returnTypeName = string.Format(this.DataServiceActionQueryOfTStructureTemplate, returnTypeName);
@@ -1816,12 +1845,12 @@ public abstract class ODataClientTemplate : TemplateBase
             string propertyName = this.context.EnableNamingAlias ? Customization.CustomizeNaming(property.Name) : property.Name;
             if (property.Type is Microsoft.OData.Edm.EdmCollectionTypeReference)
             {
-                propertyType = GetSourceOrReturnTypeName(property.Type);
+                propertyType = GetSourceOrReturnTypeName(property.Type, false);
                 WriteContextEntitySetProperty(propertyName, GetFixedName(propertyName), property.Name, propertyType, false);
             }
             else
             {
-                propertyType = Utils.GetClrTypeName(property.Type, true, this, this.context, true, isEntitySingleType : true);
+                propertyType = Utils.GetClrTypeName(property.Type, true, this, this.context, true, true, false, true);
                 WriteContextSingletonProperty(propertyName, GetFixedName(propertyName), property.Name, propertyType, false);
             }
         }
@@ -1878,7 +1907,7 @@ public abstract class ODataClientTemplate : TemplateBase
             this.WriteEntityHasStreamAttribute();
         }
 
-        this.WriteStructurdTypeDeclaration(entityType, this.BaseEntityType);
+        this.WriteStructurdTypeDeclaration(entityType, this.BaseEntityType, null);
         this.SetPropertyIdentifierMappingsIfNameConflicts(entityType.Name, entityType);
         this.WriteTypeStaticCreateMethod(entityType.Name, entityType);
 		this.WritePropertiesForStructuredType(entityType.DeclaredProperties, entityType.IsOpen);
@@ -1896,7 +1925,7 @@ public abstract class ODataClientTemplate : TemplateBase
     internal void WriteComplexType(IEdmComplexType complexType, Dictionary<IEdmStructuredType, List<IEdmOperation>> boundOperationsMap)
     {
         this.WriteSummaryCommentForStructuredType(this.context.EnableNamingAlias ? Customization.CustomizeNaming(complexType.Name) : complexType.Name);
-        this.WriteStructurdTypeDeclaration(complexType, string.Empty);
+        this.WriteStructurdTypeDeclaration(complexType, string.Empty, null);
         this.SetPropertyIdentifierMappingsIfNameConflicts(complexType.Name, complexType);
         this.WriteTypeStaticCreateMethod(complexType.Name, complexType);
 		this.WritePropertiesForStructuredType(complexType.DeclaredProperties, complexType.IsOpen);
@@ -1920,7 +1949,7 @@ public abstract class ODataClientTemplate : TemplateBase
                 bool useEntityReference;
                 bool hideBaseMethod = this.CheckMethodsInBaseClass(structuredType.BaseType, function, boundOperationsMap);
                 this.GetParameterStrings(function.IsBound, false, function.Parameters.ToArray(), out parameterString, out parameterTypes, out parameterExpressionString, out parameterValues, out useEntityReference);
-                string returnTypeName = GetSourceOrReturnTypeName(function.ReturnType);
+                string returnTypeName = GetSourceOrReturnTypeName(function.ReturnType, false);
                 string returnTypeNameWithSingleSuffix = GetSourceOrReturnTypeName(function.ReturnType, true);
                 string functionName = function.Name;
                 if (this.context.EnableNamingAlias)
@@ -1947,7 +1976,7 @@ public abstract class ODataClientTemplate : TemplateBase
                 string returnTypeName;
                 if (action.ReturnType != null)
                 {
-                    returnTypeName = GetSourceOrReturnTypeName(action.ReturnType);
+                    returnTypeName = GetSourceOrReturnTypeName(action.ReturnType, false);
                     if (action.ReturnType.IsCollection())
                     {
                         returnTypeName = string.Format(this.DataServiceActionQueryOfTStructureTemplate, returnTypeName);
@@ -2041,7 +2070,7 @@ public abstract class ODataClientTemplate : TemplateBase
         this.WriteEnumEnd();
     }
 
-    internal void WriteStructurdTypeDeclaration(IEdmStructuredType structuredType, string baseEntityType, string typeNameSuffix = null)
+    internal void WriteStructurdTypeDeclaration(IEdmStructuredType structuredType, string baseEntityType, string typeNameSuffix)
     {
         string abstractModifier = structuredType.IsAbstract && typeNameSuffix == null ? this.AbstractModifier : string.Empty;
         string baseTypeName = baseEntityType;
@@ -2064,7 +2093,7 @@ public abstract class ODataClientTemplate : TemplateBase
             {
                 IEdmSchemaElement baseType = (IEdmSchemaElement)structuredType.BaseType;
                 string baseTypeFixedName = this.context.EnableNamingAlias ? GetFixedName(Customization.CustomizeNaming(baseType.Name)) : GetFixedName(baseType.Name);
-                baseTypeName = ((IEdmSchemaElement)structuredType).Namespace == baseType.Namespace ? baseTypeFixedName : this.context.GetPrefixedFullName(baseType, baseTypeFixedName, this);
+                baseTypeName = ((IEdmSchemaElement)structuredType).Namespace == baseType.Namespace ? baseTypeFixedName : this.context.GetPrefixedFullName(baseType, baseTypeFixedName, this, true);
                 baseTypeName = this.ClassInheritMarker + baseTypeName;
             }
         }
@@ -2074,7 +2103,7 @@ public abstract class ODataClientTemplate : TemplateBase
         this.WriteClassStartForStructuredType(abstractModifier, GetFixedName(structuredTypeName + typeNameSuffix), ((IEdmSchemaElement)structuredType).Name + typeNameSuffix, baseTypeName);
     }
 
-    internal string GetSourceOrReturnTypeName(IEdmTypeReference typeReference, bool isEntitySingleType = false)
+    internal string GetSourceOrReturnTypeName(IEdmTypeReference typeReference, bool isEntitySingleType)
     {
         IEdmCollectionType edmCollectionType = typeReference.Definition as IEdmCollectionType;
         bool addNullableTemplate = true;
@@ -2084,7 +2113,7 @@ public abstract class ODataClientTemplate : TemplateBase
             addNullableTemplate = false;
         }
 
-        return Utils.GetClrTypeName(typeReference, this.context.UseDataServiceCollection, this, this.context, addNullableTemplate, isEntitySingleType:isEntitySingleType);
+        return Utils.GetClrTypeName(typeReference, this.context.UseDataServiceCollection, this, this.context, addNullableTemplate, true, false, isEntitySingleType);
     }
 
     internal void GetParameterStrings(bool isBound, bool isAction, IEdmOperationParameter[] parameters, out string parameterString, out string parameterTypes, out string parameterExpressionString, out string parameterValues,  out bool useEntityReference)
@@ -2111,7 +2140,7 @@ public abstract class ODataClientTemplate : TemplateBase
                 }
             }
 
-            string typeName = Utils.GetClrTypeName(param.Type, this.context.UseDataServiceCollection, this, this.context, true, true, true);
+            string typeName = Utils.GetClrTypeName(param.Type, this.context.UseDataServiceCollection, this, this.context, true, true, true, false);
             if (this.context.TargetLanguage == LanguageOption.CSharp)
             {
                 parameterString += typeName;
@@ -2326,7 +2355,7 @@ public abstract class ODataClientTemplate : TemplateBase
         {
             KeyValuePair<IEdmProperty, string> propertyToParameterPair = propertyToParameterPairs[idx];
 
-            string parameterType = Utils.GetClrTypeName(propertyToParameterPair.Key.Type, this.context.UseDataServiceCollection, this, this.context);
+            string parameterType = Utils.GetClrTypeName(propertyToParameterPair.Key.Type, this.context.UseDataServiceCollection, this, this.context, true, true, false, false);
             string parameterName = propertyToParameterPair.Value;
             if (idx == propertyToParameterPairs.Length - 1)
             {
@@ -2349,7 +2378,7 @@ public abstract class ODataClientTemplate : TemplateBase
 
             return new
                 {
-                    PropertyType = Utils.GetClrTypeName(property.Type, useDataServiceCollection, this, this.context),
+                    PropertyType = Utils.GetClrTypeName(property.Type, useDataServiceCollection, this, this.context, true, true, false, false),
                     PropertyVanillaName = property.Name,
                     PropertyName = propertyName,
                     FixedPropertyName = GetFixedName(propertyName),
@@ -2434,7 +2463,7 @@ public abstract class ODataClientTemplate : TemplateBase
 
         if (elementType.Namespace != container.Namespace)
         {
-            elementTypeName = this.context.GetPrefixedFullName(elementType, GetFixedName(elementTypeName), this);
+            elementTypeName = this.context.GetPrefixedFullName(elementType, GetFixedName(elementTypeName), this, true);
         }
 
         return elementTypeName;
@@ -2879,12 +2908,13 @@ internal static class Utils
     /// <param name="needGlobalPrefix">The flag indicates whether the namespace need to be added by global prefix</param>
     /// <param name="isOperationParameter">This flag indicates whether the edmTypeReference is for an operation parameter</param>
     /// <returns>The clr type name of the type reference.</returns>
-    internal static string GetClrTypeName(IEdmTypeReference edmTypeReference, bool useDataServiceCollection, ODataClientTemplate clientTemplate, CodeGenerationContext context, bool addNullableTemplate = true, bool needGlobalPrefix = true, bool isOperationParameter = false, bool isEntitySingleType = false)
+    internal static string GetClrTypeName(IEdmTypeReference edmTypeReference, bool useDataServiceCollection, ODataClientTemplate clientTemplate, CodeGenerationContext context, bool addNullableTemplate, bool needGlobalPrefix, bool isOperationParameter, bool isEntitySingleType)
     {
         string clrTypeName = null;
         IEdmType edmType = edmTypeReference.Definition;
-        if (edmType is IEdmPrimitiveType edmPrimitiveType)
+        if (edmType is IEdmPrimitiveType)
         {
+            var edmPrimitiveType = edmType as IEdmPrimitiveType;
             clrTypeName = Utils.GetClrTypeName(edmPrimitiveType, clientTemplate);
             if (edmTypeReference.IsNullable && !clientTemplate.ClrReferenceTypes.Contains(edmPrimitiveType.PrimitiveKind) && addNullableTemplate)
             {
@@ -2893,15 +2923,17 @@ internal static class Utils
         }
         else
         {
-            if (edmType is IEdmComplexType edmComplexType)
+            if (edmType is IEdmComplexType)
             {
+                var edmComplexType = edmType as IEdmComplexType;
                 clrTypeName = context.GetPrefixedFullName(edmComplexType,
-                    context.EnableNamingAlias ? clientTemplate.GetFixedName(Customization.CustomizeNaming(edmComplexType.Name)) : clientTemplate.GetFixedName(edmComplexType.Name), clientTemplate);
+                    context.EnableNamingAlias ? clientTemplate.GetFixedName(Customization.CustomizeNaming(edmComplexType.Name)) : clientTemplate.GetFixedName(edmComplexType.Name), clientTemplate, true);
             }
             else
             {
-                if (edmType is IEdmEnumType edmEnumType)
+                if (edmType is IEdmEnumType)
                 {
+                    var edmEnumType = edmType as IEdmEnumType;
                     clrTypeName = context.GetPrefixedFullName(edmEnumType,
                         context.EnableNamingAlias ? clientTemplate.GetFixedName(Customization.CustomizeNaming(edmEnumType.Name)) : clientTemplate.GetFixedName(edmEnumType.Name), clientTemplate, needGlobalPrefix);
                     if (edmTypeReference.IsNullable && addNullableTemplate)
@@ -2911,28 +2943,30 @@ internal static class Utils
                 }
                 else
                 {
-                    if (edmType is IEdmEntityType edmEntityType)
+                    if (edmType is IEdmEntityType)
                     {
+                        var edmEntityType = edmType as IEdmEntityType;
                         clrTypeName = context.GetPrefixedFullName(edmEntityType,
                             context.EnableNamingAlias
                                 ? clientTemplate.GetFixedName(Customization.CustomizeNaming(edmEntityType.Name) + (isEntitySingleType ? clientTemplate.SingleSuffix : string.Empty))
                                 : clientTemplate.GetFixedName(edmEntityType.Name + (isEntitySingleType ? clientTemplate.SingleSuffix : string.Empty)),
-                        clientTemplate);
+                        clientTemplate, true);
                     }
                     else
                     {
-                        if (edmType is IEdmCollectionType edmCollectionType)
+                        if (edmType is IEdmCollectionType)
                         {
+                            var edmCollectionType = edmType as IEdmCollectionType;
                             IEdmTypeReference elementTypeReference = edmCollectionType.ElementType;
-                            if (elementTypeReference.Definition is IEdmPrimitiveType primitiveElementType)
+                            if (elementTypeReference.Definition is IEdmPrimitiveType)
                             {
-                                clrTypeName = Utils.GetClrTypeName(primitiveElementType, clientTemplate);
+                                clrTypeName = Utils.GetClrTypeName(elementTypeReference.Definition as IEdmPrimitiveType, clientTemplate);
                             }
                             else
                             {
                                 IEdmSchemaElement schemaElement = (IEdmSchemaElement)elementTypeReference.Definition;
                                 clrTypeName = context.GetPrefixedFullName(schemaElement,
-                                    context.EnableNamingAlias ? clientTemplate.GetFixedName(Customization.CustomizeNaming(schemaElement.Name)) : clientTemplate.GetFixedName(schemaElement.Name), clientTemplate);
+                                    context.EnableNamingAlias ? clientTemplate.GetFixedName(Customization.CustomizeNaming(schemaElement.Name)) : clientTemplate.GetFixedName(schemaElement.Name), clientTemplate, true);
                             }
 
                             string collectionTypeName = isOperationParameter
@@ -2947,12 +2981,14 @@ internal static class Utils
                         }
                         else
                         {
-                            if (edmType is IEdmTypeDefinition edmTypeDefinition)
+                            if (edmType is IEdmTypeDefinition)
                             {
-                                if (edmTypeDefinition is IEdmSchemaElement schemaElement)
+                                var edmTypeDefinition = edmType as IEdmTypeDefinition;
+                                if (edmTypeDefinition is IEdmSchemaElement)
                                 {
+                                    var schemaElement = edmTypeDefinition as IEdmSchemaElement;
                                     clrTypeName = context.GetPrefixedFullName(schemaElement,
-                                        context.EnableNamingAlias ? clientTemplate.GetFixedName(Customization.CustomizeNaming(schemaElement.Name)) : clientTemplate.GetFixedName(schemaElement.Name), clientTemplate);
+                                        context.EnableNamingAlias ? clientTemplate.GetFixedName(Customization.CustomizeNaming(schemaElement.Name)) : clientTemplate.GetFixedName(schemaElement.Name), clientTemplate, true);
                                 }
                                 else
                                 {
@@ -2993,14 +3029,14 @@ internal static class Utils
             {
                 if (!string.IsNullOrEmpty(structuredProperty.DefaultValueString))
                 {
-                    string valueClrType = GetClrTypeName(edmTypeReference, useDataServiceCollection, clientTemplate, context);
+                    string valueClrType = GetClrTypeName(edmTypeReference, useDataServiceCollection, clientTemplate, context, true, true, false, false);
                     string defaultValue = structuredProperty.DefaultValueString;
                     bool isCSharpTemplate = clientTemplate is ODataClientCSharpTemplate;
                     if (edmTypeReference.Definition.TypeKind == EdmTypeKind.Enum)
                     {
                         var enumValues = defaultValue.Split(',');
-                        string fullenumTypeName = GetClrTypeName(edmTypeReference, useDataServiceCollection, clientTemplate, context);
-                        string enumTypeName = GetClrTypeName(edmTypeReference, useDataServiceCollection, clientTemplate, context, false, false);
+                        string fullenumTypeName = GetClrTypeName(edmTypeReference, useDataServiceCollection, clientTemplate, context, true, true, false, false);
+                        string enumTypeName = GetClrTypeName(edmTypeReference, useDataServiceCollection, clientTemplate, context, false, false, false, false);
                         List<string> customizedEnumValues = new List<string>();
                         foreach(var enumValue in enumValues)
                         {
@@ -3108,7 +3144,7 @@ internal static class Utils
                 constructorParameters = "()";
             }
 
-            string clrTypeName = GetClrTypeName(edmTypeReference, useDataServiceCollection, clientTemplate, context);
+            string clrTypeName = GetClrTypeName(edmTypeReference, useDataServiceCollection, clientTemplate, context, true, true, false, false);
             return clientTemplate.NewModifier + clrTypeName + constructorParameters;
         }
     }

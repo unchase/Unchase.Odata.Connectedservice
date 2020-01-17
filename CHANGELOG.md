@@ -7,6 +7,10 @@
 
 These are the changes to each version that has been released on the official [Visual Studio extension gallery](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService).
 
+## v1.3.10 `(2020-01-17)`
+
+- [x] Fix some bugs in `ODataT4CodeGenerator.ttinclude` file
+
 ## v1.3.9 `(2020-01-13)`
 
 - [x] Fix the [issue #27](https://github.com/unchase/Unchase.Odata.Connectedservice/issues/27)
