@@ -3057,6 +3057,12 @@ internal static class Utils
                     {
                         defaultValue = "\"" + defaultValue + "\"";
                     }
+                    else if (valueClrType.Equals(clientTemplate.BooleanTypeName))
+                    {
+                        // EDMX specifies boolean defaults with capital letter, C# needs this string to be lower case.
+                        if (isCSharpTemplate)
+                            defaultValue = defaultValue.ToLower();
+                    }
                     else if (valueClrType.Equals(clientTemplate.BinaryTypeName))
                     {
                         defaultValue = "System.Text.Encoding.UTF8.GetBytes(\"" + defaultValue + "\")";
@@ -5088,7 +5094,7 @@ this.Write(" to its derived type ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(derivedTypeFullName));
 
-this.Write("\r\n        /// </summary>\r\n        /// <param name=\"source\">source entity</param>\r" +
+this.Write("\r\n        /// </summary>\r\n        /// <param name=\"_source\">source entity</param>\r" +
         "\n        public static ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
@@ -5106,7 +5112,7 @@ this.Write("> _source)\r\n        {\r\n            global::Microsoft.OData.Clien
 
 this.Write(this.ToStringHelper.ToStringWithCulture(derivedTypeFullName));
 
-this.Write("> query = source.CastTo<");
+this.Write("> query = _source.CastTo<");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(derivedTypeFullName));
 
@@ -5234,7 +5240,7 @@ this.Write(this.ToStringHelper.ToStringWithCulture(useEntityReference ? ", bool 
 
 this.Write(")\r\n        {\r\n            if (!_source.IsComposable)\r\n            {\r\n             " +
         "   throw new global::System.NotSupportedException(\"The previous function is not " +
-        "composable.\");\r\n            }\r\n\r\n            return source.CreateFunctionQuery<");
+        "composable.\");\r\n            }\r\n\r\n            return _source.CreateFunctionQuery<");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
@@ -7005,10 +7011,10 @@ this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
 this.Write(@" specified by key from an entity set
         ''' </summary>
-        ''' <param name=""source"">source entity set</param>
+        ''' <param name=""_source"">source entity set</param>
         ''' <param name=""keys"">dictionary with the names and values of keys</param>
         <Global.System.Runtime.CompilerServices.Extension()>
-        Public Function ByKey(ByVal source As Global.Microsoft.OData.Client.DataServiceQuery(Of ");
+        Public Function ByKey(ByVal _source As Global.Microsoft.OData.Client.DataServiceQuery(Of ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(entityTypeName));
 
@@ -7021,8 +7027,8 @@ this.Write("\r\n            Return New ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
-this.Write("(source.Context, source.GetKeyPath(Global.Microsoft.OData.Client.Serializer.GetKe" +
-        "yString(source.Context, keys)))\r\n        End Function\r\n        \'\'\' <summary>\r\n  " +
+this.Write("(_source.Context, _source.GetKeyPath(Global.Microsoft.OData.Client.Serializer.GetKe" +
+        "yString(_source.Context, keys)))\r\n        End Function\r\n        \'\'\' <summary>\r\n  " +
         "      \'\'\' Get an entity of type ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(entityTypeName));
@@ -7032,7 +7038,7 @@ this.Write(" as ");
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
 this.Write(" specified by key from an entity set\r\n        \'\'\' </summary>\r\n        \'\'\' <param " +
-        "name=\"source\">source entity set</param>\r\n");
+        "name=\"_source\">source entity set</param>\r\n");
 
 
         foreach (var key in keys)
@@ -7052,7 +7058,7 @@ this.Write("</param>\r\n");
         }
 
 this.Write("        <Global.System.Runtime.CompilerServices.Extension()>\r\n        Public Func" +
-        "tion ByKey(ByVal source As Global.Microsoft.OData.Client.DataServiceQuery(Of ");
+        "tion ByKey(ByVal _source As Global.Microsoft.OData.Client.DataServiceQuery(Of ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(entityTypeName));
 
@@ -7074,8 +7080,8 @@ this.Write("\r\n            }\r\n            Return New ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
-this.Write("(source.Context, source.GetKeyPath(Global.Microsoft.OData.Client.Serializer.GetKe" +
-        "yString(source.Context, keys)))\r\n        End Function\r\n");
+this.Write("(_source.Context, _source.GetKeyPath(Global.Microsoft.OData.Client.Serializer.GetKe" +
+        "yString(_source.Context, keys)))\r\n        End Function\r\n");
 
 
     }
@@ -7091,13 +7097,13 @@ this.Write(" to its derived type ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(derivedTypeFullName));
 
-this.Write("\r\n        \'\'\' </summary>\r\n        \'\'\' <param name=\"source\">source entity</param>\r" +
+this.Write("\r\n        \'\'\' </summary>\r\n        \'\'\' <param name=\"_source\">source entity</param>\r" +
         "\n        <Global.System.Runtime.CompilerServices.Extension()>\r\n        Public " +
         "Function CastTo");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(derivedTypeName));
 
-this.Write("(ByVal source As Global.Microsoft.OData.Client.DataServiceQuerySingle(Of ");
+this.Write("(ByVal _source As Global.Microsoft.OData.Client.DataServiceQuerySingle(Of ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(baseTypeName));
 
@@ -7110,7 +7116,7 @@ this.Write("\r\n            Dim query As Global.Microsoft.OData.Client.DataServi
 
 this.Write(this.ToStringHelper.ToStringWithCulture(derivedTypeFullName));
 
-this.Write(") = source.CastTo(Of ");
+this.Write(") = _source.CastTo(Of ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(derivedTypeFullName));
 
@@ -7118,7 +7124,7 @@ this.Write(")()\r\n            Return New ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
-this.Write("(source.Context, query.GetPath(Nothing))\r\n        End Function\r\n");
+this.Write("(_source.Context, query.GetPath(Nothing))\r\n        End Function\r\n");
 
 
     }
@@ -7150,7 +7156,7 @@ this.Write("        Public Function ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(functionName));
 
-this.Write("(ByVal source As ");
+this.Write("(ByVal _source As ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(boundTypeName));
 
@@ -7162,13 +7168,13 @@ this.Write(") As ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(isReturnEntity ? returnTypeNameWithSingleSuffix : string.Format(this.DataServiceQuerySingleStructureTemplate, returnTypeName)));
 
-this.Write("\r\n            If Not source.IsComposable Then\r\n                Throw New Global.S" +
+this.Write("\r\n            If Not _source.IsComposable Then\r\n                Throw New Global.S" +
         "ystem.NotSupportedException(\"The previous function is not composable.\")\r\n       " +
         "     End If\r\n            \r\n            Return ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(isReturnEntity ? "New " + returnTypeNameWithSingleSuffix + "(" : string.Empty));
 
-this.Write("source.CreateFunctionQuerySingle(");
+this.Write("_source.CreateFunctionQuerySingle(");
 
 this.Write(this.ToStringHelper.ToStringWithCulture("Of " + returnTypeName));
 
@@ -7222,7 +7228,7 @@ this.Write("        Public Function ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(functionName));
 
-this.Write("(ByVal source As ");
+this.Write("(ByVal _source As ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(boundTypeName));
 
@@ -7234,9 +7240,9 @@ this.Write(") As Global.Microsoft.OData.Client.DataServiceQuery(Of ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
-this.Write(")\r\n            If Not source.IsComposable Then\r\n                Throw New Global." +
+this.Write(")\r\n            If Not _source.IsComposable Then\r\n                Throw New Global." +
         "System.NotSupportedException(\"The previous function is not composable.\")\r\n      " +
-        "      End If\r\n            \r\n            Return source.CreateFunctionQuery(Of ");
+        "      End If\r\n            \r\n            Return _source.CreateFunctionQuery(Of ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
@@ -7286,7 +7292,7 @@ this.Write("        Public Function ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(actionName));
 
-this.Write("(ByVal source As ");
+this.Write("(ByVal _source As ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(boundSourceType));
 
@@ -7296,13 +7302,13 @@ this.Write(") As ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
-this.Write("\r\n            If Not source.IsComposable Then\r\n                Throw New Global.S" +
+this.Write("\r\n            If Not _source.IsComposable Then\r\n                Throw New Global.S" +
         "ystem.NotSupportedException(\"The previous function is not composable.\")\r\n       " +
         "     End If\r\n            Return New ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
-this.Write("(source.Context, source.AppendRequestUri(\"");
+this.Write("(_source.Context, _source.AppendRequestUri(\"");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(fullNamespace));
 
