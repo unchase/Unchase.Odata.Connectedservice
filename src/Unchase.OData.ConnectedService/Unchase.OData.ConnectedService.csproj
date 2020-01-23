@@ -167,12 +167,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Templates\ODataT4CodeGenerator.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ODataT4CodeGenerator1.cs</LastGenOutput>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ODataV3ExtensionsT4CodeGenerator.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ODataV3ExtensionsT4CodeGenerator.cs</LastGenOutput>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

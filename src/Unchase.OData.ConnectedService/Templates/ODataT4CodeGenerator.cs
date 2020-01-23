@@ -58,6 +58,7 @@ namespace Unchase.OData.ConnectedService.Templates
                     context = new CodeGenerationContext(this.Edmx, this.NamespacePrefix)
                     {
                         UseDataServiceCollection = this.UseDataServiceCollection,
+                        UseAsyncDataServiceCollection = this.UseAsyncDataServiceCollection,
                         TargetLanguage = this.TargetLanguage,
                         EnableNamingAlias = this.EnableNamingAlias,
                         TempFilePath = this.TempFilePath,
@@ -78,6 +79,7 @@ namespace Unchase.OData.ConnectedService.Templates
                     context = new CodeGenerationContext(new Uri(this.MetadataDocumentUri, UriKind.Absolute), this.NamespacePrefix)
                     {
                         UseDataServiceCollection = this.UseDataServiceCollection,
+                        UseAsyncDataServiceCollection = this.UseAsyncDataServiceCollection,
                         TargetLanguage = this.TargetLanguage,
                         EnableNamingAlias = this.EnableNamingAlias,
                         TempFilePath = this.TempFilePath,
@@ -141,6 +143,8 @@ public static class Configuration
 
 	// The use of DataServiceCollection enables entity and property tracking. The value must be set to true or false.
 	public const bool UseDataServiceCollection = true;
+	// Modifies the entity and property tracking to support synchronous notification to async operations. The value must be set to true or false.
+	public const bool UseAsyncDataServiceCollection = false;
 
 	// The namespace of the client code generated. It replaces the original namespace in the metadata document, 
     // unless the model has several namespaces.
@@ -302,6 +306,15 @@ public bool UseDataServiceCollection
     get;
     set;
 }
+/// <summary>
+/// true to change the INotifyPropertyChanged Implementation to support async operations with synchronous event callbacks
+/// </summary>
+/// <remarks>This should only be set to true if the <see cref="UseDataServiceCollection"/> is also true.</remarks>
+public bool UseAsyncDataServiceCollection
+{
+    get;
+    set;
+}
 
 /// <summary>
 /// Specifies which specific .Net Framework language the generated code will target.
@@ -400,6 +413,25 @@ public void ValidateAndSetUseDataServiceCollectionFromString(string stringValue)
 
     this.UseDataServiceCollection = boolValue;
 }
+/// <summary>
+/// Set the UseAsyncDataServiceCollection property with the given value.
+/// </summary>
+/// <param name="stringValue">The value to set.</param>
+public void ValidateAndSetUseAsyncDataServiceCollectionFromString(string stringValue)
+{
+    bool boolValue;
+    if (!bool.TryParse(stringValue, out boolValue))
+    {
+        // ********************************************************************************************************
+        // To fix this error, if the current text transformation is run by the TextTemplatingFileGenerator
+        // custom tool inside Visual Studio, update the .odata.config file in the project with a valid parameter
+        // value then hit Ctrl-S to save the .tt file to refresh the code generation.
+        // ********************************************************************************************************
+        throw new ArgumentException($"The value \"{stringValue}\" cannot be assigned to the UseAsyncDataServiceCollection parameter because it is not a valid boolean value.");
+    }
+
+    this.UseAsyncDataServiceCollection = boolValue;
+}
 
 /// <summary>
 /// Tries to set the TargetLanguage property with the given value.
@@ -489,6 +521,7 @@ private void ApplyParametersFromConfigurationClass()
     this.MetadataDocumentUri = Configuration.MetadataDocumentUri;
     this.NamespacePrefix = Configuration.NamespacePrefix;
     this.UseDataServiceCollection = Configuration.UseDataServiceCollection;
+    this.UseAsyncDataServiceCollection = Configuration.UseAsyncDataServiceCollection;
     this.ValidateAndSetTargetLanguageFromString(Configuration.TargetLanguage);
     this.EnableNamingAlias = Configuration.EnableNamingAlias;
     this.TempFilePath = Configuration.TempFilePath;
@@ -524,6 +557,12 @@ private void ApplyParametersFromCommandLine()
     if (!string.IsNullOrEmpty(useDataServiceCollection))
     {
         this.ValidateAndSetUseDataServiceCollectionFromString(useDataServiceCollection);
+    }
+
+    string useAsyncDataServiceCollection = this.Host.ResolveParameterValue("notempty", "notempty", "UseAsyncDataServiceCollection");
+    if (!string.IsNullOrEmpty(useAsyncDataServiceCollection))
+    {
+        this.ValidateAndSetUseAsyncDataServiceCollectionFromString(useAsyncDataServiceCollection);
     }
 
     string targetLanguage = this.Host.ResolveParameterValue("notempty", "notempty", "TargetLanguage");
@@ -855,6 +894,16 @@ public class CodeGenerationContext
     /// true to use DataServiceCollection in the generated code, false otherwise.
     /// </summary>
     public bool UseDataServiceCollection
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// true to change the INotifyPropertyChanged Implementation to support async operations with synchronous event callbacks
+    /// </summary>
+    /// <remarks>This should only be set to true if the <see cref="UseDataServiceCollection"/> is also true.</remarks>
+    public bool UseAsyncDataServiceCollection
     {
         get;
         set;
@@ -1933,7 +1982,7 @@ public abstract class ODataClientTemplate : TemplateBase
         this.WritePropertiesForStructuredType(entityType.DeclaredProperties, entityType.IsOpen);
 
         if (entityType.BaseType == null && this.context.UseDataServiceCollection)
-        {
+        {            
             this.WriteINotifyPropertyChangedImplementation();
         }
 
@@ -2384,7 +2433,7 @@ public abstract class ODataClientTemplate : TemplateBase
 
     internal void WritePropertiesForStructuredType(IEnumerable<IEdmProperty> properties, bool isOpen)
     {
-         bool useDataServiceCollection = this.context.UseDataServiceCollection;
+        bool useDataServiceCollection = this.context.UseDataServiceCollection;
 
         var propertyInfos = properties.Select(property =>
         {
@@ -3410,6 +3459,11 @@ this.Write(this.ToStringHelper.ToStringWithCulture(DateTime.Now.ToString(global:
 
 this.Write("\r\n");
 
+        if(this.context.UseAsyncDataServiceCollection)
+        { 
+this.Write("using System.Linq;");
+this.Write("\r\n");
+        }
 
     }
 
@@ -4491,7 +4545,8 @@ this.Write("Changed();\r\n");
 
     internal override void WriteINotifyPropertyChangedImplementation()
     {
-
+        if(!this.context.UseAsyncDataServiceCollection)
+        { 
 this.Write("        /// <summary>\r\n        /// This event is raised when the value of the pro" +
         "perty is changed\r\n        /// </summary>\r\n        [global::System.CodeDom.Compil" +
         "er.GeneratedCodeAttribute(\"Microsoft.OData.Client.Design.T4\", \"");
@@ -4509,15 +4564,95 @@ this.Write(@""")]
 this.Write(this.ToStringHelper.ToStringWithCulture(T4Version));
 
 this.Write(@""")]
-        protected virtual void OnPropertyChanged(string property)
+        protected virtual void OnPropertyChanged([global::System.Runtime.CompilerServices.CallerMemberName] string property = null)
         {
-            if ((this.PropertyChanged != null))
+            this.PropertyChanged?.Invoke(this, new global::System.ComponentModel.PropertyChangedEventArgs(property));
+        }
+");
+        }
+        else
+        {
+            // based on implementation from https://stackoverflow.com/a/45422891/1690217
+            // In environments that do not support async binding operations natively...
+            // To support async operations on properties that might be bound to UI (99% of the time that is why we want a change notification!)
+            // We may need to track the original thread that the binding was registered on so that we can raise the event back on that thread.
+
+this.Write("        /// <summary>\r\n        /// Keep track of the synchronization context of " +
+        "each event handler that is registered.\r\n        /// </summary>\r\n        [global::System.CodeDom.Compil" +
+        "er.GeneratedCodeAttribute(\"Microsoft.OData.Client.Design.T4\", \"");
+
+this.Write(this.ToStringHelper.ToStringWithCulture(T4Version));
+
+this.Write(@""")]
+        private readonly global::System.Collections.Generic.List<(global::System.Threading.SynchronizationContext context, global::System.ComponentModel.PropertyChangedEventHandler handler)> _handlers = new global::System.Collections.Generic.List<(global::System.Threading.SynchronizationContext context, global::System.ComponentModel.PropertyChangedEventHandler handler)>();
+");
+
+this.Write("        /// <summary>\r\n        /// This event is raised when the value of the pro" +
+        "perty is changed\r\n        /// </summary>\r\n        [global::System.CodeDom.Compil" +
+        "er.GeneratedCodeAttribute(\"Microsoft.OData.Client.Design.T4\", \"");
+this.Write(this.ToStringHelper.ToStringWithCulture(T4Version));
+this.Write(@""")]
+        public event global::System.ComponentModel.PropertyChangedEventHandler PropertyChanged
+        {
+            add => _handlers.Add((global::System.Threading.SynchronizationContext.Current, value));
+            remove
             {
-                this.PropertyChanged(this, new global::System.ComponentModel.PropertyChangedEventArgs(property));
+                var i = 0;
+                foreach (var item in _handlers)
+                {
+                    if (item.handler.Equals(value))
+                    {
+                        _handlers.RemoveAt(i);
+                        break;
+                    }
+                    i++;
+                }
             }
         }
 ");
 
+this.Write(@"        /// <summary>
+        /// The value of the property is changed
+        /// </summary>
+        /// <param name=""property"">property name</param>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Microsoft.OData.Client.Design.T4"", """);
+
+this.Write(this.ToStringHelper.ToStringWithCulture(T4Version));
+this.Write(@""")]
+        protected global::System.Threading.Tasks.Task OnPropertyChanged([global::System.Runtime.CompilerServices.CallerMemberName] string property = null)
+        {
+            var args = new global::System.ComponentModel.PropertyChangedEventArgs(property);
+            var tasks = _handlers
+                .GroupBy(x => x.context, x => x.handler)
+                .Select(g => invokeContext(g.Key, g));
+            return global::System.Threading.Tasks.Task.WhenAll(tasks);
+
+            global::System.Threading.Tasks.Task invokeContext(global::System.Threading.SynchronizationContext context, global::System.Collections.Generic.IEnumerable<global::System.ComponentModel.PropertyChangedEventHandler> l)
+            {
+                if (context != null)
+                {
+                    var tcs = new global::System.Threading.Tasks.TaskCompletionSource<bool>();
+                    context.Post(o =>
+                    {
+                        try { invokeHandlers(l); tcs.TrySetResult(true); }
+                        catch (global::System.Exception e) { tcs.TrySetException(e); }
+                    }, null);
+                    return tcs.Task;
+                }
+                else
+                {
+                    return global::System.Threading.Tasks.Task.Run(() => invokeHandlers(l));
+                }
+            }
+            void invokeHandlers(global::System.Collections.Generic.IEnumerable<global::System.ComponentModel.PropertyChangedEventHandler> l)
+            {
+                foreach (var h in l)
+                    h(this, args);
+            }
+        }
+");
+
+        }
 
     }
 
