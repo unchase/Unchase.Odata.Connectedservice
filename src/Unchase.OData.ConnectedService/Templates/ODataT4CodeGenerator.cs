@@ -5005,7 +5005,7 @@ this.Write(" as ");
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
 this.Write(" specified by key from an entity set\r\n        /// </summary>\r\n        /// <param " +
-        "name=\"source\">source entity set</param>\r\n        /// <param name=\"keys\">dictiona" +
+        "name=\"_source\">source entity set</param>\r\n        /// <param name=\"keys\">dictiona" +
         "ry with the names and values of keys</param>\r\n        public static ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
@@ -5014,13 +5014,13 @@ this.Write(" ByKey(this global::Microsoft.OData.Client.DataServiceQuery<");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(entityTypeName));
 
-this.Write("> source, global::System.Collections.Generic.Dictionary<string, object> keys)\r\n  " +
+this.Write("> _source, global::System.Collections.Generic.Dictionary<string, object> keys)\r\n  " +
         "      {\r\n            return new ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
-this.Write("(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetK" +
-        "eyString(source.Context, keys)));\r\n        }\r\n        /// <summary>\r\n        ///" +
+this.Write("(_source.Context, _source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetK" +
+        "eyString(_source.Context, keys)));\r\n        }\r\n        /// <summary>\r\n        ///" +
         " Get an entity of type ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(entityTypeName));
@@ -5030,7 +5030,7 @@ this.Write(" as ");
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
 this.Write(" specified by key from an entity set\r\n        /// </summary>\r\n        /// <param " +
-        "name=\"source\">source entity set</param>\r\n");
+        "name=\"_source\">source entity set</param>\r\n");
 
 
         foreach (var key in keys)
@@ -5057,7 +5057,7 @@ this.Write(" ByKey(this global::Microsoft.OData.Client.DataServiceQuery<");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(entityTypeName));
 
-this.Write("> source,\r\n            ");
+this.Write("> _source,\r\n            ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(keyParameters));
 
@@ -5071,8 +5071,8 @@ this.Write("\r\n            };\r\n            return new ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
-this.Write("(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetK" +
-        "eyString(source.Context, keys)));\r\n        }\r\n");
+this.Write("(_source.Context, _source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetK" +
+        "eyString(_source.Context, keys)));\r\n        }\r\n");
 
 
     }
@@ -5101,7 +5101,7 @@ this.Write("(this global::Microsoft.OData.Client.DataServiceQuerySingle<");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(baseTypeName));
 
-this.Write("> source)\r\n        {\r\n            global::Microsoft.OData.Client.DataServiceQuery" +
+this.Write("> _source)\r\n        {\r\n            global::Microsoft.OData.Client.DataServiceQuery" +
         "Single<");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(derivedTypeFullName));
@@ -5114,7 +5114,7 @@ this.Write(">();\r\n            return new ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
-this.Write("(source.Context, query.GetPath(null));\r\n        }\r\n");
+this.Write("(_source.Context, query.GetPath(null));\r\n        }\r\n");
 
 
     }
@@ -5153,19 +5153,19 @@ this.Write("(this ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(boundTypeName));
 
-this.Write(" source");
+this.Write(" _source");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(string.IsNullOrEmpty(parameters) ? string.Empty : ", " + parameters));
 
 this.Write(this.ToStringHelper.ToStringWithCulture(useEntityReference ? ", bool useEntityReference = false" : string.Empty));
 
-this.Write(")\r\n        {\r\n            if (!source.IsComposable)\r\n            {\r\n             " +
+this.Write(")\r\n        {\r\n            if (!_source.IsComposable)\r\n            {\r\n             " +
         "   throw new global::System.NotSupportedException(\"The previous function is not " +
         "composable.\");\r\n            }\r\n\r\n            return ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(isReturnEntity ? "new " + returnTypeNameWithSingleSuffix + "(" : string.Empty));
 
-this.Write("source.CreateFunctionQuerySingle<");
+this.Write("_source.CreateFunctionQuerySingle<");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
@@ -5226,13 +5226,13 @@ this.Write("(this ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(boundTypeName));
 
-this.Write(" source");
+this.Write(" _source");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(string.IsNullOrEmpty(parameters) ? string.Empty : ", " + parameters));
 
 this.Write(this.ToStringHelper.ToStringWithCulture(useEntityReference ? ", bool useEntityReference = true" : string.Empty));
 
-this.Write(")\r\n        {\r\n            if (!source.IsComposable)\r\n            {\r\n             " +
+this.Write(")\r\n        {\r\n            if (!_source.IsComposable)\r\n            {\r\n             " +
         "   throw new global::System.NotSupportedException(\"The previous function is not " +
         "composable.\");\r\n            }\r\n\r\n            return source.CreateFunctionQuery<");
 
@@ -5291,17 +5291,17 @@ this.Write("(this ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(boundSourceType));
 
-this.Write(" source");
+this.Write(" _source");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(string.IsNullOrEmpty(parameters) ? string.Empty : ", " + parameters));
 
-this.Write(")\r\n        {\r\n            if (!source.IsComposable)\r\n            {\r\n             " +
+this.Write(")\r\n        {\r\n            if (!_source.IsComposable)\r\n            {\r\n             " +
         "   throw new global::System.NotSupportedException(\"The previous function is not " +
         "composable.\");\r\n            }\r\n\r\n            return new ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
-this.Write("(source.Context, source.AppendRequestUri(\"");
+this.Write("(_source.Context, _source.AppendRequestUri(\"");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(fullNamespace));
 
