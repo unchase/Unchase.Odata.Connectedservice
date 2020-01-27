@@ -1,4 +1,3 @@
-#
 [![Unchase OData (Swagger) Connected Service Logo](img/Unchase-OData-Connected-Service-Logo.png)](https://marketplace.visualstudio.com/items?itemName=Unchase.unchaseodataconnectedservice)
 
 [Unchase OData Connected Service](https://marketplace.visualstudio.com/items?itemName=Unchase.unchaseODataConnectedService) is a Visual Studio extension to generate `C#` or `VB` client code for `OData` web service.
