@@ -26,6 +26,7 @@ namespace Unchase.OData.ConnectedService.Models
         public string NamespacePrefix { get; set; }
 
         public bool UseDataServiceCollection { get; set; }
+
         /// <summary>
         /// Change the INotifyPropertyChanged Implementation to support async operations with synchronous event callbacks
         /// </summary>
