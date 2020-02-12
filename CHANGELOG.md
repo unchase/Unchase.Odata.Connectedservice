@@ -7,6 +7,13 @@
 
 These are the changes to each version that has been released on the official [Visual Studio extension gallery](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService).
 
+## v1.3.11 `(2020-02-12)`
+
+Thanks [@ChrisSchaller](https://github.com/ChrisSchaller) for [PR #31](https://github.com/unchase/Unchase.Odata.Connectedservice/pull/31)
+
+- [x] Add fix: reduce clashes with argument names
+- [x] Add support async binding
+
 ## v1.3.10 `(2020-01-17)`
 
 - [x] Fix some bugs in `ODataT4CodeGenerator.ttinclude` file
