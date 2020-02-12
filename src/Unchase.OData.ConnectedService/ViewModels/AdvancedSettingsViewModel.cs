@@ -28,7 +28,38 @@ namespace Unchase.OData.ConnectedService.ViewModels
                 _useDataServiceCollection = value;
                 UserSettings.UseDataServiceCollection = value;
                 OnPropertyChanged(nameof(UseDataServiceCollection));
+                OnPropertyChanged(nameof(ShowAsyncDataServiceCollectionOption));
             }
+        }
+        #endregion
+
+        #region UseAsyncDataServiceCollection
+        private bool _useAsyncDataServiceCollection;
+
+        /// <summary>
+        /// Change the INotifyPropertyChanged Implementation to support async operations with synchronous event callbacks
+        /// </summary>
+        /// <remarks>This should only be set to true is the <see cref="UseDataServiceCollection"/> is also true.</remarks>
+        public bool UseAsyncDataServiceCollection
+        {
+            get => _useAsyncDataServiceCollection;
+            set
+            {
+                _useAsyncDataServiceCollection = value;
+                UserSettings.UseAsyncDataServiceCollection = value;
+                OnPropertyChanged(nameof(UseAsyncDataServiceCollection));
+            }
+        }
+        #endregion
+
+        #region  ShowAsyncDataServiceCollectionOption
+        /// <summary>
+        /// Show the advanced option for INotifyPropertyChanged notification that generates async and await compatible bindings 
+        /// only available in C# and when <see cref="UseDataServiceCollection"/> is enabled.
+        /// </summary>
+        public bool ShowAsyncDataServiceCollectionOption
+        {
+            get => this.UserSettings.LanguageOption == LanguageOption.GenerateCSharpCode && UseDataServiceCollection;
         }
         #endregion
 
@@ -235,6 +266,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
 
             this.View = new AdvancedSettings(this.InternalWizard);
             this.UseDataServiceCollection = UserSettings.UseDataServiceCollection;
+            this.UseAsyncDataServiceCollection = UserSettings.UseAsyncDataServiceCollection;
             this.UseNamespacePrefix = UserSettings.UseNameSpacePrefix;
             this.NamespacePrefix = UserSettings.NamespacePrefix ?? Constants.DefaultNamespacePrefix;
             this.EnableNamingAlias = UserSettings.EnableNamingAlias;

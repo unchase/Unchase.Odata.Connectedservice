@@ -141,6 +141,7 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
             {
                 MetadataDocumentUri = MetadataUri,
                 UseDataServiceCollection = this.ServiceConfiguration.UseDataServiceCollection,
+                UseAsyncDataServiceCollection = this.ServiceConfiguration.UseAsyncDataServiceCollection,
                 TargetLanguage = this.ServiceConfiguration.LanguageOption == LanguageOption.GenerateCSharpCode ? ODataT4CodeGenerator.LanguageOption.CSharp : ODataT4CodeGenerator.LanguageOption.VB,
                 IgnoreUnexpectedElementsAndAttributes = this.ServiceConfiguration.IgnoreUnexpectedElementsAndAttributes,
                 EnableNamingAlias = this.ServiceConfiguration.EnableNamingAlias,

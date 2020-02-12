@@ -41,8 +41,17 @@ namespace Unchase.OData.ConnectedService.Models
         [DataMember]
         public LanguageOption LanguageOption { get; set; }
 
+        /// <summary>
+        /// Implement INotifyPropertyChanged in generated proxies to support change tracking
+        /// </summary>
         [DataMember]
         public bool UseDataServiceCollection { get; set; }
+        /// <summary>
+        /// Change the INotifyPropertyChanged Implementation to support async operations with synchronous event callbacks
+        /// </summary>
+        /// <remarks>This should only be set to true if the <see cref="UseDataServiceCollection"/> is also true.</remarks>
+        [DataMember]
+        public bool UseAsyncDataServiceCollection { get; set; }
 
         [DataMember]
         public string GeneratedFileNamePrefix { get; set; }

@@ -58,6 +58,7 @@ namespace Unchase.OData.ConnectedService.Templates
                     context = new CodeGenerationContext(this.Edmx, this.NamespacePrefix)
                     {
                         UseDataServiceCollection = this.UseDataServiceCollection,
+                        UseAsyncDataServiceCollection = this.UseAsyncDataServiceCollection,
                         TargetLanguage = this.TargetLanguage,
                         EnableNamingAlias = this.EnableNamingAlias,
                         TempFilePath = this.TempFilePath,
@@ -78,6 +79,7 @@ namespace Unchase.OData.ConnectedService.Templates
                     context = new CodeGenerationContext(new Uri(this.MetadataDocumentUri, UriKind.Absolute), this.NamespacePrefix)
                     {
                         UseDataServiceCollection = this.UseDataServiceCollection,
+                        UseAsyncDataServiceCollection = this.UseAsyncDataServiceCollection,
                         TargetLanguage = this.TargetLanguage,
                         EnableNamingAlias = this.EnableNamingAlias,
                         TempFilePath = this.TempFilePath,
@@ -141,6 +143,8 @@ public static class Configuration
 
 	// The use of DataServiceCollection enables entity and property tracking. The value must be set to true or false.
 	public const bool UseDataServiceCollection = true;
+	// Modifies the entity and property tracking to support synchronous notification to async operations. The value must be set to true or false.
+	public const bool UseAsyncDataServiceCollection = false;
 
 	// The namespace of the client code generated. It replaces the original namespace in the metadata document, 
     // unless the model has several namespaces.
@@ -302,6 +306,15 @@ public bool UseDataServiceCollection
     get;
     set;
 }
+/// <summary>
+/// true to change the INotifyPropertyChanged Implementation to support async operations with synchronous event callbacks
+/// </summary>
+/// <remarks>This should only be set to true if the <see cref="UseDataServiceCollection"/> is also true.</remarks>
+public bool UseAsyncDataServiceCollection
+{
+    get;
+    set;
+}
 
 /// <summary>
 /// Specifies which specific .Net Framework language the generated code will target.
@@ -400,6 +413,25 @@ public void ValidateAndSetUseDataServiceCollectionFromString(string stringValue)
 
     this.UseDataServiceCollection = boolValue;
 }
+/// <summary>
+/// Set the UseAsyncDataServiceCollection property with the given value.
+/// </summary>
+/// <param name="stringValue">The value to set.</param>
+public void ValidateAndSetUseAsyncDataServiceCollectionFromString(string stringValue)
+{
+    bool boolValue;
+    if (!bool.TryParse(stringValue, out boolValue))
+    {
+        // ********************************************************************************************************
+        // To fix this error, if the current text transformation is run by the TextTemplatingFileGenerator
+        // custom tool inside Visual Studio, update the .odata.config file in the project with a valid parameter
+        // value then hit Ctrl-S to save the .tt file to refresh the code generation.
+        // ********************************************************************************************************
+        throw new ArgumentException($"The value \"{stringValue}\" cannot be assigned to the UseAsyncDataServiceCollection parameter because it is not a valid boolean value.");
+    }
+
+    this.UseAsyncDataServiceCollection = boolValue;
+}
 
 /// <summary>
 /// Tries to set the TargetLanguage property with the given value.
@@ -489,6 +521,7 @@ private void ApplyParametersFromConfigurationClass()
     this.MetadataDocumentUri = Configuration.MetadataDocumentUri;
     this.NamespacePrefix = Configuration.NamespacePrefix;
     this.UseDataServiceCollection = Configuration.UseDataServiceCollection;
+    this.UseAsyncDataServiceCollection = Configuration.UseAsyncDataServiceCollection;
     this.ValidateAndSetTargetLanguageFromString(Configuration.TargetLanguage);
     this.EnableNamingAlias = Configuration.EnableNamingAlias;
     this.TempFilePath = Configuration.TempFilePath;
@@ -524,6 +557,12 @@ private void ApplyParametersFromCommandLine()
     if (!string.IsNullOrEmpty(useDataServiceCollection))
     {
         this.ValidateAndSetUseDataServiceCollectionFromString(useDataServiceCollection);
+    }
+
+    string useAsyncDataServiceCollection = this.Host.ResolveParameterValue("notempty", "notempty", "UseAsyncDataServiceCollection");
+    if (!string.IsNullOrEmpty(useAsyncDataServiceCollection))
+    {
+        this.ValidateAndSetUseAsyncDataServiceCollectionFromString(useAsyncDataServiceCollection);
     }
 
     string targetLanguage = this.Host.ResolveParameterValue("notempty", "notempty", "TargetLanguage");
@@ -855,6 +894,16 @@ public class CodeGenerationContext
     /// true to use DataServiceCollection in the generated code, false otherwise.
     /// </summary>
     public bool UseDataServiceCollection
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// true to change the INotifyPropertyChanged Implementation to support async operations with synchronous event callbacks
+    /// </summary>
+    /// <remarks>This should only be set to true if the <see cref="UseDataServiceCollection"/> is also true.</remarks>
+    public bool UseAsyncDataServiceCollection
     {
         get;
         set;
@@ -1933,7 +1982,7 @@ public abstract class ODataClientTemplate : TemplateBase
         this.WritePropertiesForStructuredType(entityType.DeclaredProperties, entityType.IsOpen);
 
         if (entityType.BaseType == null && this.context.UseDataServiceCollection)
-        {
+        {            
             this.WriteINotifyPropertyChangedImplementation();
         }
 
@@ -2384,7 +2433,7 @@ public abstract class ODataClientTemplate : TemplateBase
 
     internal void WritePropertiesForStructuredType(IEnumerable<IEdmProperty> properties, bool isOpen)
     {
-         bool useDataServiceCollection = this.context.UseDataServiceCollection;
+        bool useDataServiceCollection = this.context.UseDataServiceCollection;
 
         var propertyInfos = properties.Select(property =>
         {
@@ -3057,6 +3106,12 @@ internal static class Utils
                     {
                         defaultValue = "\"" + defaultValue + "\"";
                     }
+                    else if (valueClrType.Equals(clientTemplate.BooleanTypeName))
+                    {
+                        // EDMX specifies boolean defaults with capital letter, C# needs this string to be lower case.
+                        if (isCSharpTemplate)
+                            defaultValue = defaultValue.ToLower();
+                    }
                     else if (valueClrType.Equals(clientTemplate.BinaryTypeName))
                     {
                         defaultValue = "System.Text.Encoding.UTF8.GetBytes(\"" + defaultValue + "\")";
@@ -3404,6 +3459,11 @@ this.Write(this.ToStringHelper.ToStringWithCulture(DateTime.Now.ToString(global:
 
 this.Write("\r\n");
 
+        if(this.context.UseAsyncDataServiceCollection)
+        { 
+this.Write("using System.Linq;");
+this.Write("\r\n");
+        }
 
     }
 
@@ -4485,7 +4545,8 @@ this.Write("Changed();\r\n");
 
     internal override void WriteINotifyPropertyChangedImplementation()
     {
-
+        if(!this.context.UseAsyncDataServiceCollection)
+        { 
 this.Write("        /// <summary>\r\n        /// This event is raised when the value of the pro" +
         "perty is changed\r\n        /// </summary>\r\n        [global::System.CodeDom.Compil" +
         "er.GeneratedCodeAttribute(\"Microsoft.OData.Client.Design.T4\", \"");
@@ -4503,15 +4564,95 @@ this.Write(@""")]
 this.Write(this.ToStringHelper.ToStringWithCulture(T4Version));
 
 this.Write(@""")]
-        protected virtual void OnPropertyChanged(string property)
+        protected virtual void OnPropertyChanged([global::System.Runtime.CompilerServices.CallerMemberName] string property = null)
         {
-            if ((this.PropertyChanged != null))
+            this.PropertyChanged?.Invoke(this, new global::System.ComponentModel.PropertyChangedEventArgs(property));
+        }
+");
+        }
+        else
+        {
+            // based on implementation from https://stackoverflow.com/a/45422891/1690217
+            // In environments that do not support async binding operations natively...
+            // To support async operations on properties that might be bound to UI (99% of the time that is why we want a change notification!)
+            // We may need to track the original thread that the binding was registered on so that we can raise the event back on that thread.
+
+this.Write("        /// <summary>\r\n        /// Keep track of the synchronization context of " +
+        "each event handler that is registered.\r\n        /// </summary>\r\n        [global::System.CodeDom.Compil" +
+        "er.GeneratedCodeAttribute(\"Microsoft.OData.Client.Design.T4\", \"");
+
+this.Write(this.ToStringHelper.ToStringWithCulture(T4Version));
+
+this.Write(@""")]
+        private readonly global::System.Collections.Generic.List<(global::System.Threading.SynchronizationContext context, global::System.ComponentModel.PropertyChangedEventHandler handler)> _handlers = new global::System.Collections.Generic.List<(global::System.Threading.SynchronizationContext context, global::System.ComponentModel.PropertyChangedEventHandler handler)>();
+");
+
+this.Write("        /// <summary>\r\n        /// This event is raised when the value of the pro" +
+        "perty is changed\r\n        /// </summary>\r\n        [global::System.CodeDom.Compil" +
+        "er.GeneratedCodeAttribute(\"Microsoft.OData.Client.Design.T4\", \"");
+this.Write(this.ToStringHelper.ToStringWithCulture(T4Version));
+this.Write(@""")]
+        public event global::System.ComponentModel.PropertyChangedEventHandler PropertyChanged
+        {
+            add => _handlers.Add((global::System.Threading.SynchronizationContext.Current, value));
+            remove
             {
-                this.PropertyChanged(this, new global::System.ComponentModel.PropertyChangedEventArgs(property));
+                var i = 0;
+                foreach (var item in _handlers)
+                {
+                    if (item.handler.Equals(value))
+                    {
+                        _handlers.RemoveAt(i);
+                        break;
+                    }
+                    i++;
+                }
             }
         }
 ");
 
+this.Write(@"        /// <summary>
+        /// The value of the property is changed
+        /// </summary>
+        /// <param name=""property"">property name</param>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""Microsoft.OData.Client.Design.T4"", """);
+
+this.Write(this.ToStringHelper.ToStringWithCulture(T4Version));
+this.Write(@""")]
+        protected global::System.Threading.Tasks.Task OnPropertyChanged([global::System.Runtime.CompilerServices.CallerMemberName] string property = null)
+        {
+            var args = new global::System.ComponentModel.PropertyChangedEventArgs(property);
+            var tasks = _handlers
+                .GroupBy(x => x.context, x => x.handler)
+                .Select(g => invokeContext(g.Key, g));
+            return global::System.Threading.Tasks.Task.WhenAll(tasks);
+
+            global::System.Threading.Tasks.Task invokeContext(global::System.Threading.SynchronizationContext context, global::System.Collections.Generic.IEnumerable<global::System.ComponentModel.PropertyChangedEventHandler> l)
+            {
+                if (context != null)
+                {
+                    var tcs = new global::System.Threading.Tasks.TaskCompletionSource<bool>();
+                    context.Post(o =>
+                    {
+                        try { invokeHandlers(l); tcs.TrySetResult(true); }
+                        catch (global::System.Exception e) { tcs.TrySetException(e); }
+                    }, null);
+                    return tcs.Task;
+                }
+                else
+                {
+                    return global::System.Threading.Tasks.Task.Run(() => invokeHandlers(l));
+                }
+            }
+            void invokeHandlers(global::System.Collections.Generic.IEnumerable<global::System.ComponentModel.PropertyChangedEventHandler> l)
+            {
+                foreach (var h in l)
+                    h(this, args);
+            }
+        }
+");
+
+        }
 
     }
 
@@ -5005,7 +5146,7 @@ this.Write(" as ");
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
 this.Write(" specified by key from an entity set\r\n        /// </summary>\r\n        /// <param " +
-        "name=\"source\">source entity set</param>\r\n        /// <param name=\"keys\">dictiona" +
+        "name=\"_source\">source entity set</param>\r\n        /// <param name=\"keys\">dictiona" +
         "ry with the names and values of keys</param>\r\n        public static ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
@@ -5014,13 +5155,13 @@ this.Write(" ByKey(this global::Microsoft.OData.Client.DataServiceQuery<");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(entityTypeName));
 
-this.Write("> source, global::System.Collections.Generic.Dictionary<string, object> keys)\r\n  " +
+this.Write("> _source, global::System.Collections.Generic.Dictionary<string, object> keys)\r\n  " +
         "      {\r\n            return new ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
-this.Write("(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetK" +
-        "eyString(source.Context, keys)));\r\n        }\r\n        /// <summary>\r\n        ///" +
+this.Write("(_source.Context, _source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetK" +
+        "eyString(_source.Context, keys)));\r\n        }\r\n        /// <summary>\r\n        ///" +
         " Get an entity of type ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(entityTypeName));
@@ -5030,7 +5171,7 @@ this.Write(" as ");
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
 this.Write(" specified by key from an entity set\r\n        /// </summary>\r\n        /// <param " +
-        "name=\"source\">source entity set</param>\r\n");
+        "name=\"_source\">source entity set</param>\r\n");
 
 
         foreach (var key in keys)
@@ -5057,7 +5198,7 @@ this.Write(" ByKey(this global::Microsoft.OData.Client.DataServiceQuery<");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(entityTypeName));
 
-this.Write("> source,\r\n            ");
+this.Write("> _source,\r\n            ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(keyParameters));
 
@@ -5071,8 +5212,8 @@ this.Write("\r\n            };\r\n            return new ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
-this.Write("(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetK" +
-        "eyString(source.Context, keys)));\r\n        }\r\n");
+this.Write("(_source.Context, _source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetK" +
+        "eyString(_source.Context, keys)));\r\n        }\r\n");
 
 
     }
@@ -5088,7 +5229,7 @@ this.Write(" to its derived type ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(derivedTypeFullName));
 
-this.Write("\r\n        /// </summary>\r\n        /// <param name=\"source\">source entity</param>\r" +
+this.Write("\r\n        /// </summary>\r\n        /// <param name=\"_source\">source entity</param>\r" +
         "\n        public static ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
@@ -5101,12 +5242,12 @@ this.Write("(this global::Microsoft.OData.Client.DataServiceQuerySingle<");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(baseTypeName));
 
-this.Write("> source)\r\n        {\r\n            global::Microsoft.OData.Client.DataServiceQuery" +
+this.Write("> _source)\r\n        {\r\n            global::Microsoft.OData.Client.DataServiceQuery" +
         "Single<");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(derivedTypeFullName));
 
-this.Write("> query = source.CastTo<");
+this.Write("> query = _source.CastTo<");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(derivedTypeFullName));
 
@@ -5114,7 +5255,7 @@ this.Write(">();\r\n            return new ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
-this.Write("(source.Context, query.GetPath(null));\r\n        }\r\n");
+this.Write("(_source.Context, query.GetPath(null));\r\n        }\r\n");
 
 
     }
@@ -5153,19 +5294,19 @@ this.Write("(this ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(boundTypeName));
 
-this.Write(" source");
+this.Write(" _source");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(string.IsNullOrEmpty(parameters) ? string.Empty : ", " + parameters));
 
 this.Write(this.ToStringHelper.ToStringWithCulture(useEntityReference ? ", bool useEntityReference = false" : string.Empty));
 
-this.Write(")\r\n        {\r\n            if (!source.IsComposable)\r\n            {\r\n             " +
+this.Write(")\r\n        {\r\n            if (!_source.IsComposable)\r\n            {\r\n             " +
         "   throw new global::System.NotSupportedException(\"The previous function is not " +
         "composable.\");\r\n            }\r\n\r\n            return ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(isReturnEntity ? "new " + returnTypeNameWithSingleSuffix + "(" : string.Empty));
 
-this.Write("source.CreateFunctionQuerySingle<");
+this.Write("_source.CreateFunctionQuerySingle<");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
@@ -5226,15 +5367,15 @@ this.Write("(this ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(boundTypeName));
 
-this.Write(" source");
+this.Write(" _source");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(string.IsNullOrEmpty(parameters) ? string.Empty : ", " + parameters));
 
 this.Write(this.ToStringHelper.ToStringWithCulture(useEntityReference ? ", bool useEntityReference = true" : string.Empty));
 
-this.Write(")\r\n        {\r\n            if (!source.IsComposable)\r\n            {\r\n             " +
+this.Write(")\r\n        {\r\n            if (!_source.IsComposable)\r\n            {\r\n             " +
         "   throw new global::System.NotSupportedException(\"The previous function is not " +
-        "composable.\");\r\n            }\r\n\r\n            return source.CreateFunctionQuery<");
+        "composable.\");\r\n            }\r\n\r\n            return _source.CreateFunctionQuery<");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
@@ -5291,17 +5432,17 @@ this.Write("(this ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(boundSourceType));
 
-this.Write(" source");
+this.Write(" _source");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(string.IsNullOrEmpty(parameters) ? string.Empty : ", " + parameters));
 
-this.Write(")\r\n        {\r\n            if (!source.IsComposable)\r\n            {\r\n             " +
+this.Write(")\r\n        {\r\n            if (!_source.IsComposable)\r\n            {\r\n             " +
         "   throw new global::System.NotSupportedException(\"The previous function is not " +
         "composable.\");\r\n            }\r\n\r\n            return new ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
-this.Write("(source.Context, source.AppendRequestUri(\"");
+this.Write("(_source.Context, _source.AppendRequestUri(\"");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(fullNamespace));
 
@@ -7005,10 +7146,10 @@ this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
 this.Write(@" specified by key from an entity set
         ''' </summary>
-        ''' <param name=""source"">source entity set</param>
+        ''' <param name=""_source"">source entity set</param>
         ''' <param name=""keys"">dictionary with the names and values of keys</param>
         <Global.System.Runtime.CompilerServices.Extension()>
-        Public Function ByKey(ByVal source As Global.Microsoft.OData.Client.DataServiceQuery(Of ");
+        Public Function ByKey(ByVal _source As Global.Microsoft.OData.Client.DataServiceQuery(Of ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(entityTypeName));
 
@@ -7021,8 +7162,8 @@ this.Write("\r\n            Return New ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
-this.Write("(source.Context, source.GetKeyPath(Global.Microsoft.OData.Client.Serializer.GetKe" +
-        "yString(source.Context, keys)))\r\n        End Function\r\n        \'\'\' <summary>\r\n  " +
+this.Write("(_source.Context, _source.GetKeyPath(Global.Microsoft.OData.Client.Serializer.GetKe" +
+        "yString(_source.Context, keys)))\r\n        End Function\r\n        \'\'\' <summary>\r\n  " +
         "      \'\'\' Get an entity of type ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(entityTypeName));
@@ -7032,7 +7173,7 @@ this.Write(" as ");
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
 this.Write(" specified by key from an entity set\r\n        \'\'\' </summary>\r\n        \'\'\' <param " +
-        "name=\"source\">source entity set</param>\r\n");
+        "name=\"_source\">source entity set</param>\r\n");
 
 
         foreach (var key in keys)
@@ -7052,7 +7193,7 @@ this.Write("</param>\r\n");
         }
 
 this.Write("        <Global.System.Runtime.CompilerServices.Extension()>\r\n        Public Func" +
-        "tion ByKey(ByVal source As Global.Microsoft.OData.Client.DataServiceQuery(Of ");
+        "tion ByKey(ByVal _source As Global.Microsoft.OData.Client.DataServiceQuery(Of ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(entityTypeName));
 
@@ -7074,8 +7215,8 @@ this.Write("\r\n            }\r\n            Return New ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
-this.Write("(source.Context, source.GetKeyPath(Global.Microsoft.OData.Client.Serializer.GetKe" +
-        "yString(source.Context, keys)))\r\n        End Function\r\n");
+this.Write("(_source.Context, _source.GetKeyPath(Global.Microsoft.OData.Client.Serializer.GetKe" +
+        "yString(_source.Context, keys)))\r\n        End Function\r\n");
 
 
     }
@@ -7091,13 +7232,13 @@ this.Write(" to its derived type ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(derivedTypeFullName));
 
-this.Write("\r\n        \'\'\' </summary>\r\n        \'\'\' <param name=\"source\">source entity</param>\r" +
+this.Write("\r\n        \'\'\' </summary>\r\n        \'\'\' <param name=\"_source\">source entity</param>\r" +
         "\n        <Global.System.Runtime.CompilerServices.Extension()>\r\n        Public " +
         "Function CastTo");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(derivedTypeName));
 
-this.Write("(ByVal source As Global.Microsoft.OData.Client.DataServiceQuerySingle(Of ");
+this.Write("(ByVal _source As Global.Microsoft.OData.Client.DataServiceQuerySingle(Of ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(baseTypeName));
 
@@ -7110,7 +7251,7 @@ this.Write("\r\n            Dim query As Global.Microsoft.OData.Client.DataServi
 
 this.Write(this.ToStringHelper.ToStringWithCulture(derivedTypeFullName));
 
-this.Write(") = source.CastTo(Of ");
+this.Write(") = _source.CastTo(Of ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(derivedTypeFullName));
 
@@ -7118,7 +7259,7 @@ this.Write(")()\r\n            Return New ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
-this.Write("(source.Context, query.GetPath(Nothing))\r\n        End Function\r\n");
+this.Write("(_source.Context, query.GetPath(Nothing))\r\n        End Function\r\n");
 
 
     }
@@ -7150,7 +7291,7 @@ this.Write("        Public Function ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(functionName));
 
-this.Write("(ByVal source As ");
+this.Write("(ByVal _source As ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(boundTypeName));
 
@@ -7162,13 +7303,13 @@ this.Write(") As ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(isReturnEntity ? returnTypeNameWithSingleSuffix : string.Format(this.DataServiceQuerySingleStructureTemplate, returnTypeName)));
 
-this.Write("\r\n            If Not source.IsComposable Then\r\n                Throw New Global.S" +
+this.Write("\r\n            If Not _source.IsComposable Then\r\n                Throw New Global.S" +
         "ystem.NotSupportedException(\"The previous function is not composable.\")\r\n       " +
         "     End If\r\n            \r\n            Return ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(isReturnEntity ? "New " + returnTypeNameWithSingleSuffix + "(" : string.Empty));
 
-this.Write("source.CreateFunctionQuerySingle(");
+this.Write("_source.CreateFunctionQuerySingle(");
 
 this.Write(this.ToStringHelper.ToStringWithCulture("Of " + returnTypeName));
 
@@ -7222,7 +7363,7 @@ this.Write("        Public Function ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(functionName));
 
-this.Write("(ByVal source As ");
+this.Write("(ByVal _source As ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(boundTypeName));
 
@@ -7234,9 +7375,9 @@ this.Write(") As Global.Microsoft.OData.Client.DataServiceQuery(Of ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
-this.Write(")\r\n            If Not source.IsComposable Then\r\n                Throw New Global." +
+this.Write(")\r\n            If Not _source.IsComposable Then\r\n                Throw New Global." +
         "System.NotSupportedException(\"The previous function is not composable.\")\r\n      " +
-        "      End If\r\n            \r\n            Return source.CreateFunctionQuery(Of ");
+        "      End If\r\n            \r\n            Return _source.CreateFunctionQuery(Of ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
@@ -7286,7 +7427,7 @@ this.Write("        Public Function ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(actionName));
 
-this.Write("(ByVal source As ");
+this.Write("(ByVal _source As ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(boundSourceType));
 
@@ -7296,13 +7437,13 @@ this.Write(") As ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
-this.Write("\r\n            If Not source.IsComposable Then\r\n                Throw New Global.S" +
+this.Write("\r\n            If Not _source.IsComposable Then\r\n                Throw New Global.S" +
         "ystem.NotSupportedException(\"The previous function is not composable.\")\r\n       " +
         "     End If\r\n            Return New ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
-this.Write("(source.Context, source.AppendRequestUri(\"");
+this.Write("(_source.Context, _source.AppendRequestUri(\"");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(fullNamespace));
 

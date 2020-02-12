@@ -85,6 +85,7 @@ namespace Unchase.OData.ConnectedService.Views
                 this.UserSettings.ExcludedOperationImportsNames = microsoftConnectedServiceData.ExtendedData?.ExcludedOperationImportsNames ?? this.UserSettings.ExcludedOperationImportsNames;
                 this.UserSettings.UseNameSpacePrefix = microsoftConnectedServiceData.ExtendedData?.UseNameSpacePrefix ?? this.UserSettings.UseNameSpacePrefix;
                 this.UserSettings.UseDataServiceCollection = microsoftConnectedServiceData.ExtendedData?.UseDataServiceCollection ?? this.UserSettings.UseDataServiceCollection;
+                this.UserSettings.UseAsyncDataServiceCollection = microsoftConnectedServiceData.ExtendedData?.UseAsyncDataServiceCollection ?? this.UserSettings.UseAsyncDataServiceCollection;
                 this.UserSettings.ServiceName = microsoftConnectedServiceData.ExtendedData?.ServiceName ?? this.UserSettings.ServiceName;
                 this.UserSettings.AcceptAllUntrustedCertificates = microsoftConnectedServiceData.ExtendedData?.AcceptAllUntrustedCertificates ?? this.UserSettings.AcceptAllUntrustedCertificates;
                 this.UserSettings.NamespacePrefix = microsoftConnectedServiceData.ExtendedData?.NamespacePrefix ?? this.UserSettings.NamespacePrefix;
