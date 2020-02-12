@@ -66,13 +66,25 @@
                     VerticalAlignment="Center"
                     Text="{Binding UserSettings.NamespacePrefix, Mode=TwoWay}"
                     TextWrapping="Wrap" />
-                <CheckBox
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <CheckBox
                     x:Name="UseDsc"
-                    Margin="0,5,0,0"
+                    
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Content="Enable entity and property tracking."
                     IsChecked="{Binding UserSettings.UseDataServiceCollection, Mode=TwoWay}" />
+                    <TextBlock Margin="10,0,0,0">-</TextBlock>
+                    <CheckBox
+                    x:Name="UseAsyncDsc"
+                    Margin="10,0,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Content="Implement async binding base. (c# only)"
+                    Visibility="{Binding UserSettings.UseDataServiceCollection}"
+                    IsEnabled="{Binding UserSettings.ShowAsyncDataServiceCollectionOption}"
+                    IsChecked="{Binding UserSettings.UseAsyncDataServiceCollection, Mode=TwoWay}" />
+                </StackPanel>
                 <CheckBox
                     x:Name="SelectOperationImports"
                     Width="450"

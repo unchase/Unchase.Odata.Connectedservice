@@ -73,6 +73,7 @@ namespace Unchase.OData.ConnectedService
                 AdvancedSettingsViewModel.UseNamespacePrefix = serviceConfig.UseNameSpacePrefix;
                 AdvancedSettingsViewModel.NamespacePrefix = serviceConfig.NamespacePrefix;
                 AdvancedSettingsViewModel.UseDataServiceCollection = serviceConfig.UseDataServiceCollection;
+                AdvancedSettingsViewModel.UseAsyncDataServiceCollection = serviceConfig.UseAsyncDataServiceCollection;
                 AdvancedSettingsViewModel.OperationImportsGenerator = serviceConfig.OperationImportsGenerator;
                 AdvancedSettingsViewModel.SelectOperationImports = serviceConfig.GenerateOperationImports;
                 AdvancedSettingsViewModel.ExcludedOperationImportsNames = serviceConfig.ExcludedOperationImportsNames;
@@ -100,6 +101,7 @@ namespace Unchase.OData.ConnectedService
                             advancedSettingsViewModel.UseNamespacePrefix = serviceConfig.UseNameSpacePrefix;
                             advancedSettingsViewModel.NamespacePrefix = serviceConfig.NamespacePrefix;
                             advancedSettingsViewModel.UseDataServiceCollection = serviceConfig.UseDataServiceCollection;
+                            advancedSettingsViewModel.UseAsyncDataServiceCollection = serviceConfig.UseAsyncDataServiceCollection;
                             advancedSettingsViewModel.OperationImportsGenerator = serviceConfig.OperationImportsGenerator;
                             advancedSettingsViewModel.SelectOperationImports = serviceConfig.GenerateOperationImports;
                             advancedSettingsViewModel.ExcludedOperationImportsNames = serviceConfig.ExcludedOperationImportsNames;
@@ -252,6 +254,7 @@ namespace Unchase.OData.ConnectedService
             serviceConfiguration.Endpoint = ConfigODataEndpointViewModel.UserSettings.Endpoint;
             serviceConfiguration.EdmxVersion = ConfigODataEndpointViewModel.EdmxVersion;
             serviceConfiguration.UseDataServiceCollection = AdvancedSettingsViewModel.UserSettings.UseDataServiceCollection;
+            serviceConfiguration.UseAsyncDataServiceCollection = AdvancedSettingsViewModel.UserSettings.UseAsyncDataServiceCollection;
             serviceConfiguration.GeneratedFileNamePrefix = AdvancedSettingsViewModel.UserSettings.GeneratedFileNamePrefix;
             serviceConfiguration.UseNameSpacePrefix = AdvancedSettingsViewModel.UserSettings.UseNameSpacePrefix;
             serviceConfiguration.OpenGeneratedFilesOnComplete = ConfigODataEndpointViewModel.UserSettings.OpenGeneratedFilesOnComplete;
