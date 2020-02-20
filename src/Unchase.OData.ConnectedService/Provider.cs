@@ -13,7 +13,7 @@ using Unchase.OData.ConnectedService.Properties;
 
 namespace Unchase.OData.ConnectedService
 {
-    [ConnectedServiceProviderExport("Unchase.OData.ConnectedService", SupportsUpdate = true)]
+    [ConnectedServiceProviderExport(Constants.ProviderId, SupportsUpdate = true)]
     internal class Provider : ConnectedServiceProvider
     {
         #region Constructors

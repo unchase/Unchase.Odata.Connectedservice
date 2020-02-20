@@ -79,6 +79,9 @@ namespace Unchase.OData.ConnectedService.Models
         public bool IncludeT4File { get; set; }
 
         [DataMember]
+        public bool MakeTypesInternal { get; set; }
+
+        [DataMember]
         public bool IncludeExtensionsT4File { get; set; }
 
         [DataMember]

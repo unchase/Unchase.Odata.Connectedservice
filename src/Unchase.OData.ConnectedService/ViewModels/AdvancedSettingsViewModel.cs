@@ -183,6 +183,20 @@ namespace Unchase.OData.ConnectedService.ViewModels
         }
         #endregion
 
+        #region MakeTypesInternal
+        private bool _makeTypesInternal;
+        public bool MakeTypesInternal
+        {
+            get => _makeTypesInternal;
+            set
+            {
+                _makeTypesInternal = value;
+                UserSettings.MakeTypesInternal = value;
+                OnPropertyChanged(nameof(MakeTypesInternal));
+            }
+        }
+        #endregion
+
         #region IncludeExtensionsT4File
         private bool _includeExtensionsT4File;
         public bool IncludeExtensionsT4File
@@ -277,6 +291,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.GeneratedFileNamePrefix = UserSettings.GeneratedFileNamePrefix ?? Constants.DefaultReferenceFileName;
             this.IncludeT4FileEnabled = true;
             this.IncludeT4File = UserSettings.IncludeT4File;
+            this.MakeTypesInternal = UserSettings.MakeTypesInternal;
             this.IncludeExtensionsT4File = UserSettings.IncludeExtensionsT4File;
             this.OperationImportsGenerator = UserSettings.OperationImportsGenerator;
             this.SelectOperationImports = UserSettings.SelectOperationImports;

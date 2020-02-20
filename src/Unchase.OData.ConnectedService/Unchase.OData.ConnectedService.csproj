@@ -133,10 +133,10 @@
       <Version>8.0.3</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.OData.Client">
-      <Version>7.6.0</Version>
+      <Version>7.6.3</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.OData.Edm">
-      <Version>7.6.0</Version>
+      <Version>7.6.3</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.ConnectedServices">
       <Version>15.3.47</Version>

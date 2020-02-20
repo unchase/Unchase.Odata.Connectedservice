@@ -86,6 +86,7 @@ namespace Unchase.OData.ConnectedService
                     AdvancedSettingsViewModel.DynamicPropertiesCollectionName = serviceConfig.DynamicPropertiesCollectionName;
                     AdvancedSettingsViewModel.EnableNamingAlias = serviceConfig.EnableNamingAlias;
                     AdvancedSettingsViewModel.IncludeT4File = serviceConfig.IncludeT4File;
+                    AdvancedSettingsViewModel.MakeTypesInternal = serviceConfig.MakeTypesInternal;
                     AdvancedSettingsViewModel.IncludeT4FileEnabled = true;
                 }
 
@@ -114,6 +115,7 @@ namespace Unchase.OData.ConnectedService
                                 advancedSettingsViewModel.DynamicPropertiesCollectionName = serviceConfig.DynamicPropertiesCollectionName;
                                 advancedSettingsViewModel.EnableNamingAlias = serviceConfig.EnableNamingAlias;
                                 advancedSettingsViewModel.IncludeT4File = serviceConfig.IncludeT4File;
+                                advancedSettingsViewModel.MakeTypesInternal = serviceConfig.MakeTypesInternal;
                                 advancedSettingsViewModel.IncludeT4FileEnabled = true;
                                 advancedSettings.IncludeT4File.IsEnabled = true;
                             }
@@ -234,7 +236,8 @@ namespace Unchase.OData.ConnectedService
                     GenerateDynamicPropertiesCollection = AdvancedSettingsViewModel.UserSettings.GenerateDynamicPropertiesCollection,
                     DynamicPropertiesCollectionName = AdvancedSettingsViewModel.UserSettings.DynamicPropertiesCollectionName,
                     EnableNamingAlias = AdvancedSettingsViewModel.UserSettings.EnableNamingAlias,
-                    IncludeT4File = AdvancedSettingsViewModel.UserSettings.IncludeT4File
+                    IncludeT4File = AdvancedSettingsViewModel.UserSettings.IncludeT4File,
+                    MakeTypesInternal = AdvancedSettingsViewModel.UserSettings.MakeTypesInternal
                 };
             }
             else

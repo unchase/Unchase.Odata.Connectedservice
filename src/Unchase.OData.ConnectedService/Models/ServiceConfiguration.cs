@@ -83,6 +83,8 @@ namespace Unchase.OData.ConnectedService.Models
         public string DynamicPropertiesCollectionName { get; set; }
 
         public bool IncludeT4File { get; set; }
+
+        public bool MakeTypesInternal { get; set; }
     }
     #endregion
 }

@@ -7,6 +7,11 @@
 
 These are the changes to each version that has been released on the official [Visual Studio extension gallery](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService).
 
+## v1.4.0 `(2020-02-20)`
+
+- [x] Add feature: allow making generated types internal to hide them outside the assembly
+  - [x] Add an option in the advanced settings UI configuration of the service that makes the generated types (classes and enums) internal
+
 ## v1.3.11 `(2020-02-12)`
 
 Thanks [@ChrisSchaller](https://github.com/ChrisSchaller) for [PR #31](https://github.com/unchase/Unchase.Odata.Connectedservice/pull/31)

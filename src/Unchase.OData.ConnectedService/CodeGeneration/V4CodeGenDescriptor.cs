@@ -109,6 +109,8 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
 
                 text = Regex.Replace(text, "(public const string ExcludedOperationImportsNames = )\"\";", "$1\"" + this.ServiceConfiguration.ExcludedOperationImportsNames + "\";");
 
+                text = Regex.Replace(text, "(public const bool MakeTypesInternal = )false;", "$1" + ServiceConfiguration.MakeTypesInternal.ToString().ToLower(CultureInfo.InvariantCulture) + ";");
+
                 await writer.WriteAsync(text);
                 await writer.FlushAsync();
             }
@@ -148,7 +150,8 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
                 NamespacePrefix = this.ServiceConfiguration.NamespacePrefix,
                 ExcludedOperationImportsNames = this.ServiceConfiguration?.ExcludedOperationImportsNames,
                 GenerateDynamicPropertiesCollection = this.ServiceConfiguration.GenerateDynamicPropertiesCollection,
-                DynamicPropertiesCollectionName = this.ServiceConfiguration?.DynamicPropertiesCollectionName
+                DynamicPropertiesCollectionName = this.ServiceConfiguration?.DynamicPropertiesCollectionName,
+                MakeTypesInternal = ServiceConfiguration.MakeTypesInternal
             };
 
             var tempFile = Path.GetTempFileName();

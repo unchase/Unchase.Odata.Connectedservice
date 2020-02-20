@@ -42,8 +42,12 @@ public static class Configuration
 	// The string for the comma separated OperationImports (ActionImports and FunctionImports) names in metadata to exclude from generated code.
     public const string ExcludedOperationImportsNames = "";
 
+	// If set to true, generated types will have an "internal" class modifier ("Friend" in VB) instead of "public"
+	// thereby making them invisible outside the assembly
+	public const bool MakeTypesInternal = false;
+
 	//
-    public const string T4Version = "2.6.0";
+    public const string T4Version = "2.7.0";
 }
 
 public static class Customization
