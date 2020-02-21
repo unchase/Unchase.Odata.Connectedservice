@@ -7,6 +7,11 @@
 
 These are the changes to each version that has been released on the official [Visual Studio extension gallery](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService).
 
+## v1.4.1 `(2020-02-21)`
+
+- [x] Replace Dictionary with IDictionary in ByKey method
+  - [x] This fix is dependent on the update to OData Client v7.6.3 as done in this PR [OData/odata.net#1648](https://github.com/OData/odata.net/pull/1648)
+
 ## v1.4.0 `(2020-02-20)`
 
 - [x] Add feature: allow making generated types internal to hide them outside the assembly
