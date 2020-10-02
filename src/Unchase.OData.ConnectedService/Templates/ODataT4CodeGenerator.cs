@@ -6871,7 +6871,7 @@ this.Write(")\r\n            Return Me.CreateFunctionQuery(Of ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(returnTypeName));
 
-this.Write(")(\"\", \"/");
+this.Write(")(\"\", \"");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(originalFunctionName));
 
@@ -6932,7 +6932,7 @@ this.Write("Me.CreateFunctionQuerySingle(");
 
 this.Write(this.ToStringHelper.ToStringWithCulture("Of " + returnTypeName));
 
-this.Write(")(\"\", \"/");
+this.Write(")(\"\", \"");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(originalFunctionName));
 

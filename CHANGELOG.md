@@ -7,6 +7,10 @@
 
 These are the changes to each version that has been released on the official [Visual Studio extension gallery](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService).
 
+## v1.4.2 `(2020-10-02)`
+
+- [x] Fix [issue #49](https://github.com/unchase/Unchase.Odata.Connectedservice/issues/49)
+
 ## v1.4.1 `(2020-02-21)`
 
 - [x] Replace Dictionary with IDictionary in ByKey method

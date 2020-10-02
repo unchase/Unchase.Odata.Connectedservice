@@ -5251,7 +5251,7 @@ Namespace <#= fullNamespace #>
         }
 #>
         Public Function <#= functionName #>(<#= parameters #><#= useEntityReference ? ", Optional ByVal useEntityReference As Boolean = False" : string.Empty #>) As Global.Microsoft.OData.Client.DataServiceQuery(Of <#= returnTypeName #>)
-            Return Me.CreateFunctionQuery(Of <#= returnTypeName #>)("", "/<#= originalFunctionName #>", <#= isComposable #> <#= string.IsNullOrEmpty(parameterValues) ? string.Empty : ", " + parameterValues #>)
+            Return Me.CreateFunctionQuery(Of <#= returnTypeName #>)("", "<#= originalFunctionName #>", <#= isComposable #> <#= string.IsNullOrEmpty(parameterValues) ? string.Empty : ", " + parameterValues #>)
         End Function
 <#+
     }
@@ -5271,7 +5271,7 @@ Namespace <#= fullNamespace #>
         }
 #>
         Public Function <#= functionName #>(<#= parameters #><#= useEntityReference ? ", Optional ByVal useEntityReference As Boolean = False" : string.Empty #>) As <#= isReturnEntity ? returnTypeNameWithSingleSuffix : string.Format(CultureInfo.InvariantCulture, this.DataServiceQuerySingleStructureTemplate, returnTypeName) #>
-            Return <#= isReturnEntity ? "New " + returnTypeNameWithSingleSuffix + "(" : string.Empty #>Me.CreateFunctionQuerySingle(<#= "Of " + returnTypeName #>)("", "/<#= originalFunctionName #>", <#= isComposable #><#= string.IsNullOrEmpty(parameterValues) ? string.Empty : ", " + parameterValues #>)<#= isReturnEntity ? ")" : string.Empty #>
+            Return <#= isReturnEntity ? "New " + returnTypeNameWithSingleSuffix + "(" : string.Empty #>Me.CreateFunctionQuerySingle(<#= "Of " + returnTypeName #>)("", "<#= originalFunctionName #>", <#= isComposable #><#= string.IsNullOrEmpty(parameterValues) ? string.Empty : ", " + parameterValues #>)<#= isReturnEntity ? ")" : string.Empty #>
         End Function
 <#+
     }
