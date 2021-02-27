@@ -17,6 +17,7 @@ namespace Unchase.OData.ConnectedService
     internal class Provider : ConnectedServiceProvider
     {
         #region Constructors
+
         public Provider()
         {
             Category = Constants.ExtensionCategory;
@@ -29,13 +30,14 @@ namespace Unchase.OData.ConnectedService
                 BitmapSizeOptions.FromWidthAndHeight(64, 64)
             );
             CreatedBy = Constants.Author;
-            Version = new Version(1, 3, 11, 0);
             Version = typeof(Provider).Assembly.GetName().Version;
             MoreInfoUri = new Uri(Constants.Website);
         }
+
         #endregion
 
         #region Methods
+
         public override IEnumerable<Tuple<string, Uri>> GetSupportedTechnologyLinks()
         {
             yield return Tuple.Create("OData Website", new Uri("http://www.odata.org/"));
@@ -47,6 +49,7 @@ namespace Unchase.OData.ConnectedService
             var wizard = new Wizard(context);
             return Task.FromResult<ConnectedServiceConfigurator>(wizard);
         }
+
         #endregion
     }
 }
