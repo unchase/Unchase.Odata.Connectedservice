@@ -13,7 +13,7 @@
 
 #### **[Read How-To on medium.com](https://medium.com/@unchase/how-to-generate-c-or-visual-basic-client-code-for-odata-protocol-versions-1-0-4-0-a3a4f9402ea1)**
 
-Install from `Tools -> Extensions and Updates` menu inside [Visual Studio](https://visualstudio.microsoft.com/vs/) (including 2019) or [download](http://vsixgallery.com/extensions/Unchase.OData.ConnectedService.afc46f39-8c64-4e14-85d0-af6c7c4291f3/extension.vsix)  as `VSIX` package from VSGallery or [download](https://marketplace.visualstudio.com/items?itemName=unchase.unchaseODataConnectedService)  as `VSIX` package from Visual Studio Marketplace: 
+Install from `Tools -> Extensions and Updates` menu inside [Visual Studio](https://visualstudio.microsoft.com/vs/) (including 2019 and 2022) or [download](http://vsixgallery.com/extensions/Unchase.OData.ConnectedService.afc46f39-8c64-4e14-85d0-af6c7c4291f3/extension.vsix)  as `VSIX` package from VSGallery or [download](https://marketplace.visualstudio.com/items?itemName=unchase.unchaseODataConnectedService)  as `VSIX` package from Visual Studio Marketplace: 
 
 ![Adding Unchase OData Connected Service in Visual Studio](img/Unchase-OData-Connected-Service.gif)
 
@@ -80,9 +80,9 @@ Install from `Tools -> Extensions and Updates` menu inside [Visual Studio](https
 
 ## Troubleshooting
 
-### Installation completes but I can't see the Service in the list of connected services (Visual Studio 2019)
+### Installation completes but I can't see the Service in the list of connected services (Visual Studio 2019 and newer)
 
-- Relevant [bug report](https://developercommunity.visualstudio.com/content/problem/468751/vs2019-preview-cannot-install-connected-service-ex.html). `Connected Services` restored in the v16.1.3 update to [Visual Studio](https://visualstudio.microsoft.com/vs/) 2019.
+- Relevant [bug report](https://developercommunity.visualstudio.com/content/problem/468751/vs2019-preview-cannot-install-connected-service-ex.html). `Connected Services` restored in the v16.1.3 update to [Visual Studio](https://visualstudio.microsoft.com/vs/) 2019 or newer.
 
 ## Roadmap
 
