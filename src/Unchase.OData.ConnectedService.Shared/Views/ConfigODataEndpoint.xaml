@@ -34,9 +34,7 @@
                     Margin="5,5,10,5"
                     HorizontalAlignment="Right"
                     Click="ReportABugButton_Click">
-                    <Button.Background>
-                        <ImageBrush ImageSource="../Resources/NewBug.png" Stretch="UniformToFill" />
-                    </Button.Background>
+                    <TextBox Text="!" />
                 </Button>
             </DockPanel>
         </DockPanel>

@@ -23,6 +23,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
 	internal class ConfigODataEndpointViewModel : ConnectedServiceWizardPage
 	{
         #region Properties and fields
+
         private string _endPoint;
         public string Endpoint
         {
@@ -89,19 +90,23 @@ namespace Unchase.OData.ConnectedService.ViewModels
         public Wizard InternalWizard { get; }
 
         #region Network Credentials
+
         public bool UseNetworkCredentials { get; set; }
         public string NetworkCredentialsUserName { get; set; }
         public string NetworkCredentialsPassword { get; set; }
         public string NetworkCredentialsDomain { get; set; }
+
         #endregion
 
         #region WebProxy
+
         public bool UseWebProxy { get; set; }
         public bool UseWebProxyCredentials { get; set; }
         public string WebProxyNetworkCredentialsUserName { get; set; }
         public string WebProxyNetworkCredentialsPassword { get; set; }
         public string WebProxyNetworkCredentialsDomain { get; set; }
         public string WebProxyUri { get; set; }
+
         #endregion
 
         public LanguageOption[] LanguageOptions
@@ -113,9 +118,11 @@ namespace Unchase.OData.ConnectedService.ViewModels
                     .ToArray();
             }
         }
+
         #endregion
 
         #region Constructors
+
         public ConfigODataEndpointViewModel(UserSettings userSettings, Wizard wizard) : base()
         {
             this.Title = "Configure metadata endpoint";
@@ -136,9 +143,11 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.UseWebProxy = false;
             this.UseWebProxyCredentials = false;
         }
+
         #endregion
 
         #region Methods
+
         public override Task<PageNavigationResult> OnPageLeavingAsync(WizardLeavingArgs args)
         {
             UserSettings.AddToTopOfMruList(((Wizard)this.Wizard).UserSettings.MruEndpoints, this.Endpoint);
@@ -161,6 +170,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
         }
 
         #region Private methods
+
         private string GetMetadata(out Version edmxVersion)
         {
             if (string.IsNullOrEmpty(this.UserSettings.Endpoint))
@@ -192,7 +202,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
                     xmlUrlResolver.Proxy = new WebProxy(this.WebProxyUri);
             }
 
-            var readerSettings = new XmlReaderSettings()
+            var readerSettings = new XmlReaderSettings
             {
                 XmlResolver = new XmlSecureResolver(xmlUrlResolver, new PermissionSet(System.Security.Permissions.PermissionState.Unrestricted)),
                 DtdProcessing = DtdProcessing.Parse
@@ -279,6 +289,7 @@ namespace Unchase.OData.ConnectedService.ViewModels
 
             return true;
         }
+
         #endregion
 
         #endregion

@@ -11,6 +11,7 @@ namespace Unchase.OData.ConnectedService.Models
     internal class ServiceConfiguration
     {
         #region Properties and fields
+
         public string ServiceName { get; set; }
 
         public bool AcceptAllUntrustedCertificates { get; set; }
@@ -44,25 +45,30 @@ namespace Unchase.OData.ConnectedService.Models
         public string ExcludedOperationImportsNames { get; set; }
 
         #region Network Credentials
+
         public bool UseNetworkCredentials { get; set; }
         public string NetworkCredentialsUserName { get; set; }
         public string NetworkCredentialsPassword { get; set; }
         public string NetworkCredentialsDomain { get; set; }
+
         #endregion
 
         #region WebProxy
+
         public string WebProxyUri { get; set; }
         public bool UseWebProxy { get; set; }
         public bool UseWebProxyCredentials { get; set; }
         public string WebProxyNetworkCredentialsUserName { get; set; }
         public string WebProxyNetworkCredentialsPassword { get; set; }
         public string WebProxyNetworkCredentialsDomain { get; set; }
+
         #endregion
 
         #endregion
     }
 
     #region Child classes
+
     internal class ServiceConfigurationV3 : ServiceConfiguration
     {
         public Constants.OperationImportsGenerator OperationImportsGenerator { get; set; }
@@ -86,5 +92,6 @@ namespace Unchase.OData.ConnectedService.Models
 
         public bool MakeTypesInternal { get; set; }
     }
+
     #endregion
 }

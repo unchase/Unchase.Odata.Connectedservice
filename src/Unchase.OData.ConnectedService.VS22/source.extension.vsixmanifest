@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" ?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="Unchase.OData.ConnectedService.afc46f39-8c64-4e14-85d0-af6c7c4291f3" Version="1.5.0" Language="en-US" Publisher="Unchase" />
-        <DisplayName>Unchase OData Connected Service</DisplayName>
+        <Identity Id="Unchase.OData.ConnectedService.afc46f39-8c64-4e14-85d0-af6c7c4291f4" Version="1.5.0" Language="en-US" Publisher="Unchase" />
+        <DisplayName>Unchase OData Connected Service VS2022</DisplayName>
         <Description xml:space="preserve">OData V1-V4 connected service with extension methods for client-side proxy class.</Description>
         <MoreInfo>https://github.com/unchase/Unchase.Odata.Connectedservice</MoreInfo>
         <License>EULA.txt</License>
@@ -13,16 +13,21 @@
         <Tags>OData, REST API, Code Generation, Scaffolding, Connected Service</Tags>
     </Metadata>
     <Installation>
-        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0, 17.0)" />
-        <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[15.0,17.0)" />
-        <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[15.0,17.0)" />
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
+            <ProductArchitecture>amd64</ProductArchitecture>
+        </InstallationTarget>
+        <InstallationTarget Version="[17.0,18.0)" Id="Microsoft.VisualStudio.Pro">
+            <ProductArchitecture>amd64</ProductArchitecture>
+        </InstallationTarget>
+        <InstallationTarget Version="[17.0,18.0)" Id="Microsoft.VisualStudio.Enterprise">
+            <ProductArchitecture>amd64</ProductArchitecture>
+        </InstallationTarget>
     </Installation>
     <Dependencies>
-        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
         <Dependency d:Source="Installed" Id="ConnectedServices.897486C9-63BD-48D3-8A33-CB770FBD0723" DisplayName="Microsoft Connected Services" Version="[2.0,)" />
     </Dependencies>
     <Prerequisites>
-        <Prerequisite Id="Microsoft.VisualStudio.Component.Roslyn.LanguageServices" Version="[15.8.27729.1,)" DisplayName="C# и Visual Basic" />
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,18.0)" DisplayName="Visual Studio core editor" />
     </Prerequisites>
     <Assets>
         <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />

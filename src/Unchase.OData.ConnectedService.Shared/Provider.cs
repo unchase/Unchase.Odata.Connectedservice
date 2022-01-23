@@ -9,7 +9,11 @@ using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using Microsoft.VisualStudio.ConnectedServices;
 using Unchase.OData.ConnectedService.Common;
+#if VS17
+using Unchase.OData.ConnectedService.VS22.Properties;
+#else
 using Unchase.OData.ConnectedService.Properties;
+#endif
 
 namespace Unchase.OData.ConnectedService
 {

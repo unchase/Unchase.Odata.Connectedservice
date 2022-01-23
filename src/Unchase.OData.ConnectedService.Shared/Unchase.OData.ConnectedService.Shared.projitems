@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>c352867a-ad41-48a4-80f8-1c5c2057a774</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Unchase.OData.ConnectedService.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CodeGeneration\BaseCodeGenDescriptor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeGeneration\V3CodeGenDescriptor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeGeneration\V4CodeGenDescriptor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\StackPanelChangeVisibilityCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\Constants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\ExtensionsHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\FunctionImportsHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\OperationImportsHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\ProjectHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\UserSettingsPersistenceHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\OperationImportToColorConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\VisibilityConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\VisibilityToHyperlinkTextConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Handler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Instance.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\FunctionImportModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\OperationImportModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ServiceConfiguration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\UserSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Provider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Templates\ODataT4CodeGenerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\AdvancedSettingsViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ConfigODataEndpointViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\FunctionImportsViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\AdvancedSettings.xaml.cs">
+      <DependentUpon>AdvancedSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\ConfigODataEndpoint.xaml.cs">
+      <DependentUpon>ConfigODataEndpoint.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\FunctionImports.xaml.cs">
+      <DependentUpon>FunctionImports.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Wizard.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Resources\EULA.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Resources\logo_128x128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Resources\NewBug.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Resources\preview_200x200.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Templates\ODataT4CodeGenerator.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Templates\ODataT4CodeGenerator.ttinclude">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Templates\ODataV3ExtensionsT4CodeGenerator.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <LastGenOutput>ODataV3ExtensionsT4CodeGenerator.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)Views\AdvancedSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\ConfigODataEndpoint.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\FunctionImports.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="$(MSBuildThisFileDirectory)Resources\NewBug.png" />
+  </ItemGroup>
+</Project>
