@@ -11,7 +11,7 @@ namespace Unchase.OData.ConnectedService.VS22
         public const string Name = "Unchase OData Connected Service VS2022";
         public const string Description = @"OData V1-V4 connected service with extension methods for client-side proxy class.";
         public const string Language = "en-US";
-        public const string Version = "1.5.0";
+        public const string Version = "1.5.1";
         public const string Author = "Unchase";
         public const string Tags = "OData, REST API, Code Generation, Scaffolding, Connected Service";
     }

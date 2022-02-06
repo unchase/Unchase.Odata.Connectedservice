@@ -7,7 +7,11 @@
 
 These are the changes to each version that has been released on the official [Visual Studio extension gallery](https://marketplace.visualstudio.com/items?itemName=unchase.UnchaseODataConnectedService).
 
-## v1.5.0 `(2021-01-23)`
+## v1.5.1 `(2022-02-07)`
+
+- Fix [issue #73](https://github.com/unchase/Unchase.Odata.Connectedservice/issues/73)
+
+## v1.5.0 `(2022-01-23)`
 
 - [x] Update dependencies: add support for NSwag.Commands v13.14.8
 - [x] Fix [issue #63](https://github.com/unchase/Unchase.Odata.Connectedservice/issues/63) - Visual Studio 2022 Support

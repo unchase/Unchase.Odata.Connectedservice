@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" ?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="Unchase.OData.ConnectedService.afc46f39-8c64-4e14-85d0-af6c7c4291f3" Version="1.5.0" Language="en-US" Publisher="Unchase" />
+        <Identity Id="Unchase.OData.ConnectedService.afc46f39-8c64-4e14-85d0-af6c7c4291f3" Version="1.5.1" Language="en-US" Publisher="Unchase" />
         <DisplayName>Unchase OData Connected Service</DisplayName>
         <Description xml:space="preserve">OData V1-V4 connected service with extension methods for client-side proxy class.</Description>
         <MoreInfo>https://github.com/unchase/Unchase.Odata.Connectedservice</MoreInfo>

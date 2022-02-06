@@ -135,7 +135,10 @@ namespace Unchase.OData.ConnectedService.Common
             catch (Exception ex)
             {
                 var loggerTask = logger.WriteMessageAsync(LoggerMessageCategory.Warning, failureMessage, failureMessageArg, ex);
-                loggerTask.RunSynchronously();
+                if (!loggerTask.IsCompleted)
+                {
+                    loggerTask.RunSynchronously();
+                }  
             }
         }
         #endregion
