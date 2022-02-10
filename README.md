@@ -24,7 +24,7 @@ Install from `Tools -> Extensions and Updates` menu inside [Visual Studio](https
 |Status|Value|
 |:----|:---:|
 |Build|[![Build status](https://ci.appveyor.com/api/projects/status/kk4auowp28dy7qme)](https://ci.appveyor.com/project/unchase/unchase.odata.connectedservice)
-|Buid History|![Build history](https://buildstats.info/appveyor/chart/unchase/unchase-odata-connectedservice)
+|Build History|![Build history](https://buildstats.info/appveyor/chart/unchase/unchase-odata-connectedservice)
 |GitHub Release|[![GitHub release](https://img.shields.io/github/release/unchase/Unchase.Odata.Connectedservice.svg)](https://github.com/unchase/Unchase.Odata.Connectedservice/releases/latest)
 |GitHub Release Date|[![GitHub Release Date](https://img.shields.io/github/release-date/unchase/Unchase.Odata.Connectedservice.svg)](https://github.com/unchase/Unchase.Odata.Connectedservice/releases/latest)
 |GitHub Release Downloads|[![Github Releases](https://img.shields.io/github/downloads/unchase/Unchase.Odata.Connectedservice/total.svg)](https://github.com/unchase/Unchase.Odata.Connectedservice/releases/latest)
