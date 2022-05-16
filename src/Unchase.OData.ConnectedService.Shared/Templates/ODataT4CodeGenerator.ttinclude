@@ -2440,7 +2440,8 @@ public abstract class ODataClientTemplate : TemplateBase
                     PropertyName = propertyName,
                     FixedPropertyName = GetFixedName(propertyName),
                     PrivatePropertyName = "_" + propertyName,
-                    PropertyInitializationValue = Utils.GetPropertyInitializationValue(property, useDataServiceCollection, this, this.context)
+                    PropertyInitializationValue = Utils.GetPropertyInitializationValue(property, useDataServiceCollection, this, this.context),
+                    IsOpenTypeProperty = false
                 };
         }).ToList();
 
@@ -2453,7 +2454,8 @@ public abstract class ODataClientTemplate : TemplateBase
                 PropertyName = this.context.DynamicPropertiesCollectionName,
                 FixedPropertyName = GetFixedName(this.context.DynamicPropertiesCollectionName),
                 PrivatePropertyName = "_" + Utils.CamelCase(this.context.DynamicPropertiesCollectionName),
-                PropertyInitializationValue = string.Format(this.DictionaryConstructor, this.StringTypeName, this.ObjectTypeName)
+                PropertyInitializationValue = string.Format(this.DictionaryConstructor, this.StringTypeName, this.ObjectTypeName),
+                IsOpenTypeProperty = true
             });
         }
 
@@ -2472,7 +2474,8 @@ public abstract class ODataClientTemplate : TemplateBase
                 propertyInfo.FixedPropertyName,
                 privatePropertyName,
                 propertyInfo.PropertyInitializationValue,
-                useDataServiceCollection);
+                useDataServiceCollection,
+                propertyInfo.IsOpenTypeProperty);
         }
     }
 

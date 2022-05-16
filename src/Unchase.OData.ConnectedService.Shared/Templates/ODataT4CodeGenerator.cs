@@ -1362,7 +1362,7 @@ public abstract class ODataClientTemplate : TemplateBase
     internal abstract void WriteParameterNullCheckForStaticCreateMethod(string parameterName);
     internal abstract void WritePropertyValueAssignmentForStaticCreateMethod(string instanceName, string propertyName, string parameterName);
     internal abstract void WriteMethodEndForStaticCreateMethod(string instanceName);
-    internal abstract void WritePropertyForStructuredType(string propertyType, string originalPropertyName, string propertyName, string fixedPropertyName, string privatePropertyName, string propertyInitializationValue, bool writeOnPropertyChanged);
+    internal abstract void WritePropertyForStructuredType(string propertyType, string originalPropertyName, string propertyName, string fixedPropertyName, string privatePropertyName, string propertyInitializationValue, bool writeOnPropertyChanged, bool isOpenType);
     internal abstract void WriteINotifyPropertyChangedImplementation();
     internal abstract void WriteClassEndForStructuredType();
     internal abstract void WriteNamespaceEnd();
@@ -2511,7 +2511,8 @@ public abstract class ODataClientTemplate : TemplateBase
                     PropertyName = propertyName,
                     FixedPropertyName = GetFixedName(propertyName),
                     PrivatePropertyName = "_" + propertyName,
-                    PropertyInitializationValue = Utils.GetPropertyInitializationValue(property, useDataServiceCollection, this, this.context)
+                    PropertyInitializationValue = Utils.GetPropertyInitializationValue(property, useDataServiceCollection, this, this.context),
+                    IsOpenTypeProperty = false
                 };
         }).ToList();
 
@@ -2524,7 +2525,8 @@ public abstract class ODataClientTemplate : TemplateBase
                 PropertyName = this.context.DynamicPropertiesCollectionName,
                 FixedPropertyName = GetFixedName(this.context.DynamicPropertiesCollectionName),
                 PrivatePropertyName = "_" + Utils.CamelCase(this.context.DynamicPropertiesCollectionName),
-                PropertyInitializationValue = string.Format(this.DictionaryConstructor, this.StringTypeName, this.ObjectTypeName)
+                PropertyInitializationValue = string.Format(this.DictionaryConstructor, this.StringTypeName, this.ObjectTypeName),
+                IsOpenTypeProperty = true
             });
         }
 
@@ -2543,7 +2545,8 @@ public abstract class ODataClientTemplate : TemplateBase
                 propertyInfo.FixedPropertyName,
                 privatePropertyName,
                 propertyInfo.PropertyInitializationValue,
-                useDataServiceCollection);
+                useDataServiceCollection,
+                propertyInfo.IsOpenTypeProperty);
         }
     }
 
@@ -4517,7 +4520,7 @@ this.Write(";\r\n        }\r\n");
 
     }
 
-    internal override void WritePropertyForStructuredType(string propertyType, string originalPropertyName, string propertyName, string fixedPropertyName, string privatePropertyName, string propertyInitializationValue, bool writeOnPropertyChanged)
+    internal override void WritePropertyForStructuredType(string propertyType, string originalPropertyName, string propertyName, string fixedPropertyName, string privatePropertyName, string propertyInitializationValue, bool writeOnPropertyChanged, bool isOpenType)
     {
 
 this.Write("        /// <summary>\r\n        /// There are no comments for Property ");
@@ -4531,8 +4534,13 @@ this.Write(this.ToStringHelper.ToStringWithCulture(T4Version));
 
 this.Write("\")]\r\n");
 
+                if (isOpenType)
+                {
+                    this.Write("        [global::Microsoft.OData.Client.ContainerProperty]\r\n");
+                }
 
-        if (this.context.EnableNamingAlias || IdentifierMappings.ContainsKey(originalPropertyName))
+
+                if (this.context.EnableNamingAlias || IdentifierMappings.ContainsKey(originalPropertyName))
         {
 
 this.Write("        [global::Microsoft.OData.Client.OriginalNameAttribute(\"");
@@ -6606,7 +6614,7 @@ this.Write("\r\n        End Function\r\n");
 
     }
 
-    internal override void WritePropertyForStructuredType(string propertyType, string originalPropertyName, string propertyName, string fixedPropertyName, string privatePropertyName, string propertyInitializationValue, bool writeOnPropertyChanged)
+    internal override void WritePropertyForStructuredType(string propertyType, string originalPropertyName, string propertyName, string fixedPropertyName, string privatePropertyName, string propertyInitializationValue, bool writeOnPropertyChanged, bool isOpenType)
     {
 
 this.Write("        \'\'\'<summary>\r\n        \'\'\'There are no comments for Property ");
@@ -6620,6 +6628,10 @@ this.Write(this.ToStringHelper.ToStringWithCulture(T4Version));
 
 this.Write("\")>  _\r\n");
 
+        if(isOpenType)
+        {
+        this.Write("        <Global.Microsoft.OData.Client.ContainerProperty>\r\n");
+        }
 
         if (this.context.EnableNamingAlias || IdentifierMappings.ContainsKey(originalPropertyName))
         {
