@@ -2534,7 +2534,7 @@ public abstract class ODataClientTemplate : TemplateBase
 
         foreach (var propertyInfo in propertyInfos)
         {
-            string privatePropertyName = uniqueIdentifierService.GetUniqueIdentifier("_" + propertyInfo.PropertyName);
+            string privatePropertyName = uniqueIdentifierService.GetUniqueIdentifier("_" + propertyInfo.FixedPropertyName);
 
             this.WritePropertyForStructuredType(
                 propertyInfo.PropertyType,
@@ -2567,7 +2567,7 @@ public abstract class ODataClientTemplate : TemplateBase
         }
     }
 
-    internal string GetFixedName(string originalName)
+    internal virtual string GetFixedName(string originalName)
     {
         string fixedName = originalName;
 
@@ -2830,17 +2830,9 @@ public abstract class TemplateBase
                 throw new global::System.ArgumentNullException("objectToConvert");
             }
             System.Type t = objectToConvert.GetType();
-            System.Reflection.MethodInfo method = t.GetMethod("ToString", new System.Type[] {
-                        typeof(System.IFormatProvider)});
-            if ((method == null))
-            {
-                return objectToConvert.ToString();
-            }
-            else
-            {
-                return ((string)(method.Invoke(objectToConvert, new object[] {
-                            this.formatProviderField })));
-            }
+            System.Reflection.MethodInfo method = t.GetMethod("ToString", new System.Type[] { typeof(System.IFormatProvider)});
+
+            return ((method == null ? objectToConvert.ToString() : ((string)(method.Invoke(objectToConvert, new object[] { this.formatProviderField })))) ?? String.Empty);
         }
     }
     private ToStringInstanceHelper toStringHelperField = new ToStringInstanceHelper();
@@ -3489,6 +3481,18 @@ public sealed class ODataClientCSharpTemplate : ODataClientTemplate
     internal override string ParameterDeclarationTemplate => "{0} {1}";
     internal override string DictionaryItemConstructor => "{{ {0}, {1} }}";
 
+    internal override string GetFixedName(string originalName)
+    {
+        string fixedName = originalName;
+
+        if (this.LanguageKeywords.Contains(fixedName))
+        {
+            fixedName = string.Format(this.FixPattern, fixedName);
+        }
+
+        return (fixedName ?? String.Empty).Replace(' ', '_');
+    }
+
     internal override HashSet<string> LanguageKeywords { get {
         if (CSharpKeywords == null)
         {
@@ -3538,7 +3542,7 @@ this.Write("\r\n");
 
 this.Write("namespace ");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(fullNamespace));
+this.Write(this.ToStringHelper.ToStringWithCulture(this.GetFixedName(fullNamespace)));
 
 this.Write("\r\n{\r\n");
 
@@ -3860,11 +3864,11 @@ this.Write("                if (!this.IsComposable)\r\n                {\r\n    
 
 this.Write("                if ((this._");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(entitySetName));
+this.Write(this.ToStringHelper.ToStringWithCulture(entitySetFixedName));
 
 this.Write(" == null))\r\n                {\r\n                    this._");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(entitySetName));
+this.Write(this.ToStringHelper.ToStringWithCulture(entitySetFixedName));
 
 this.Write(" = ");
 
@@ -3880,7 +3884,7 @@ this.Write(this.ToStringHelper.ToStringWithCulture(inContext ? "\"" + originalEn
 
 this.Write(");\r\n                }\r\n                return this._");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(entitySetName));
+this.Write(this.ToStringHelper.ToStringWithCulture(entitySetFixedName));
 
 this.Write(";\r\n            }\r\n        }\r\n        [global::System.CodeDom.Compiler.GeneratedCo" +
         "deAttribute(\"Microsoft.OData.Client.Design.T4\", \"");
@@ -3893,7 +3897,7 @@ this.Write(this.ToStringHelper.ToStringWithCulture(entitySetElementTypeName));
 
 this.Write("> _");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(entitySetName));
+this.Write(this.ToStringHelper.ToStringWithCulture(entitySetFixedName));
 
 this.Write(";\r\n");
 
@@ -3950,11 +3954,11 @@ this.Write("                if (!this.IsComposable)\r\n                {\r\n    
 
 this.Write("                if ((this._");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(singletonName));
+this.Write(this.ToStringHelper.ToStringWithCulture(singletonFixedName));
 
 this.Write(" == null))\r\n                {\r\n                    this._");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(singletonName));
+this.Write(this.ToStringHelper.ToStringWithCulture(singletonFixedName));
 
 this.Write(" = new ");
 
@@ -3970,7 +3974,7 @@ this.Write(this.ToStringHelper.ToStringWithCulture(inContext ? "\"" + originalSi
 
 this.Write(");\r\n                }\r\n                return this._");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(singletonName));
+this.Write(this.ToStringHelper.ToStringWithCulture(singletonFixedName));
 
 this.Write(";\r\n            }\r\n        }\r\n        [global::System.CodeDom.Compiler.GeneratedCo" +
         "deAttribute(\"Microsoft.OData.Client.Design.T4\", \"");
@@ -3983,7 +3987,7 @@ this.Write(this.ToStringHelper.ToStringWithCulture(singletonElementTypeName));
 
 this.Write(" _");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(singletonName));
+this.Write(this.ToStringHelper.ToStringWithCulture(singletonFixedName));
 
 this.Write(";\r\n");
 
@@ -4558,7 +4562,7 @@ this.Write(this.ToStringHelper.ToStringWithCulture(privatePropertyName));
 
 this.Write(";\r\n            }\r\n            set\r\n            {\r\n                this.On");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(propertyName));
+this.Write(this.ToStringHelper.ToStringWithCulture(fixedPropertyName));
 
 this.Write("Changing(value);\r\n                this.");
 
@@ -4566,7 +4570,7 @@ this.Write(this.ToStringHelper.ToStringWithCulture(privatePropertyName));
 
 this.Write(" = value;\r\n                this.On");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(propertyName));
+this.Write(this.ToStringHelper.ToStringWithCulture(fixedPropertyName));
 
 this.Write("Changed();\r\n");
 
@@ -4600,7 +4604,7 @@ this.Write(this.ToStringHelper.ToStringWithCulture(propertyInitializationValue !
 
 this.Write(";\r\n        partial void On");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(propertyName));
+this.Write(this.ToStringHelper.ToStringWithCulture(fixedPropertyName));
 
 this.Write("Changing(");
 
@@ -4608,7 +4612,7 @@ this.Write(this.ToStringHelper.ToStringWithCulture(propertyType));
 
 this.Write(" value);\r\n        partial void On");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(propertyName));
+this.Write(this.ToStringHelper.ToStringWithCulture(fixedPropertyName));
 
 this.Write("Changed();\r\n");
 
