@@ -49,7 +49,7 @@ namespace Unchase.OData.ConnectedService.Templates
 
             THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             */
-
+            
             try
             {
                 CodeGenerationContext context;
@@ -1812,7 +1812,7 @@ public abstract class ODataClientTemplate : TemplateBase
             if (this.context.EnableNamingAlias)
             {
                 camelCaseEntitySetName = Customization.CustomizeNaming(camelCaseEntitySetName);
-        }
+            }
 
             this.WriteContextAddToEntitySetMethod(camelCaseEntitySetName, entitySet.Name, GetFixedName(entitySetElementTypeName), parameterName);
         }
@@ -1834,7 +1834,7 @@ public abstract class ODataClientTemplate : TemplateBase
                 edmNavigationSourceList.Add(singleton);
             }
         }
-
+        
         this.WriteGeneratedEdmModel(Utils.SerializeToString(this.context.Edmx).Replace("\"", "\"\""));
         
         bool hasOperationImport = container.OperationImports().OfType<IEdmOperationImport>().Any();
