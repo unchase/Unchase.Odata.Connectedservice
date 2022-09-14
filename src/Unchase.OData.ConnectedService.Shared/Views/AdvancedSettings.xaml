@@ -9,7 +9,7 @@
     d:DesignHeight="460"
     d:DesignWidth="500"
     mc:Ignorable="d">
-    <StackPanel>
+    <StackPanel Margin="0,0,0,-193">
         <StackPanel
             x:Name="SettingsPanel"
             Height="125"
@@ -81,7 +81,6 @@
                         VerticalAlignment="Top"
                         Content="Implement async binding base. (c# only)"
                         IsChecked="{Binding UserSettings.UseAsyncDataServiceCollection, Mode=TwoWay}"
-                        IsEnabled="{Binding UserSettings.ShowAsyncDataServiceCollectionOption}"
                         Visibility="{Binding UserSettings.UseDataServiceCollection}" />
                 </StackPanel>
                 <CheckBox
@@ -183,6 +182,18 @@
                     VerticalAlignment="Center"
                     Text="{Binding UserSettings.DynamicPropertiesCollectionName, Mode=TwoWay}"
                     TextWrapping="Wrap" />
+
+                <CheckBox
+                    x:Name="EmbedEdmxFile"
+                    Width="500"
+                    Height="25"
+                    Margin="0,5"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Content="Embed Edmx file (use this if your Edmx is too long for a string literal)."
+                    FontWeight="Medium"
+                    IsChecked="{Binding UserSettings.EmbedEdmxFile, Mode=TwoWay}"
+                    IsEnabled="{Binding EmbedEdmxFileEnabled, Mode=TwoWay}" />
 
                 <CheckBox
                     x:Name="IncludeT4File"

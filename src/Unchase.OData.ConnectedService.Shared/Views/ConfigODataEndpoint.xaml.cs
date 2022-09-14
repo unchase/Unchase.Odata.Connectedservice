@@ -78,6 +78,7 @@ namespace Unchase.OData.ConnectedService.Views
                 this.UserSettings.GenerateDynamicPropertiesCollection = microsoftConnectedServiceData.ExtendedData?.GenerateDynamicPropertiesCollection ?? this.UserSettings.GenerateDynamicPropertiesCollection;
                 this.UserSettings.DynamicPropertiesCollectionName = microsoftConnectedServiceData.ExtendedData?.DynamicPropertiesCollectionName ?? this.UserSettings.DynamicPropertiesCollectionName;
                 this.UserSettings.IncludeT4File = microsoftConnectedServiceData.ExtendedData?.IncludeT4File ?? this.UserSettings.IncludeT4File;
+                this.UserSettings.EmbedEdmxFile = microsoftConnectedServiceData.ExtendedData?.EmbedEdmxFile ?? this.UserSettings.EmbedEdmxFile;
                 this.UserSettings.MakeTypesInternal = microsoftConnectedServiceData.ExtendedData?.MakeTypesInternal ?? this.UserSettings.MakeTypesInternal;
                 this.UserSettings.LanguageOption = microsoftConnectedServiceData.ExtendedData?.LanguageOption ?? this.UserSettings.LanguageOption;
                 this.UserSettings.OperationImportsGenerator = microsoftConnectedServiceData.ExtendedData?.OperationImportsGenerator ?? this.UserSettings.OperationImportsGenerator;

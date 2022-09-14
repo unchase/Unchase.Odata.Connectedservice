@@ -6,6 +6,7 @@ using System.Data.Services.Design;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.VisualStudio.ConnectedServices;
+using Microsoft.VisualStudio.Debugger.Interop;
 using Unchase.OData.ConnectedService.Common;
 using Unchase.OData.ConnectedService.Models;
 using Unchase.OData.ConnectedService.Views;
@@ -183,6 +184,24 @@ namespace Unchase.OData.ConnectedService.ViewModels
         }
         #endregion
 
+        #region EmbedEdmxFileEnabled
+        public bool EmbedEdmxFileEnabled { get; set; }
+        #endregion
+
+        #region EmbedEdmxFile
+        private bool _embedEdmxFile;
+        public bool EmbedEdmxFile
+        {
+            get => _embedEdmxFile;
+            set
+            {
+                _embedEdmxFile = value;
+                UserSettings.EmbedEdmxFile = value;
+                OnPropertyChanged(nameof(EmbedEdmxFile));
+            }
+        }
+        #endregion
+
         #region MakeTypesInternal
         private bool _makeTypesInternal;
         public bool MakeTypesInternal
@@ -291,6 +310,8 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.GeneratedFileNamePrefix = UserSettings.GeneratedFileNamePrefix ?? Constants.DefaultReferenceFileName;
             this.IncludeT4FileEnabled = true;
             this.IncludeT4File = UserSettings.IncludeT4File;
+            this.EmbedEdmxFileEnabled = true;
+            this.EmbedEdmxFile = UserSettings.EmbedEdmxFile;
             this.MakeTypesInternal = UserSettings.MakeTypesInternal;
             this.IncludeExtensionsT4File = UserSettings.IncludeExtensionsT4File;
             this.OperationImportsGenerator = UserSettings.OperationImportsGenerator;

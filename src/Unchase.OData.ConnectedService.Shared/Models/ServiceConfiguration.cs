@@ -90,6 +90,8 @@ namespace Unchase.OData.ConnectedService.Models
 
         public bool IncludeT4File { get; set; }
 
+        public bool EmbedEdmxFile { get; set; }
+
         public bool MakeTypesInternal { get; set; }
     }
 

@@ -61,6 +61,7 @@ namespace Unchase.OData.ConnectedService.Templates
                         UseAsyncDataServiceCollection = this.UseAsyncDataServiceCollection,
                         TargetLanguage = this.TargetLanguage,
                         EnableNamingAlias = this.EnableNamingAlias,
+                        EmbedEdmxFilePath = this.EmbedEdmxFilePath,
                         TempFilePath = this.TempFilePath,
                         IgnoreUnexpectedElementsAndAttributes = this.IgnoreUnexpectedElementsAndAttributes,
                         GenerateDynamicPropertiesCollection = this.GenerateDynamicPropertiesCollection,
@@ -83,6 +84,7 @@ namespace Unchase.OData.ConnectedService.Templates
                         UseAsyncDataServiceCollection = this.UseAsyncDataServiceCollection,
                         TargetLanguage = this.TargetLanguage,
                         EnableNamingAlias = this.EnableNamingAlias,
+                        EmbedEdmxFilePath = this.EmbedEdmxFilePath,
                         TempFilePath = this.TempFilePath,
                         IgnoreUnexpectedElementsAndAttributes = this.IgnoreUnexpectedElementsAndAttributes,
                         GenerateDynamicPropertiesCollection = this.GenerateDynamicPropertiesCollection,
@@ -90,6 +92,8 @@ namespace Unchase.OData.ConnectedService.Templates
                         ExcludedOperationImportsNames = this.ExcludedOperationImportsNames,
                         MakeTypesInternal = this.MakeTypesInternal
                     };
+
+                    this.Edmx = Utils.SerializeToString(context.Edmx);
                 }
 
                 if (this.GetReferencedModelReaderFunc != null)
@@ -335,6 +339,15 @@ public LanguageOption TargetLanguage
 /// true to use Upper camel case for all class and property names, false otherwise.
 /// </summary>
 public bool EnableNamingAlias
+{
+    get;
+    set;
+}
+
+/// <summary>
+/// true to embed the Edmx as a file, false to include it as a string literal
+/// </summary>
+public string EmbedEdmxFilePath
 {
     get;
     set;
@@ -983,6 +996,15 @@ public class CodeGenerationContext
     /// true to use Upper camel case for all class and property names, false otherwise.
     /// </summary>
     public bool EnableNamingAlias
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// pass an action that takes an edmx string and a filename to embed edmx as a file, otherwise null
+    /// </summary>
+    public string EmbedEdmxFilePath
     {
         get;
         set;
@@ -1834,7 +1856,7 @@ public abstract class ODataClientTemplate : TemplateBase
                 edmNavigationSourceList.Add(singleton);
             }
         }
-        
+
         this.WriteGeneratedEdmModel(Utils.SerializeToString(this.context.Edmx).Replace("\"", "\"\""));
         
         bool hasOperationImport = container.OperationImports().OfType<IEdmOperationImport>().Any();
@@ -3467,7 +3489,7 @@ public sealed class ODataClientCSharpTemplate : ODataClientTemplate
     internal override string XmlConvertClassName => "global::System.Xml.XmlConvert";
     internal override string EnumTypeName => "global::System.Enum";
     internal override string DictionaryTypeName => "global::System.Collections.Generic.Dictionary<{0}, {1}>";
-    internal override string FixPattern => "@{0}";
+    internal override string FixPattern => "_{0}";
     internal override string EnumUnderlyingTypeMarker => " : ";
     internal override string ConstantExpressionConstructorWithType => "global::System.Linq.Expressions.Expression.Constant({0}, typeof({1}))";
     internal override string TypeofFormatter => "typeof({0})";
@@ -3504,7 +3526,8 @@ public sealed class ODataClientCSharpTemplate : ODataClientTemplate
                 "long", "namespace", "new", "null", "object", "operator", "out", "override", "params", "private", "protected", "public",
                 "readonly", "ref", "return", "sbyte", "sealed", "string", "short", "sizeof", "stackalloc", "static", "struct", "switch",
                 "this", "throw", "true", "try", "typeof", "uint", "ulong", "unchecked", "unsafe", "ushort", "using", "virtual", "volatile",
-                "void", "while"
+                "void", "while",
+                "Context" // Not actually a keyword, but a necessary inherited property
             };
         }
         return CSharpKeywords;
@@ -4045,6 +4068,7 @@ this.Write(");\r\n        }\r\n");
         }
 
         bool useTempFile = !String.IsNullOrEmpty(path) && System.IO.File.Exists(path);
+        bool useEmbeddedFile = !String.IsNullOrEmpty(this.context.EmbedEdmxFilePath);
 
 this.Write("        [global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Microsoft.OData." +
         "Client.Design.T4\", \"");
@@ -4097,8 +4121,23 @@ this.Write("\")]\r\n            private static global::Microsoft.OData.Edm.IEdmM
         " = LoadModelFromString();\r\n");
 
 
-        if (useTempFile)
+        if (useEmbeddedFile)
         {
+this.Write("            [global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Microsoft.OD" +
+        "ata.Client.Design.T4\", \"");
+
+this.Write(this.ToStringHelper.ToStringWithCulture(T4Version));
+
+this.Write("\")]\r\n            private const string EmbeddedEdmxPath = @\"");
+
+this.Write(this.ToStringHelper.ToStringWithCulture(this.context.EmbedEdmxFilePath));
+
+this.Write("\";\r\n");
+        }
+        else
+        { 
+            if (useTempFile)
+            {
 
 this.Write("   \r\n           [global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Microsof" +
         "t.OData.Client.Design.T4\", \"");
@@ -4112,9 +4151,9 @@ this.Write(this.ToStringHelper.ToStringWithCulture(path));
 this.Write("\";\r\n");
 
 
-        }
-        else
-        {
+            }
+            else
+            {
 
 this.Write("            [global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Microsoft.OD" +
         "ata.Client.Design.T4\", \"");
@@ -4128,6 +4167,7 @@ this.Write(this.ToStringHelper.ToStringWithCulture(escapedEdmxString));
 this.Write("\";\r\n");
 
 
+            }
         }
 
 this.Write("            [global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Microsoft.OD" +
@@ -4166,7 +4206,11 @@ this.Write("\")]\r\n            private static global::Microsoft.OData.Edm.IEdmM
         "omString()\r\n            {\r\n");
 
 
-            if (useTempFile)
+            if (useEmbeddedFile)
+            {
+this.Write("                global::System.Xml.XmlReader reader = CreateXmlReader(EmbeddedEdmxPath);\r\n");
+            }
+            else if (useTempFile)
             {
 
 this.Write("   \r\n                global::System.Xml.XmlReader reader = CreateXmlReader();\r\n");
@@ -4206,7 +4250,11 @@ this.Write("\")]\r\n            private static global::Microsoft.OData.Edm.IEdmM
         "omString()\r\n            {\r\n");
 
 
-            if (useTempFile)
+            if (useEmbeddedFile)
+            {
+this.Write("                global::System.Xml.XmlReader reader = CreateXmlReader(EmbeddedEdmxPath);\r\n");
+            }
+            else if (useTempFile)
             {
 
 this.Write("   \r\n                global::System.Xml.XmlReader reader = CreateXmlReader();\r\n");
@@ -4253,17 +4301,21 @@ this.Write(@", out edmModel, out errors))
 
         }
 
-this.Write("            [global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Microsoft.OD" +
-        "ata.Client.Design.T4\", \"");
+        if (useEmbeddedFile)
+        {
+            this.Write("            [global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Microsoft.OData.Client.Design.T4\", \"");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(T4Version));
+            this.Write(this.ToStringHelper.ToStringWithCulture(T4Version));
 
-this.Write("\")]\r\n            private static global::System.Xml.XmlReader CreateXmlReader(stri" +
-        "ng edmxToParse)\r\n            {\r\n                return global::System.Xml.XmlRea" +
-        "der.Create(new global::System.IO.StringReader(edmxToParse));\r\n            }\r\n");
-
-
-        if (useTempFile)
+            this.Write(@""")]
+            private static global::System.Xml.XmlReader CreateXmlReader(string edmxEmbedPath)
+            {
+                var embeddedProvider = new Microsoft.Extensions.FileProviders.EmbeddedFileProvider(System.Reflection.Assembly.GetExecutingAssembly());
+                return global::System.Xml.XmlReader.Create(new global::System.IO.StreamReader(embeddedProvider.GetFileInfo(edmxEmbedPath).CreateReadStream()));
+            }
+");
+        }
+        else if (useTempFile)
         {
 
 this.Write("   \r\n                [global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Mic" +
@@ -4277,8 +4329,20 @@ this.Write("\")]\r\n                private static global::System.Xml.XmlReader 
 
 
         }
+        else
+        {
+this.Write("            [global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Microsoft.OD" +
+        "ata.Client.Design.T4\", \"");
 
-this.Write("        }\r\n");
+this.Write(this.ToStringHelper.ToStringWithCulture(T4Version));
+
+this.Write("\")]\r\n            private static global::System.Xml.XmlReader CreateXmlReader(stri" +
+        "ng edmxToParse)\r\n            {\r\n                return global::System.Xml.XmlRea" +
+        "der.Create(new global::System.IO.StringReader(edmxToParse));\r\n            }\r\n");
+
+        }
+
+        this.Write("        }\r\n");
 
 
     }
@@ -5656,7 +5720,8 @@ public sealed class ODataClientVBTemplate : ODataClientTemplate
                 "Select", "Set", "Shadows", "Shared", "Short", "Single", "Static", "Step", "Stop", "String", 
                 "Structure", "Sub", "SyncLock", "Then", "Throw", "To", "True", "Try", "TryCast", "TypeOf", 
                 "UInteger", "ULong", "UShort", "Using", "Variant", "Wend", "When", "While", "Widening", "With", 
-                "WithEvents", "WriteOnly", "Xor"
+                "WithEvents", "WriteOnly", "Xor",
+                "Context" // Not actually a keyword, but a necessary inherited property
             };
         }
         return VBKeywords;

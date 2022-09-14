@@ -43,6 +43,8 @@ namespace Unchase.OData.ConnectedService.Common
         public const string V4EdmNuGetPackage = "Microsoft.OData.Edm";
         public const string V4SpatialNuGetPackage = "Microsoft.Spatial";
 
+        public const string MSEmbeddedResourcePackage = "Microsoft.Extensions.FileProviders.Embedded";
+
         public const string EdmxVersion1Namespace = "http://schemas.microsoft.com/ado/2007/06/edmx";
         public const string EdmxVersion2Namespace = "http://schemas.microsoft.com/ado/2008/10/edmx";
         public const string EdmxVersion3Namespace = "http://schemas.microsoft.com/ado/2009/11/edmx";
