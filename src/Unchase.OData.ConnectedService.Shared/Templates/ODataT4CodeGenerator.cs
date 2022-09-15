@@ -1142,7 +1142,7 @@ public class CodeGenerationContext
             {
                 if (template.LanguageKeywords.Contains(segments[i]))
                 {
-                    prefixedNamespace += string.Format(CultureInfo.InvariantCulture, template.FixPattern, segments[i]);
+                    prefixedNamespace += string.Format(CultureInfo.InvariantCulture, template.FixKeywordPattern, segments[i]);
                 }
                 else
                 {
@@ -1335,7 +1335,12 @@ public abstract class ODataClientTemplate : TemplateBase
     internal abstract string EnumTypeName { get; }
     internal abstract string DictionaryTypeName { get; }
     internal abstract HashSet<string> LanguageKeywords { get; }
-    internal abstract string FixPattern { get; }
+    internal HashSet<string> ReservedMemberNames = new HashSet<string>(StringComparer.Ordinal)
+    {
+        "Context"
+    };
+    internal abstract string FixKeywordPattern { get; }
+    internal string FixReservedMemberNamePattern = "{0}_";
     internal abstract string EnumUnderlyingTypeMarker { get; }
     internal abstract string ConstantExpressionConstructorWithType { get; }
     internal abstract string TypeofFormatter { get; }
@@ -2595,7 +2600,7 @@ public abstract class ODataClientTemplate : TemplateBase
 
         if (this.LanguageKeywords.Contains(fixedName))
         {
-            fixedName = string.Format(this.FixPattern, fixedName);
+            fixedName = string.Format(this.FixKeywordPattern, fixedName);
         }
 
         return fixedName;
@@ -3494,7 +3499,7 @@ public sealed class ODataClientCSharpTemplate : ODataClientTemplate
     internal override string XmlConvertClassName => "global::System.Xml.XmlConvert";
     internal override string EnumTypeName => "global::System.Enum";
     internal override string DictionaryTypeName => "global::System.Collections.Generic.Dictionary<{0}, {1}>";
-    internal override string FixPattern => "@{0}";
+    internal override string FixKeywordPattern => "@{0}";
     internal override string EnumUnderlyingTypeMarker => " : ";
     internal override string ConstantExpressionConstructorWithType => "global::System.Linq.Expressions.Expression.Constant({0}, typeof({1}))";
     internal override string TypeofFormatter => "typeof({0})";
@@ -3512,9 +3517,13 @@ public sealed class ODataClientCSharpTemplate : ODataClientTemplate
     {
         string fixedName = originalName;
 
+        if (this.ReservedMemberNames.Contains(fixedName))
+        {
+            fixedName = string.Format(this.FixReservedMemberNamePattern, fixedName);
+        }
         if (this.LanguageKeywords.Contains(fixedName))
         {
-            fixedName = string.Format(this.FixPattern, fixedName);
+            fixedName = string.Format(this.FixKeywordPattern, fixedName);
         }
 
         return GetFixedNamePart(fixedName ?? String.Empty);
@@ -3531,8 +3540,7 @@ public sealed class ODataClientCSharpTemplate : ODataClientTemplate
                 "long", "namespace", "new", "null", "object", "operator", "out", "override", "params", "private", "protected", "public",
                 "readonly", "ref", "return", "sbyte", "sealed", "string", "short", "sizeof", "stackalloc", "static", "struct", "switch",
                 "this", "throw", "true", "try", "typeof", "uint", "ulong", "unchecked", "unsafe", "ushort", "using", "virtual", "volatile",
-                "void", "while",
-                "Context" // Not actually a keyword, but a necessary inherited property
+                "void", "while"
             };
         }
         return CSharpKeywords;
@@ -5692,7 +5700,7 @@ public sealed class ODataClientVBTemplate : ODataClientTemplate
     internal override string XmlConvertClassName { get { return "Global.System.Xml.XmlConvert"; } }
     internal override string EnumTypeName { get { return "Global.System.Enum"; } }
     internal override string DictionaryTypeName { get { return "Global.System.Collections.Generic.Dictionary(Of {0}, {1})"; } }
-    internal override string FixPattern { get { return "[{0}]"; } }
+    internal override string FixKeywordPattern { get { return "[{0}]"; } }
     internal override string EnumUnderlyingTypeMarker { get { return " As "; } }
     internal override string ConstantExpressionConstructorWithType { get { return "Global.System.Linq.Expressions.Expression.Constant({0}, GetType({1}))"; } }
     internal override string TypeofFormatter { get { return "GetType({0})"; } }    
@@ -5725,8 +5733,7 @@ public sealed class ODataClientVBTemplate : ODataClientTemplate
                 "Select", "Set", "Shadows", "Shared", "Short", "Single", "Static", "Step", "Stop", "String", 
                 "Structure", "Sub", "SyncLock", "Then", "Throw", "To", "True", "Try", "TryCast", "TypeOf", 
                 "UInteger", "ULong", "UShort", "Using", "Variant", "Wend", "When", "While", "Widening", "With", 
-                "WithEvents", "WriteOnly", "Xor",
-                "Context" // Not actually a keyword, but a necessary inherited property
+                "WithEvents", "WriteOnly", "Xor"
             };
         }
         return VBKeywords;
