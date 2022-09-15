@@ -49,7 +49,7 @@ namespace Unchase.OData.ConnectedService.Templates
 
             THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             */
-
+            
             try
             {
                 CodeGenerationContext context;
@@ -61,6 +61,7 @@ namespace Unchase.OData.ConnectedService.Templates
                         UseAsyncDataServiceCollection = this.UseAsyncDataServiceCollection,
                         TargetLanguage = this.TargetLanguage,
                         EnableNamingAlias = this.EnableNamingAlias,
+                        EmbedEdmxFilePath = this.EmbedEdmxFilePath,
                         TempFilePath = this.TempFilePath,
                         IgnoreUnexpectedElementsAndAttributes = this.IgnoreUnexpectedElementsAndAttributes,
                         GenerateDynamicPropertiesCollection = this.GenerateDynamicPropertiesCollection,
@@ -83,6 +84,7 @@ namespace Unchase.OData.ConnectedService.Templates
                         UseAsyncDataServiceCollection = this.UseAsyncDataServiceCollection,
                         TargetLanguage = this.TargetLanguage,
                         EnableNamingAlias = this.EnableNamingAlias,
+                        EmbedEdmxFilePath = this.EmbedEdmxFilePath,
                         TempFilePath = this.TempFilePath,
                         IgnoreUnexpectedElementsAndAttributes = this.IgnoreUnexpectedElementsAndAttributes,
                         GenerateDynamicPropertiesCollection = this.GenerateDynamicPropertiesCollection,
@@ -90,6 +92,8 @@ namespace Unchase.OData.ConnectedService.Templates
                         ExcludedOperationImportsNames = this.ExcludedOperationImportsNames,
                         MakeTypesInternal = this.MakeTypesInternal
                     };
+
+                    this.Edmx = Utils.SerializeToString(context.Edmx);
                 }
 
                 if (this.GetReferencedModelReaderFunc != null)
@@ -335,6 +339,15 @@ public LanguageOption TargetLanguage
 /// true to use Upper camel case for all class and property names, false otherwise.
 /// </summary>
 public bool EnableNamingAlias
+{
+    get;
+    set;
+}
+
+/// <summary>
+/// true to embed the Edmx as a file, false to include it as a string literal
+/// </summary>
+public string EmbedEdmxFilePath
 {
     get;
     set;
@@ -989,6 +1002,15 @@ public class CodeGenerationContext
     }
 
     /// <summary>
+    /// pass an action that takes an edmx string and a filename to embed edmx as a file, otherwise null
+    /// </summary>
+    public string EmbedEdmxFilePath
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
     /// true to ignore unknown elements or attributes in metadata, false otherwise.
     /// </summary>
     public bool IgnoreUnexpectedElementsAndAttributes
@@ -1120,7 +1142,7 @@ public class CodeGenerationContext
             {
                 if (template.LanguageKeywords.Contains(segments[i]))
                 {
-                    prefixedNamespace += string.Format(CultureInfo.InvariantCulture, template.FixPattern, segments[i]);
+                    prefixedNamespace += string.Format(CultureInfo.InvariantCulture, template.FixKeywordPattern, segments[i]);
                 }
                 else
                 {
@@ -1313,7 +1335,12 @@ public abstract class ODataClientTemplate : TemplateBase
     internal abstract string EnumTypeName { get; }
     internal abstract string DictionaryTypeName { get; }
     internal abstract HashSet<string> LanguageKeywords { get; }
-    internal abstract string FixPattern { get; }
+    internal HashSet<string> ReservedMemberNames = new HashSet<string>(StringComparer.Ordinal)
+    {
+        "Context"
+    };
+    internal abstract string FixKeywordPattern { get; }
+    internal string FixReservedMemberNamePattern = "{0}_";
     internal abstract string EnumUnderlyingTypeMarker { get; }
     internal abstract string ConstantExpressionConstructorWithType { get; }
     internal abstract string TypeofFormatter { get; }
@@ -1343,8 +1370,8 @@ public abstract class ODataClientTemplate : TemplateBase
     internal abstract void WriteMethodStartForResolveNameFromType(string containerName, string fullNamespace);
     internal abstract void WriteResolveType(string fullNamespace, string languageDependentNamespace);
     internal abstract void WriteMethodEndForResolveNameFromType(bool modelHasInheritance);
-    internal abstract void WriteContextEntitySetProperty(string entitySetName, string entitySetFixedName, string originalEntitySetName, string entitySetElementTypeName, bool inContext = true);
-    internal abstract void WriteContextSingletonProperty(string singletonName, string singletonFixedName, string originalSingletonName, string singletonElementTypeName, bool inContext = true);
+    internal abstract void WriteContextEntitySetProperty(string entitySetName, string entitySetFixedName, string entitySetPrivateName, string originalEntitySetName, string entitySetElementTypeName, bool inContext = true);
+    internal abstract void WriteContextSingletonProperty(string singletonName, string singletonFixedName, string singletonPrivateName, string originalSingletonName, string singletonElementTypeName, bool inContext = true);
     internal abstract void WriteContextAddToEntitySetMethod(string entitySetName, string originalEntitySetName, string typeName, string parameterName);
     internal abstract void WriteGeneratedEdmModel(string escapedEdmxString);
     internal abstract void WriteClassEndForEntityContainer();
@@ -1789,7 +1816,7 @@ public abstract class ODataClientTemplate : TemplateBase
                 camelCaseEntitySetName = Customization.CustomizeNaming(camelCaseEntitySetName);
             }
 
-            this.WriteContextEntitySetProperty(camelCaseEntitySetName, GetFixedName(camelCaseEntitySetName), entitySet.Name, GetFixedName(entitySetElementTypeName));
+            this.WriteContextEntitySetProperty(GetFixedNamePart(camelCaseEntitySetName), GetFixedName(camelCaseEntitySetName), GetFixedNamePart($"_{camelCaseEntitySetName}"), entitySet.Name, GetFixedName(entitySetElementTypeName));
             if (!this.context.ElementTypeToNavigationSourceMap.TryGetValue(entitySet.EntityType(), out var edmNavigationSourceList))
             {
                 edmNavigationSourceList = new List<IEdmNavigationSource>();
@@ -1812,9 +1839,9 @@ public abstract class ODataClientTemplate : TemplateBase
             if (this.context.EnableNamingAlias)
             {
                 camelCaseEntitySetName = Customization.CustomizeNaming(camelCaseEntitySetName);
-        }
+            }
 
-            this.WriteContextAddToEntitySetMethod(camelCaseEntitySetName, entitySet.Name, GetFixedName(entitySetElementTypeName), parameterName);
+            this.WriteContextAddToEntitySetMethod(GetFixedNamePart(camelCaseEntitySetName), entitySet.Name, GetFixedName(entitySetElementTypeName), parameterName);
         }
 
         foreach (IEdmSingleton singleton in container.Singletons())
@@ -1827,7 +1854,7 @@ public abstract class ODataClientTemplate : TemplateBase
                 camelCaseSingletonName = Customization.CustomizeNaming(camelCaseSingletonName);
             }
 
-            this.WriteContextSingletonProperty(camelCaseSingletonName, GetFixedName(camelCaseSingletonName), singleton.Name, singletonElementTypeName + "Single");
+            this.WriteContextSingletonProperty(GetFixedNamePart(camelCaseSingletonName), GetFixedName(camelCaseSingletonName), GetFixedNamePart($"_{camelCaseSingletonName}"), singleton.Name, singletonElementTypeName + "Single");
 
             if (this.context.ElementTypeToNavigationSourceMap.TryGetValue(singleton.EntityType(), out var edmNavigationSourceList))
             {
@@ -1980,12 +2007,12 @@ public abstract class ODataClientTemplate : TemplateBase
             if (property.Type is Microsoft.OData.Edm.EdmCollectionTypeReference)
             {
                 propertyType = GetSourceOrReturnTypeName(property.Type);
-                WriteContextEntitySetProperty(propertyName, GetFixedName(propertyName), property.Name, propertyType, false);
+                WriteContextEntitySetProperty(GetFixedNamePart(propertyName), GetFixedName(propertyName), GetFixedNamePart($"_{propertyName}"), property.Name, propertyType, false);
             }
             else
             {
                 propertyType = Utils.GetClrTypeName(property.Type, true, this, this.context, true, isEntitySingleType : true);
-                WriteContextSingletonProperty(propertyName, GetFixedName(propertyName), property.Name, propertyType, false);
+                WriteContextSingletonProperty(GetFixedNamePart(propertyName), GetFixedName(propertyName), GetFixedNamePart($"_{propertyName}"), property.Name, propertyType, false);
             }
         }
     }
@@ -2508,9 +2535,9 @@ public abstract class ODataClientTemplate : TemplateBase
                 {
                     PropertyType = Utils.GetClrTypeName(property.Type, useDataServiceCollection, this, this.context),
                     PropertyVanillaName = property.Name,
-                    PropertyName = propertyName,
+                    PropertyName = GetFixedNamePart(propertyName),
                     FixedPropertyName = GetFixedName(propertyName),
-                    PrivatePropertyName = "_" + propertyName,
+                    PrivatePropertyName = GetFixedNamePart(Utils.CamelCase($"_{propertyName}")),
                     PropertyInitializationValue = Utils.GetPropertyInitializationValue(property, useDataServiceCollection, this, this.context)
                 };
         }).ToList();
@@ -2521,9 +2548,9 @@ public abstract class ODataClientTemplate : TemplateBase
             {
                 PropertyType = string.Format(this.DictionaryTypeName, this.StringTypeName, this.ObjectTypeName),
                 PropertyVanillaName = string.Empty, // No such property in metadata
-                PropertyName = this.context.DynamicPropertiesCollectionName,
+                PropertyName = GetFixedNamePart(this.context.DynamicPropertiesCollectionName),
                 FixedPropertyName = GetFixedName(this.context.DynamicPropertiesCollectionName),
-                PrivatePropertyName = "_" + Utils.CamelCase(this.context.DynamicPropertiesCollectionName),
+                PrivatePropertyName = GetFixedNamePart(Utils.CamelCase($"_{this.context.DynamicPropertiesCollectionName}")),
                 PropertyInitializationValue = string.Format(this.DictionaryConstructor, this.StringTypeName, this.ObjectTypeName)
             });
         }
@@ -2534,7 +2561,7 @@ public abstract class ODataClientTemplate : TemplateBase
 
         foreach (var propertyInfo in propertyInfos)
         {
-            string privatePropertyName = uniqueIdentifierService.GetUniqueIdentifier("_" + propertyInfo.PropertyName);
+            string privatePropertyName = uniqueIdentifierService.GetUniqueIdentifier(propertyInfo.PrivatePropertyName);
 
             this.WritePropertyForStructuredType(
                 propertyInfo.PropertyType,
@@ -2567,16 +2594,21 @@ public abstract class ODataClientTemplate : TemplateBase
         }
     }
 
-    internal string GetFixedName(string originalName)
+    internal virtual string GetFixedName(string originalName)
     {
         string fixedName = originalName;
 
         if (this.LanguageKeywords.Contains(fixedName))
         {
-            fixedName = string.Format(this.FixPattern, fixedName);
+            fixedName = string.Format(this.FixKeywordPattern, fixedName);
         }
 
         return fixedName;
+    }
+
+    internal string GetFixedNamePart(string originalNamePart)
+    {
+        return originalNamePart.Replace(' ', '_');
     }
 
     internal string GetElementTypeName(IEdmEntityType elementType, IEdmEntityContainer container)
@@ -2830,17 +2862,9 @@ public abstract class TemplateBase
                 throw new global::System.ArgumentNullException("objectToConvert");
             }
             System.Type t = objectToConvert.GetType();
-            System.Reflection.MethodInfo method = t.GetMethod("ToString", new System.Type[] {
-                        typeof(System.IFormatProvider)});
-            if ((method == null))
-            {
-                return objectToConvert.ToString();
-            }
-            else
-            {
-                return ((string)(method.Invoke(objectToConvert, new object[] {
-                            this.formatProviderField })));
-            }
+            System.Reflection.MethodInfo method = t.GetMethod("ToString", new System.Type[] { typeof(System.IFormatProvider)});
+
+            return ((method == null ? objectToConvert.ToString() : ((string)(method.Invoke(objectToConvert, new object[] { this.formatProviderField })))) ?? String.Empty);
         }
     }
     private ToStringInstanceHelper toStringHelperField = new ToStringInstanceHelper();
@@ -3475,7 +3499,7 @@ public sealed class ODataClientCSharpTemplate : ODataClientTemplate
     internal override string XmlConvertClassName => "global::System.Xml.XmlConvert";
     internal override string EnumTypeName => "global::System.Enum";
     internal override string DictionaryTypeName => "global::System.Collections.Generic.Dictionary<{0}, {1}>";
-    internal override string FixPattern => "@{0}";
+    internal override string FixKeywordPattern => "@{0}";
     internal override string EnumUnderlyingTypeMarker => " : ";
     internal override string ConstantExpressionConstructorWithType => "global::System.Linq.Expressions.Expression.Constant({0}, typeof({1}))";
     internal override string TypeofFormatter => "typeof({0})";
@@ -3488,6 +3512,22 @@ public sealed class ODataClientCSharpTemplate : ODataClientTemplate
     internal override string ODataVersion => "global::Microsoft.OData.ODataVersion.V4";
     internal override string ParameterDeclarationTemplate => "{0} {1}";
     internal override string DictionaryItemConstructor => "{{ {0}, {1} }}";
+
+    internal override string GetFixedName(string originalName)
+    {
+        string fixedName = originalName;
+
+        if (this.ReservedMemberNames.Contains(fixedName))
+        {
+            fixedName = string.Format(this.FixReservedMemberNamePattern, fixedName);
+        }
+        if (this.LanguageKeywords.Contains(fixedName))
+        {
+            fixedName = string.Format(this.FixKeywordPattern, fixedName);
+        }
+
+        return GetFixedNamePart(fixedName ?? String.Empty);
+    }
 
     internal override HashSet<string> LanguageKeywords { get {
         if (CSharpKeywords == null)
@@ -3538,7 +3578,7 @@ this.Write("\r\n");
 
 this.Write("namespace ");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(fullNamespace));
+this.Write(this.ToStringHelper.ToStringWithCulture(this.GetFixedName(fullNamespace)));
 
 this.Write("\r\n{\r\n");
 
@@ -3810,7 +3850,7 @@ this.Write(" query)\r\n            : base(query) {}\r\n\r\n");
 
     }
 
-    internal override void WriteContextEntitySetProperty(string entitySetName, string entitySetFixedName, string originalEntitySetName, string entitySetElementTypeName, bool inContext)
+    internal override void WriteContextEntitySetProperty(string entitySetName, string entitySetFixedName, string entitySetPrivateName, string originalEntitySetName, string entitySetElementTypeName, bool inContext)
     {
 
 this.Write("        /// <summary>\r\n        /// There are no comments for ");
@@ -3858,13 +3898,13 @@ this.Write("                if (!this.IsComposable)\r\n                {\r\n    
 
         }
 
-this.Write("                if ((this._");
+this.Write("                if ((this.");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(entitySetName));
+this.Write(this.ToStringHelper.ToStringWithCulture(entitySetPrivateName));
 
-this.Write(" == null))\r\n                {\r\n                    this._");
+this.Write(" == null))\r\n                {\r\n                    this.");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(entitySetName));
+this.Write(this.ToStringHelper.ToStringWithCulture(entitySetPrivateName));
 
 this.Write(" = ");
 
@@ -3878,9 +3918,9 @@ this.Write(">(");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(inContext ? "\"" + originalEntitySetName + "\"" : "GetPath(\"" + originalEntitySetName + "\")"));
 
-this.Write(");\r\n                }\r\n                return this._");
+this.Write(");\r\n                }\r\n                return this.");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(entitySetName));
+this.Write(this.ToStringHelper.ToStringWithCulture(entitySetPrivateName));
 
 this.Write(";\r\n            }\r\n        }\r\n        [global::System.CodeDom.Compiler.GeneratedCo" +
         "deAttribute(\"Microsoft.OData.Client.Design.T4\", \"");
@@ -3891,16 +3931,16 @@ this.Write("\")]\r\n        private global::Microsoft.OData.Client.DataServiceQu
 
 this.Write(this.ToStringHelper.ToStringWithCulture(entitySetElementTypeName));
 
-this.Write("> _");
+this.Write("> ");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(entitySetName));
+this.Write(this.ToStringHelper.ToStringWithCulture(entitySetPrivateName));
 
 this.Write(";\r\n");
 
 
     }
 
-    internal override void WriteContextSingletonProperty(string singletonName, string singletonFixedName, string originalSingletonName, string singletonElementTypeName, bool inContext)
+    internal override void WriteContextSingletonProperty(string singletonName, string singletonFixedName, string singletonPrivateName, string originalSingletonName, string singletonElementTypeName, bool inContext)
     {
 
 this.Write("        /// <summary>\r\n        /// There are no comments for ");
@@ -3948,13 +3988,13 @@ this.Write("                if (!this.IsComposable)\r\n                {\r\n    
 
         }
 
-this.Write("                if ((this._");
+this.Write("                if ((this.");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(singletonName));
+this.Write(this.ToStringHelper.ToStringWithCulture(singletonPrivateName));
 
-this.Write(" == null))\r\n                {\r\n                    this._");
+this.Write(" == null))\r\n                {\r\n                    this.");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(singletonName));
+this.Write(this.ToStringHelper.ToStringWithCulture(singletonPrivateName));
 
 this.Write(" = new ");
 
@@ -3968,9 +4008,9 @@ this.Write(", ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(inContext ? "\"" + originalSingletonName + "\"" : "GetPath(\"" + originalSingletonName + "\")"));
 
-this.Write(");\r\n                }\r\n                return this._");
+this.Write(");\r\n                }\r\n                return this.");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(singletonName));
+this.Write(this.ToStringHelper.ToStringWithCulture(singletonPrivateName));
 
 this.Write(";\r\n            }\r\n        }\r\n        [global::System.CodeDom.Compiler.GeneratedCo" +
         "deAttribute(\"Microsoft.OData.Client.Design.T4\", \"");
@@ -3981,9 +4021,9 @@ this.Write("\")]\r\n        private ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(singletonElementTypeName));
 
-this.Write(" _");
+this.Write(" ");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(singletonName));
+this.Write(this.ToStringHelper.ToStringWithCulture(singletonPrivateName));
 
 this.Write(";\r\n");
 
@@ -4041,6 +4081,7 @@ this.Write(");\r\n        }\r\n");
         }
 
         bool useTempFile = !String.IsNullOrEmpty(path) && System.IO.File.Exists(path);
+        bool useEmbeddedFile = !String.IsNullOrEmpty(this.context.EmbedEdmxFilePath);
 
 this.Write("        [global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Microsoft.OData." +
         "Client.Design.T4\", \"");
@@ -4093,8 +4134,23 @@ this.Write("\")]\r\n            private static global::Microsoft.OData.Edm.IEdmM
         " = LoadModelFromString();\r\n");
 
 
-        if (useTempFile)
+        if (useEmbeddedFile)
         {
+this.Write("            [global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Microsoft.OD" +
+        "ata.Client.Design.T4\", \"");
+
+this.Write(this.ToStringHelper.ToStringWithCulture(T4Version));
+
+this.Write("\")]\r\n            private const string EmbeddedEdmxPath = @\"");
+
+this.Write(this.ToStringHelper.ToStringWithCulture(this.context.EmbedEdmxFilePath));
+
+this.Write("\";\r\n");
+        }
+        else
+        { 
+            if (useTempFile)
+            {
 
 this.Write("   \r\n           [global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Microsof" +
         "t.OData.Client.Design.T4\", \"");
@@ -4108,9 +4164,9 @@ this.Write(this.ToStringHelper.ToStringWithCulture(path));
 this.Write("\";\r\n");
 
 
-        }
-        else
-        {
+            }
+            else
+            {
 
 this.Write("            [global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Microsoft.OD" +
         "ata.Client.Design.T4\", \"");
@@ -4124,6 +4180,7 @@ this.Write(this.ToStringHelper.ToStringWithCulture(escapedEdmxString));
 this.Write("\";\r\n");
 
 
+            }
         }
 
 this.Write("            [global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Microsoft.OD" +
@@ -4162,7 +4219,11 @@ this.Write("\")]\r\n            private static global::Microsoft.OData.Edm.IEdmM
         "omString()\r\n            {\r\n");
 
 
-            if (useTempFile)
+            if (useEmbeddedFile)
+            {
+this.Write("                global::System.Xml.XmlReader reader = CreateXmlReader(EmbeddedEdmxPath);\r\n");
+            }
+            else if (useTempFile)
             {
 
 this.Write("   \r\n                global::System.Xml.XmlReader reader = CreateXmlReader();\r\n");
@@ -4202,7 +4263,11 @@ this.Write("\")]\r\n            private static global::Microsoft.OData.Edm.IEdmM
         "omString()\r\n            {\r\n");
 
 
-            if (useTempFile)
+            if (useEmbeddedFile)
+            {
+this.Write("                global::System.Xml.XmlReader reader = CreateXmlReader(EmbeddedEdmxPath);\r\n");
+            }
+            else if (useTempFile)
             {
 
 this.Write("   \r\n                global::System.Xml.XmlReader reader = CreateXmlReader();\r\n");
@@ -4249,17 +4314,21 @@ this.Write(@", out edmModel, out errors))
 
         }
 
-this.Write("            [global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Microsoft.OD" +
-        "ata.Client.Design.T4\", \"");
+        if (useEmbeddedFile)
+        {
+            this.Write("            [global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Microsoft.OData.Client.Design.T4\", \"");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(T4Version));
+            this.Write(this.ToStringHelper.ToStringWithCulture(T4Version));
 
-this.Write("\")]\r\n            private static global::System.Xml.XmlReader CreateXmlReader(stri" +
-        "ng edmxToParse)\r\n            {\r\n                return global::System.Xml.XmlRea" +
-        "der.Create(new global::System.IO.StringReader(edmxToParse));\r\n            }\r\n");
-
-
-        if (useTempFile)
+            this.Write(@""")]
+            private static global::System.Xml.XmlReader CreateXmlReader(string edmxEmbedPath)
+            {
+                var embeddedProvider = new Microsoft.Extensions.FileProviders.EmbeddedFileProvider(System.Reflection.Assembly.GetExecutingAssembly());
+                return global::System.Xml.XmlReader.Create(new global::System.IO.StreamReader(embeddedProvider.GetFileInfo(edmxEmbedPath).CreateReadStream()));
+            }
+");
+        }
+        else if (useTempFile)
         {
 
 this.Write("   \r\n                [global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Mic" +
@@ -4273,8 +4342,20 @@ this.Write("\")]\r\n                private static global::System.Xml.XmlReader 
 
 
         }
+        else
+        {
+this.Write("            [global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"Microsoft.OD" +
+        "ata.Client.Design.T4\", \"");
 
-this.Write("        }\r\n");
+this.Write(this.ToStringHelper.ToStringWithCulture(T4Version));
+
+this.Write("\")]\r\n            private static global::System.Xml.XmlReader CreateXmlReader(stri" +
+        "ng edmxToParse)\r\n            {\r\n                return global::System.Xml.XmlRea" +
+        "der.Create(new global::System.IO.StringReader(edmxToParse));\r\n            }\r\n");
+
+        }
+
+        this.Write("        }\r\n");
 
 
     }
@@ -5619,7 +5700,7 @@ public sealed class ODataClientVBTemplate : ODataClientTemplate
     internal override string XmlConvertClassName { get { return "Global.System.Xml.XmlConvert"; } }
     internal override string EnumTypeName { get { return "Global.System.Enum"; } }
     internal override string DictionaryTypeName { get { return "Global.System.Collections.Generic.Dictionary(Of {0}, {1})"; } }
-    internal override string FixPattern { get { return "[{0}]"; } }
+    internal override string FixKeywordPattern { get { return "[{0}]"; } }
     internal override string EnumUnderlyingTypeMarker { get { return " As "; } }
     internal override string ConstantExpressionConstructorWithType { get { return "Global.System.Linq.Expressions.Expression.Constant({0}, GetType({1}))"; } }
     internal override string TypeofFormatter { get { return "GetType({0})"; } }    
@@ -6003,7 +6084,7 @@ this.Write(")\r\n            MyBase.New(query)\r\n        End Sub\r\n");
 
     }
 
-    internal override void WriteContextEntitySetProperty(string entitySetName, string entitySetFixedName, string originalEntitySetName, string entitySetElementTypeName, bool inContext)
+    internal override void WriteContextEntitySetProperty(string entitySetName, string entitySetFixedName, string entitySetPrivateName, string originalEntitySetName, string entitySetElementTypeName, bool inContext)
     {
 
 this.Write("        \'\'\'<summary>\r\n        \'\'\'There are no comments for ");
@@ -6051,13 +6132,13 @@ this.Write("                If Not Me.IsComposable Then\r\n                    T
 
         }
 
-this.Write("                If (Me._");
+this.Write("                If (Me.");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(entitySetName));
+this.Write(this.ToStringHelper.ToStringWithCulture(entitySetPrivateName));
 
-this.Write(" Is Nothing) Then\r\n                    Me._");
+this.Write(" Is Nothing) Then\r\n                    Me.");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(entitySetName));
+this.Write(this.ToStringHelper.ToStringWithCulture(entitySetPrivateName));
 
 this.Write(" = ");
 
@@ -6071,18 +6152,18 @@ this.Write(")(");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(inContext ? "\"" + originalEntitySetName + "\"" : "GetPath(\"" + originalEntitySetName + "\")"));
 
-this.Write(")\r\n                End If\r\n                Return Me._");
+this.Write(")\r\n                End If\r\n                Return Me.");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(entitySetName));
+this.Write(this.ToStringHelper.ToStringWithCulture(entitySetPrivateName));
 
 this.Write("\r\n            End Get\r\n        End Property\r\n        <Global.System.CodeDom.Compi" +
         "ler.GeneratedCodeAttribute(\"Microsoft.OData.Client.Design.T4\", \"");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(T4Version));
 
-this.Write("\")>  _\r\n        Private _");
+this.Write("\")>  _\r\n        Private ");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(entitySetName));
+this.Write(this.ToStringHelper.ToStringWithCulture(entitySetPrivateName));
 
 this.Write(" As Global.Microsoft.OData.Client.DataServiceQuery(Of ");
 
@@ -6093,7 +6174,7 @@ this.Write(")\r\n");
 
     }
 
-    internal override void WriteContextSingletonProperty(string singletonName, string singletonFixedName, string originalSingletonName, string singletonElementTypeName, bool inContext)
+    internal override void WriteContextSingletonProperty(string singletonName, string singletonFixedName, string singletonPrivateName, string originalSingletonName, string singletonElementTypeName, bool inContext)
     {
 
 this.Write("        \'\'\'<summary>\r\n        \'\'\'There are no comments for ");
@@ -6141,13 +6222,13 @@ this.Write("                If Not Me.IsComposable Then\r\n                    T
 
         }
 
-this.Write("                If (Me._");
+this.Write("                If (Me.");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(singletonName));
+this.Write(this.ToStringHelper.ToStringWithCulture(singletonPrivateName));
 
-this.Write(" Is Nothing) Then\r\n                    Me._");
+this.Write(" Is Nothing) Then\r\n                    Me.");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(singletonName));
+this.Write(this.ToStringHelper.ToStringWithCulture(singletonPrivateName));
 
 this.Write(" = New ");
 
@@ -6161,18 +6242,18 @@ this.Write(", ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(inContext ? "\"" + originalSingletonName + "\"" : "GetPath(\"" + originalSingletonName + "\")"));
 
-this.Write(")\r\n                End If\r\n                Return Me._");
+this.Write(")\r\n                End If\r\n                Return Me.");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(singletonName));
+this.Write(this.ToStringHelper.ToStringWithCulture(singletonPrivateName));
 
 this.Write("\r\n            End Get\r\n        End Property\r\n        <Global.System.CodeDom.Compi" +
         "ler.GeneratedCodeAttribute(\"Microsoft.OData.Client.Design.T4\", \"");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(T4Version));
 
-this.Write("\")>  _\r\n        Private _");
+this.Write("\")>  _\r\n        Private ");
 
-this.Write(this.ToStringHelper.ToStringWithCulture(singletonName));
+this.Write(this.ToStringHelper.ToStringWithCulture(singletonPrivateName));
 
 this.Write(" As ");
 

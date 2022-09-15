@@ -86,8 +86,10 @@ namespace Unchase.OData.ConnectedService
                     AdvancedSettingsViewModel.DynamicPropertiesCollectionName = serviceConfig.DynamicPropertiesCollectionName;
                     AdvancedSettingsViewModel.EnableNamingAlias = serviceConfig.EnableNamingAlias;
                     AdvancedSettingsViewModel.IncludeT4File = serviceConfig.IncludeT4File;
+                    AdvancedSettingsViewModel.EmbedEdmxFile = serviceConfig.EmbedEdmxFile;
                     AdvancedSettingsViewModel.MakeTypesInternal = serviceConfig.MakeTypesInternal;
                     AdvancedSettingsViewModel.IncludeT4FileEnabled = true;
+                    AdvancedSettingsViewModel.EmbedEdmxFileEnabled = true;
                 }
 
                 // Restore the advanced settings to UI elements.
@@ -115,9 +117,12 @@ namespace Unchase.OData.ConnectedService
                                 advancedSettingsViewModel.DynamicPropertiesCollectionName = serviceConfig.DynamicPropertiesCollectionName;
                                 advancedSettingsViewModel.EnableNamingAlias = serviceConfig.EnableNamingAlias;
                                 advancedSettingsViewModel.IncludeT4File = serviceConfig.IncludeT4File;
+                                advancedSettingsViewModel.EmbedEdmxFile = serviceConfig.EmbedEdmxFile;
                                 advancedSettingsViewModel.MakeTypesInternal = serviceConfig.MakeTypesInternal;
                                 advancedSettingsViewModel.IncludeT4FileEnabled = true;
                                 advancedSettings.IncludeT4File.IsEnabled = true;
+                                advancedSettingsViewModel.EmbedEdmxFileEnabled = true;
+                                advancedSettings.EmbedEdmxFile.IsEnabled = true;
                             }
 
                             if (!advancedSettingsViewModel.SelectOperationImports || UserSettings.LanguageOption != LanguageOption.GenerateCSharpCode)
@@ -143,6 +148,7 @@ namespace Unchase.OData.ConnectedService
                     advancedSettingsViewModel.OperationImportsGenerator = AdvancedSettingsViewModel.OperationImportsGenerator;
                     advancedSettingsViewModel.SelectOperationImports = AdvancedSettingsViewModel.SelectOperationImports;
                     advancedSettingsViewModel.IncludeT4FileEnabled = true;
+                    advancedSettingsViewModel.EmbedEdmxFileEnabled = true;
                     if (!advancedSettingsViewModel.SelectOperationImports || UserSettings.LanguageOption != LanguageOption.GenerateCSharpCode)
                         RemoveOperationImportsSettingsPage();
                     else
@@ -237,6 +243,7 @@ namespace Unchase.OData.ConnectedService
                     DynamicPropertiesCollectionName = AdvancedSettingsViewModel.UserSettings.DynamicPropertiesCollectionName,
                     EnableNamingAlias = AdvancedSettingsViewModel.UserSettings.EnableNamingAlias,
                     IncludeT4File = AdvancedSettingsViewModel.UserSettings.IncludeT4File,
+                    EmbedEdmxFile = AdvancedSettingsViewModel.UserSettings.EmbedEdmxFile,
                     MakeTypesInternal = AdvancedSettingsViewModel.UserSettings.MakeTypesInternal
                 };
             }

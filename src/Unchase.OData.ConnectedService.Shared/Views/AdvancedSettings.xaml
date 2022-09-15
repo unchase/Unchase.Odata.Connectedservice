@@ -9,19 +9,20 @@
     d:DesignHeight="460"
     d:DesignWidth="500"
     mc:Ignorable="d">
-    <StackPanel>
-        <StackPanel
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+            <StackPanel
             x:Name="SettingsPanel"
             Height="125"
             Margin="10,0,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top">
-            <TextBlock
+                <TextBlock
                 x:Name="ReferenceFileNameLabel"
                 Margin="0,5,0,0"
                 HorizontalAlignment="Left"
                 Text="Enter the file name (without extension):" />
-            <TextBox
+                <TextBox
                 x:Name="ReferenceFileName"
                 Width="480"
                 Margin="20,5,0,0"
@@ -30,35 +31,35 @@
                 IsEnabled="{Binding GeneratedFileNameEnabled, Mode=TwoWay}"
                 Text="{Binding UserSettings.GeneratedFileNamePrefix, Mode=TwoWay}"
                 TextWrapping="Wrap" />
-            <TextBlock
+                <TextBlock
                 x:Name="Label"
                 Margin="0,20,40,0"
                 TextWrapping="WrapWithOverflow">
                 You can generate the client proxy based on the default settings, or you can click following link for further configuration.
-            </TextBlock>
-            <TextBlock
+                </TextBlock>
+                <TextBlock
                 x:Name="TextBlock"
                 Margin="0,5"
                 TextWrapping="Wrap">
                 <Hyperlink Name="Settings" Click="settings_Click">AdvancedSettings</Hyperlink>
-            </TextBlock>
-        </StackPanel>
-        <StackPanel x:Name="AdvancedSettingsPanel">
-            <StackPanel
+                </TextBlock>
+            </StackPanel>
+            <StackPanel x:Name="AdvancedSettingsPanel">
+                <StackPanel
                 Margin="10,5,0,0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top">
-                <CheckBox
+                    <CheckBox
                     x:Name="UseNamespacePrefix"
                     Margin="0,5"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Bottom"
                     IsChecked="{Binding UserSettings.UseNameSpacePrefix, Mode=TwoWay}">
-                    <TextBlock Margin="0,0,40,0" TextWrapping="Wrap">
+                        <TextBlock Margin="0,0,40,0" TextWrapping="Wrap">
                         Use a custom namespace (It will replace the original namespace in the metadata document, unless the model has several namespaces).
-                    </TextBlock>
-                </CheckBox>
-                <TextBox
+                        </TextBlock>
+                    </CheckBox>
+                    <TextBox
                     x:Name="NamespacePrefix"
                     Width="480"
                     Margin="20,0,0,5"
@@ -66,25 +67,24 @@
                     VerticalAlignment="Center"
                     Text="{Binding UserSettings.NamespacePrefix, Mode=TwoWay}"
                     TextWrapping="Wrap" />
-                <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                    <CheckBox
+                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                        <CheckBox
                         x:Name="UseDsc"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Content="Enable entity and property tracking."
                         IsChecked="{Binding UserSettings.UseDataServiceCollection, Mode=TwoWay}" />
-                    <TextBlock Margin="10,0,0,0">-</TextBlock>
-                    <CheckBox
+                        <TextBlock Margin="10,0,0,0">-</TextBlock>
+                        <CheckBox
                         x:Name="UseAsyncDsc"
                         Margin="10,0,0,0"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Content="Implement async binding base. (c# only)"
                         IsChecked="{Binding UserSettings.UseAsyncDataServiceCollection, Mode=TwoWay}"
-                        IsEnabled="{Binding UserSettings.ShowAsyncDataServiceCollectionOption}"
                         Visibility="{Binding UserSettings.UseDataServiceCollection}" />
-                </StackPanel>
-                <CheckBox
+                    </StackPanel>
+                    <CheckBox
                     x:Name="SelectOperationImports"
                     Width="450"
                     Height="20"
@@ -96,14 +96,14 @@
                     FontWeight="Medium"
                     IsChecked="{Binding UserSettings.SelectOperationImports, Mode=TwoWay}"
                     Unchecked="SelectOperationImports_OnUnchecked" />
-                <StackPanel x:Name="ExtensionMethodsForCSharpStackPanel">
-                    <TextBlock
+                    <StackPanel x:Name="ExtensionMethodsForCSharpStackPanel">
+                        <TextBlock
                         x:Name="ExtensionsTemplateLabel"
                         Margin="0,0,10,5"
                         HorizontalAlignment="Left"
                         Text="Extensions:"
                         Visibility="{Binding IncludeExtensionsT4FileVisibility, Mode=TwoWay}" />
-                    <CheckBox
+                        <CheckBox
                         x:Name="IncludeExtensionsT4File"
                         Width="450"
                         Height="25"
@@ -114,15 +114,15 @@
                         FontWeight="Medium"
                         IsChecked="{Binding UserSettings.IncludeExtensionsT4File, Mode=TwoWay}"
                         Visibility="{Binding IncludeExtensionsT4FileVisibility, Mode=TwoWay}" />
-                    <StackPanel x:Name="FunctionImportsStackPanel" Visibility="Collapsed">
-                        <TextBlock
+                        <StackPanel x:Name="FunctionImportsStackPanel" Visibility="Collapsed">
+                            <TextBlock
                             x:Name="ExtensionsFunctionImportsGeneratorLabel"
                             Margin="0,10,10,5"
                             HorizontalAlignment="Left"
                             IsEnabled="{Binding ElementName=IncludeExtensionsT4File, Path=IsChecked}"
                             Text="OData methods generation method (from FunctionImports):"
                             Visibility="{Binding IncludeExtensionsT4FileVisibility, Mode=TwoWay}" />
-                        <ComboBox
+                            <ComboBox
                             x:Name="FunctionImportsGenerationMethod"
                             Width="480"
                             Height="25"
@@ -135,47 +135,47 @@
                             SelectedIndex="0"
                             SelectedValue="{Binding OperationImportsGenerator}"
                             Visibility="{Binding IncludeExtensionsT4FileVisibility, Mode=TwoWay}" />
+                        </StackPanel>
                     </StackPanel>
                 </StackPanel>
-            </StackPanel>
-            <StackPanel
+                <StackPanel
                 x:Name="AdvancedSettingsForv4"
                 Margin="10,5,0,0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top">
-                <CheckBox
+                    <CheckBox
                     x:Name="EnableCamelCase"
                     Margin="0,5"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Content="Use c# casing style."
                     IsChecked="{Binding UserSettings.EnableNamingAlias, Mode=TwoWay}" />
-                <CheckBox
+                    <CheckBox
                     x:Name="IgnoreUnknownAttributeOrElement"
                     Margin="0,5"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     IsChecked="{Binding UserSettings.IgnoreUnexpectedElementsAndAttributes, Mode=TwoWay}">
-                    <TextBlock Margin="0,0,40,0" TextWrapping="Wrap">Ignore unknown elements (Whether to ignore unexpected elements and attributes in the metadata document and generate the client code if any).</TextBlock>
-                </CheckBox>
-                <CheckBox
+                        <TextBlock Margin="0,0,40,0" TextWrapping="Wrap">Ignore unknown elements (Whether to ignore unexpected elements and attributes in the metadata document and generate the client code if any).</TextBlock>
+                    </CheckBox>
+                    <CheckBox
                     x:Name="MakeTypesInternal"
                     Margin="0,5"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     IsChecked="{Binding UserSettings.MakeTypesInternal, Mode=TwoWay}">
-                    <TextBlock Margin="0,0,40,0" TextWrapping="Wrap">Make generated types internal (Enable this if you don't want to expose the generated types outside of your assembly).</TextBlock>
-                </CheckBox>
+                        <TextBlock Margin="0,0,40,0" TextWrapping="Wrap">Make generated types internal (Enable this if you don't want to expose the generated types outside of your assembly).</TextBlock>
+                    </CheckBox>
 
-                <CheckBox
+                    <CheckBox
                     x:Name="GenerateDynamicPropertiesCollection"
                     Margin="0,5"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     IsChecked="{Binding UserSettings.GenerateDynamicPropertiesCollection, Mode=TwoWay}">
-                    <TextBlock Margin="0,0,40,0" TextWrapping="Wrap">Generate Dynamic Properties Collection with name :</TextBlock>
-                </CheckBox>
-                <TextBox
+                        <TextBlock Margin="0,0,40,0" TextWrapping="Wrap">Generate Dynamic Properties Collection with name :</TextBlock>
+                    </CheckBox>
+                    <TextBox
                     x:Name="DynamicPropertiesCollectionName"
                     Width="480"
                     Margin="20,0,0,5"
@@ -184,7 +184,19 @@
                     Text="{Binding UserSettings.DynamicPropertiesCollectionName, Mode=TwoWay}"
                     TextWrapping="Wrap" />
 
-                <CheckBox
+                    <CheckBox
+                    x:Name="EmbedEdmxFile"
+                    Width="500"
+                    Height="25"
+                    Margin="0,5"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Content="Embed Edmx file (use this if your Edmx is too long for a string literal)."
+                    FontWeight="Medium"
+                    IsChecked="{Binding UserSettings.EmbedEdmxFile, Mode=TwoWay}"
+                    IsEnabled="{Binding EmbedEdmxFileEnabled, Mode=TwoWay}" />
+
+                    <CheckBox
                     x:Name="IncludeT4File"
                     Width="500"
                     Height="25"
@@ -195,10 +207,10 @@
                     FontWeight="Medium"
                     IsChecked="{Binding UserSettings.IncludeT4File, Mode=TwoWay}"
                     IsEnabled="{Binding IncludeT4FileEnabled, Mode=TwoWay}" />
-                <TextBlock Margin="20,0,40,0" TextWrapping="Wrap">
+                    <TextBlock Margin="20,0,40,0" TextWrapping="Wrap">
                     OperationImports (ActionImports and FunctionImports) names in metadata to exclude from generated code (comma separated):
-                </TextBlock>
-                <TextBox
+                    </TextBlock>
+                    <TextBox
                     x:Name="ExcludedOperationImportsNames"
                     Width="480"
                     Margin="20,10,0,5"
@@ -206,7 +218,8 @@
                     VerticalAlignment="Center"
                     Text="{Binding UserSettings.ExcludedOperationImportsNames, Mode=TwoWay}"
                     TextWrapping="Wrap" />
+                </StackPanel>
             </StackPanel>
         </StackPanel>
-    </StackPanel>
+    </ScrollViewer>
 </UserControl>

@@ -42,6 +42,15 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
                 await CheckAndInstallNuGetPackageAsync(Common.Constants.NuGetOnlineRepository, nugetPackage);
 
             await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Nuget Packages for OData V4 were installed.");
+
+            if (this.ServiceConfiguration.EmbedEdmxFile)
+            {
+                await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Adding Nuget Packages for embedded Edmx resource...");
+
+                await CheckAndInstallNuGetPackageAsync(Common.Constants.NuGetOnlineRepository, Common.Constants.MSEmbeddedResourcePackage);
+
+                await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Nuget Packages for embedded Edmx resource were installed.");
+            }
         }
 
         internal async Task CheckAndInstallNuGetPackageAsync(string packageSource, string nugetPackage)
@@ -148,6 +157,7 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
                 IgnoreUnexpectedElementsAndAttributes = this.ServiceConfiguration.IgnoreUnexpectedElementsAndAttributes,
                 EnableNamingAlias = this.ServiceConfiguration.EnableNamingAlias,
                 NamespacePrefix = this.ServiceConfiguration.NamespacePrefix,
+                EmbedEdmxFilePath = this.ServiceConfiguration.EmbedEdmxFile ? Path.Combine(this.Context.HandlerHelper.GetServiceArtifactsRootFolder(), this.Context.ServiceInstance.Name, $"{this.GeneratedFileNamePrefix}.edmx").Replace('\\', '.').Replace(' ', '_') : null,
                 ExcludedOperationImportsNames = this.ServiceConfiguration?.ExcludedOperationImportsNames,
                 GenerateDynamicPropertiesCollection = this.ServiceConfiguration.GenerateDynamicPropertiesCollection,
                 DynamicPropertiesCollectionName = this.ServiceConfiguration?.DynamicPropertiesCollectionName,
@@ -170,6 +180,15 @@ namespace Unchase.OData.ConnectedService.CodeGeneration
             await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             var outputFile = Path.Combine(this.ReferenceFileFolder, $"{this.GeneratedFileNamePrefix}{(this.ServiceConfiguration.LanguageOption == LanguageOption.GenerateCSharpCode ? ".cs" : ".vb")}");
             await this.Context.HandlerHelper.AddFileAsync(tempFile, outputFile, new AddFileOptions { OpenOnComplete = this.Instance.ServiceConfig.OpenGeneratedFilesOnComplete });
+
+            if (this.ServiceConfiguration.EmbedEdmxFile)
+            {
+                var projFilePath = Path.Combine(this.ReferenceFileFolder, $"{this.GeneratedFileNamePrefix}.edmx");
+                File.WriteAllText(projFilePath, t4CodeGenerator.Edmx);
+
+                var item = this.Project.ProjectItems.AddFromFile(projFilePath);
+                item.Properties.Item("ItemType").Value = "EmbeddedResource";
+            }
 
             await this.Context.Logger.WriteMessageAsync(LoggerMessageCategory.Information, "Client Proxy for OData V4 was generated.");
         }

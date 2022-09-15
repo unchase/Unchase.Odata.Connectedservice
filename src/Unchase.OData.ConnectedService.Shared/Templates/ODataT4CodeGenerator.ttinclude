@@ -2497,7 +2497,7 @@ public abstract class ODataClientTemplate : TemplateBase
         }
     }
 
-    internal string GetFixedName(string originalName)
+    internal virtual string GetFixedName(string originalName)
     {
         string fixedName = originalName;
 
@@ -3442,6 +3442,19 @@ public sealed class ODataClientCSharpTemplate : ODataClientTemplate
     internal override string ODataVersion { get { return "global::Microsoft.OData.ODataVersion.V4"; } }
     internal override string ParameterDeclarationTemplate { get { return "{0} {1}"; } }
     internal override string DictionaryItemConstructor { get { return "{{ {0}, {1} }}"; } }
+
+    internal override string GetFixedName(string originalName)
+    {
+        string fixedName = originalName;
+
+        if (this.LanguageKeywords.Contains(fixedName))
+        {
+            fixedName = string.Format(this.FixPattern, fixedName);
+        }
+
+        return (fixedName ?? String.Empty).Replace(' ', '_');
+    }
+
     internal override HashSet<string> LanguageKeywords { get {
         if (CSharpKeywords == null)
         {
