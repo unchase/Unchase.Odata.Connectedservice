@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.VisualStudio.ConnectedServices;
 using Microsoft.VisualStudio.Debugger.Interop;
-using Unchase.OData.ConnectedService.Common;
+using Common = Unchase.OData.ConnectedService.Common;
 using Unchase.OData.ConnectedService.Models;
 using Unchase.OData.ConnectedService.Views;
 
@@ -16,8 +16,8 @@ namespace Unchase.OData.ConnectedService.ViewModels
     internal class AdvancedSettingsViewModel : ConnectedServiceWizardPage
     {
         #region Properties and fields
-        public Constants.OperationImportsGenerator[] OperationImportsGenerators =>
-            new[] { Constants.OperationImportsGenerator.Inner, Constants.OperationImportsGenerator.SimpleOData};
+        public Common.Constants.OperationImportsGenerator[] OperationImportsGenerators =>
+            new[] { Common.Constants.OperationImportsGenerator.Inner, Common.Constants.OperationImportsGenerator.SimpleOData};
 
         #region UseDataServiceCollection
         private bool _useDataServiceCollection;
@@ -231,8 +231,8 @@ namespace Unchase.OData.ConnectedService.ViewModels
         #endregion
 
         #region OperationImportsGenerator
-        private Constants.OperationImportsGenerator _operationImportsGenerator;
-        public Constants.OperationImportsGenerator OperationImportsGenerator
+        private Common.Constants.OperationImportsGenerator _operationImportsGenerator;
+        public Common.Constants.OperationImportsGenerator OperationImportsGenerator
         {
             get => _operationImportsGenerator;
             set
@@ -301,13 +301,13 @@ namespace Unchase.OData.ConnectedService.ViewModels
             this.UseDataServiceCollection = UserSettings.UseDataServiceCollection;
             this.UseAsyncDataServiceCollection = UserSettings.UseAsyncDataServiceCollection;
             this.UseNamespacePrefix = UserSettings.UseNameSpacePrefix;
-            this.NamespacePrefix = UserSettings.NamespacePrefix ?? Constants.DefaultNamespacePrefix;
+            this.NamespacePrefix = UserSettings.NamespacePrefix ?? Common.Constants.DefaultNamespacePrefix;
             this.EnableNamingAlias = UserSettings.EnableNamingAlias;
             this.IgnoreUnexpectedElementsAndAttributes = UserSettings.IgnoreUnexpectedElementsAndAttributes;
             this.GenerateDynamicPropertiesCollection = UserSettings.GenerateDynamicPropertiesCollection;
             this.DynamicPropertiesCollectionName = UserSettings.DynamicPropertiesCollectionName;
             this.GeneratedFileNameEnabled = true;
-            this.GeneratedFileNamePrefix = UserSettings.GeneratedFileNamePrefix ?? Constants.DefaultReferenceFileName;
+            this.GeneratedFileNamePrefix = UserSettings.GeneratedFileNamePrefix ?? Common.Constants.DefaultReferenceFileName;
             this.IncludeT4FileEnabled = true;
             this.IncludeT4File = UserSettings.IncludeT4File;
             this.EmbedEdmxFileEnabled = true;
